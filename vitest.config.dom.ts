@@ -3,7 +3,7 @@ import { defineConfig, configDefaults } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "jsdom",
-    setupFiles: ["test/setupTests.ts"],
+    setupFiles: ["vitest.setup.ts"],
     watch: false,
     coverage: {
       include: ["**/__tests__/**/*.{ts,js}"],
