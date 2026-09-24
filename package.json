@@ -12,7 +12,7 @@
   },
   "homepage": "https://github.com/Najemi-Software/vitest-dom#readme",
   "license": "MIT",
-  "author": "Chance Stricklad <hi@chance.dev>",
+  "author": "Martin Najemi <martin@najemi.cz>",
   "type": "module",
   "packageManager": "pnpm@10.15.0",
   "files": [
