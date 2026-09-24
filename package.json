@@ -1,6 +1,6 @@
 {
   "name": "@najemi-software/vitest-dom",
-  "version": "0.1.1",
+  "version": "0.0.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -13,6 +13,20 @@
   "homepage": "https://github.com/Najemi-Software/vitest-dom#readme",
   "license": "MIT",
   "author": "Martin Najemi <martin@najemi.cz>",
+  "contributors": [
+    {
+      "name": "Chance Strickland",
+      "email": "hi@chance.dev"
+    },
+    {
+      "name": "Rory Jennings",
+      "email": "48416253+themagickoala@users.noreply.github.com"
+    },
+    {
+      "name": "Martin Litvaj",
+      "email": "kamahl19@gmail.com"
+    }
+  ],
   "type": "module",
   "packageManager": "pnpm@10.15.0",
   "files": [

@@ -1,0 +1,328 @@
+name: "Pull Request ~ Status Check"
+
+on:
+  pull_request:
+    branches: [ master ]
+
+concurrency:
+  group: ${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dismiss-approvals:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Dismiss Approvals
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            // Get all reviews on the pull request
+            const reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            // Iterate over reviews and dismiss approvals
+            for (const review of reviews.data) {
+              if (review.state === "APPROVED" && review.user.login !== "yenkins-admin") {
+                await github.rest.pulls.dismissReview({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  review_id: review.id,
+                  message: "Approval dismissed automatically due to PR update.",
+                });
+                console.log(`Dismissed approval from ${review.user.login}`);
+              }
+            }
+        env:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+
+  check-merge-commit:
+    name: check-merge-commit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check for merge commits on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          MERGE_COMMITS=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/commits" --paginate \
+            --jq '.[] | select(.parents | length > 1) | "\(.sha[0:7]) \(.commit.message | split("\n")[0])"')
+
+          if [ -n "$MERGE_COMMITS" ]; then
+            gh pr comment "${PR_NUMBER}" \
+              --repo "${REPO}" \
+              --body "🚫 **Merge commits are not allowed on this branch. Please rebase onto \`${BASE_REF}\` instead of merging.**
+
+          Found merge commit(s) since branch diverged from \`${BASE_REF}\`:
+          \`\`\`
+          ${MERGE_COMMITS}
+          \`\`\`"
+
+            echo "::error::Merge commits detected on branch. Please rebase onto ${BASE_REF} instead of merging."
+            echo "$MERGE_COMMITS"
+            exit 1
+          fi
+
+          echo "No merge commits found on branch."
+
+  lint-commit-messages:
+    name: lint-commit-messages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR tip
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Lint commit messages
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          HEADER_MAX_LENGTH=70
+          CONVENTIONAL_REGEX='^(feat|chore|fix)(\(.+\))?!?: .+'
+
+          # Walk first-parent history from the PR tip; the first merge commit
+          # is the latest master merge the branch is based on.
+          BASE_SHA=$(git rev-list --first-parent --merges -n 1 HEAD)
+          if [[ -z "$BASE_SHA" ]]; then
+            echo "::error::Reached a root commit without finding a merge commit; cannot determine the master base."
+            exit 1
+          fi
+
+          # All commits between the base and the PR tip (tip included, base excluded).
+          COMMITS=$(git rev-list --first-parent "${BASE_SHA}..HEAD")
+
+          VIOLATIONS=""
+          for COMMIT_HASH in $COMMITS; do
+            COMMIT_MESSAGE=$(git log -1 --format=%B "$COMMIT_HASH")
+            COMMIT_SUBJECT="${COMMIT_MESSAGE%%$'\n'*}"
+            COMMIT_VIOLATIONS=""
+
+            if ! [[ "$COMMIT_SUBJECT" =~ $CONVENTIONAL_REGEX ]]; then
+              COMMIT_VIOLATIONS+=":x: subject must match \`(feat|chore|fix)(scope)?!?: ...\`\n"
+            fi
+
+            if (( ${#COMMIT_SUBJECT} > HEADER_MAX_LENGTH )); then
+              COMMIT_VIOLATIONS+=":x: exceeds ${HEADER_MAX_LENGTH} characters\n"
+            fi
+
+            if [[ -n "$COMMIT_VIOLATIONS" ]]; then
+              VIOLATIONS+="\`${COMMIT_HASH:0:7} ${COMMIT_SUBJECT}\`\n${COMMIT_VIOLATIONS}\n"
+            fi
+          done
+
+          {
+            echo "## Commit Lint Results"
+            if [[ -n "$VIOLATIONS" ]]; then
+              echo "### Violations"
+              echo -e "$VIOLATIONS"
+            else
+              echo ":white_check_mark: All commit messages follow the guidelines."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ -n "$VIOLATIONS" ]]; then
+            echo -e "$VIOLATIONS"
+            exit 1
+          fi
+
+          echo "All commit messages follow the guidelines."
+
+  build-validate-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm test
+
+  publish-alpha:
+    needs:
+      - build-validate-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout PR tip
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect bump
+        id: detect-bump
+        uses: ./.github/actions/versioning/detect-bump
+        with:
+          pr-number: ${{ github.event.pull_request.number }}
+
+      - name: Decide whether to publish
+        id: gate
+        env:
+          BUMP: ${{ steps.detect-bump.outputs.bump }}
+          HAS_SKIP_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'skip publish') }}
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "$BUMP" = "none" ]; then
+            publish=false; reason="bump is none"
+          elif [ "$HAS_SKIP_LABEL" = "true" ]; then
+            publish=false; reason="PR has the 'skip publish' label"
+          elif [ "$SAME_REPO" != "true" ]; then
+            publish=false; reason="fork PR, no access to publish secrets"
+          else
+            publish=true; reason="all conditions met"
+          fi
+          echo "publish=${publish}" >> "$GITHUB_OUTPUT"
+          echo "Publish alpha: ${publish} (${reason})"
+
+      - name: Comment bump on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BUMP: ${{ steps.detect-bump.outputs.bump }}
+          HEAD_SHA: ${{ steps.detect-bump.outputs.head-sha }}
+        run: |
+          set -euo pipefail
+          if [ "$BUMP" = "none" ]; then
+            body="🔖 No version bump detected for \`${HEAD_SHA}\` — merging this PR will not trigger a release."
+          else
+            body="🔖 Version bump detected for \`${HEAD_SHA}\`: **${BUMP}** — merging this PR will release a ${BUMP} version."
+          fi
+          gh pr comment "$PR_NUMBER" --body "$body"
+
+      - name: Get latest release version
+        id: latest-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="$(gh api "repos/${REPO}/releases/latest" --jq '.tag_name')"
+          echo "version=${tag}" >> "$GITHUB_OUTPUT"
+          echo "Latest release: ${tag}"
+
+      - name: Ensure latest release in git history
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.latest-release.outputs.version }}
+          BASE_SHA: ${{ steps.detect-bump.outputs.base-sha }}
+        run: |
+          set -euo pipefail
+          status="$(gh api "repos/${REPO}/compare/${RELEASE_TAG}...${BASE_SHA}" --jq '.status')"
+          case "$status" in
+            identical|ahead)
+              echo "Base ${BASE_SHA} is at or after latest release ${RELEASE_TAG} (status: ${status})."
+              ;;
+            *)
+              echo "::error::PR base ${BASE_SHA} predates or diverged from latest release ${RELEASE_TAG} (status: ${status}). Rebase onto master."
+              exit 1
+              ;;
+          esac
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Calculate next version
+        id: next-version
+        if: ${{ steps.gate.outputs.publish == 'true' }}
+        uses: ./.github/actions/versioning/calculate-next-version
+        with:
+          latest-version: ${{ steps.latest-release.outputs.version }}
+          bump: ${{ steps.detect-bump.outputs.bump }}
+          pr-number: ${{ github.event.pull_request.number }}
+
+      - name: Install dependencies
+        if: ${{ steps.gate.outputs.publish == 'true' }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Set version
+        if: ${{ steps.gate.outputs.publish == 'true' }}
+        uses: ./.github/actions/versioning/set-version
+        with:
+          version: ${{ steps.next-version.outputs.version }}
+
+      - name: Build
+        if: ${{ steps.gate.outputs.publish == 'true' }}
+        run: pnpm run build
+
+      - name: Publish to npm
+        id: npm-publish
+        if: ${{ steps.gate.outputs.publish == 'true' }}
+        uses: ./.github/actions/publishing/npm-publish
+        with:
+          npm-token: ${{ secrets.NPM_TOKEN }}
+
+      - name: Comment install instructions on PR
+        if: ${{ steps.gate.outputs.publish == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          VERSION: ${{ steps.npm-publish.outputs.version }}
+          DIST_TAG: ${{ steps.npm-publish.outputs.dist-tag }}
+        run: |
+          set -euo pipefail
+          pkg="$(pnpm pkg get name | tr -d '"')"
+          gh pr comment "$PR_NUMBER" --body "📦 Published \`${pkg}@${VERSION}\` — try it with:
+          \`\`\`bash
+          npm i ${pkg}@${DIST_TAG}
+          \`\`\`
+          or
+          \`\`\`bash
+          npm i ${pkg}@${VERSION}
+          \`\`\`"
+
+  status-check:
+    name: status-check
+    if: ${{ !cancelled() }}
+    needs:
+      - build-validate-test
+      - check-merge-commit
+      - publish-alpha
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@v1.2.2
+        with:
+          allowed-skips: ${{ toJSON(needs) }}
+          jobs: ${{ toJSON(needs) }}
