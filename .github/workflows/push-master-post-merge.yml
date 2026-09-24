@@ -1,0 +1,106 @@
+name: "Push (master) ~ Post Merge"
+
+on:
+  push:
+    branches:
+      - master # Trigger on push to master
+
+concurrency:
+  group: post-merge
+  queue: max
+
+jobs:
+  get-pull-request-info:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      pr-number: ${{ steps.pr.outputs.pr-number }}
+    steps:
+      - name: Get pull request for pushed commit
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          # github.sha is expected to be a merge commit (parent 1: previous
+          # master, parent 2: PR head tip); match the PR it was created from.
+          pr_number="$(gh api "repos/${REPO}/commits/${SHA}/pulls" \
+            --jq '[.[] | select(.merge_commit_sha == env.SHA)][0].number // ""')"
+          echo "pr-number=${pr_number}" >> "$GITHUB_OUTPUT"
+          echo "PR for ${SHA}: ${pr_number:-<none>}"
+
+  publish:
+    needs:
+      - get-pull-request-info
+    if: ${{ needs.get-pull-request-info.outputs.pr-number != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # npm-publish creates the release tag + GitHub release
+      pull-requests: read
+    steps:
+      - name: Checkout merge commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Detect bump
+        id: detect-bump
+        uses: ./.github/actions/versioning/detect-bump
+        with:
+          pr-number: ${{ needs.get-pull-request-info.outputs.pr-number }}
+
+      - name: Get latest release version
+        id: latest-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="$(gh api "repos/${REPO}/releases/latest" --jq '.tag_name')"
+          echo "version=${tag}" >> "$GITHUB_OUTPUT"
+          echo "Latest release: ${tag}"
+
+      - name: Calculate next version
+        id: next-version
+        if: ${{ steps.detect-bump.outputs.bump != 'none' }}
+        uses: ./.github/actions/versioning/calculate-next-version
+        with:
+          latest-version: ${{ steps.latest-release.outputs.version }}
+          bump: ${{ steps.detect-bump.outputs.bump }}
+
+      - name: Set version
+        if: ${{ steps.detect-bump.outputs.bump != 'none' }}
+        uses: ./.github/actions/versioning/set-version
+        with:
+          version: ${{ steps.next-version.outputs.version }}
+
+      - name: Build
+        if: ${{ steps.detect-bump.outputs.bump != 'none' }}
+        run: pnpm run build
+
+      - name: Publish to npm
+        id: npm-publish
+        if: ${{ steps.detect-bump.outputs.bump != 'none' }}
+        uses: ./.github/actions/publishing/npm-publish
+        with:
+          npm-token: ${{ secrets.NPM_TOKEN }}
+
+      - name: No release for this merge
+        if: ${{ steps.detect-bump.outputs.bump == 'none' }}
+        run: echo "Bump is 'none' — nothing to release for this merge."

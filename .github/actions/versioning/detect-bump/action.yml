@@ -1,0 +1,125 @@
+name: "Detect Bump"
+description: >
+  Detects the semver bump (major/minor/patch/none) from a PR's commits,
+  fully via the GitHub API — no checkout required and no job state touched.
+  Starts at the PR head commit and walks first-parent history (GET commit,
+  parent navigation) until the first commit with two parents: the latest
+  master merge the branch is based on. The commit subjects in between
+  (including the head, excluding the base) determine the bump.
+
+inputs:
+  pr-number:
+    description: "Pull request number whose commits determine the bump"
+    required: true
+  github-token:
+    description: "Token used for GitHub API calls"
+    required: false
+    default: ${{ github.token }}
+  max-commits:
+    description: "Safety cap on commits walked before failing"
+    required: false
+    default: "250"
+
+outputs:
+  bump:
+    description: "Detected bump: major, minor, patch or none"
+    value: ${{ steps.detect.outputs.bump }}
+  base-sha:
+    description: "The merge commit identified as the latest master base"
+    value: ${{ steps.detect.outputs.base-sha }}
+  head-sha:
+    description: "The PR head commit the walk started from"
+    value: ${{ steps.detect.outputs.head-sha }}
+  merge-sha:
+    description: >
+      The PR's merge commit (empty if none). Before merge this is GitHub's
+      test merge commit; after merge it is the actual merge commit on master.
+    value: ${{ steps.detect.outputs.merge-sha }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Detect bump
+      id: detect
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        REPO: ${{ github.repository }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        MAX_COMMITS: ${{ inputs.max-commits }}
+      run: |
+        set -euo pipefail
+
+        IFS=$'\t' read -r head_sha merge_sha < <(
+          gh api "repos/${REPO}/pulls/${PR_NUMBER}" \
+            --jq '[.head.sha, (.merge_commit_sha // "")] | @tsv'
+        )
+
+        # Walk first-parent history from the PR head; the first commit with
+        # two parents is the latest master merge the branch is based on.
+        # Highest bump across PR commits wins: 3 major, 2 minor, 1 patch, 0 none.
+        sha="$head_sha"
+        base=""
+        rank=0
+        count=0
+        while [ -n "$sha" ]; do
+          if [ "$count" -ge "$MAX_COMMITS" ]; then
+            echo "::error::Walked ${MAX_COMMITS} commits from PR head without finding a merge commit; aborting."
+            exit 1
+          fi
+
+          IFS=$'\t' read -r parent_count first_parent subject < <(
+            gh api "repos/${REPO}/commits/${sha}" \
+              --jq '[(.parents | length), (.parents[0].sha // ""), (.commit.message | split("\n")[0])] | @tsv'
+          )
+
+          if [ "$parent_count" -ge 2 ]; then
+            base="$sha"
+            break
+          fi
+
+          if grep -qE '^[a-z]+(\([^)]*\))?!:' <<< "$subject"; then
+            level=3
+          elif grep -qE '^(chore|feat)(\([^)]*\))?:' <<< "$subject"; then
+            level=2
+          elif grep -qE '^fix(\([^)]*\))?:' <<< "$subject"; then
+            level=1
+          else
+            level=0
+          fi
+          if [ "$level" -gt "$rank" ]; then
+            rank=$level
+          fi
+
+          count=$((count + 1))
+          sha="$first_parent"
+        done
+
+        if [ -z "$base" ]; then
+          echo "::error::Reached a root commit without finding a merge commit; cannot determine the master base."
+          exit 1
+        fi
+
+        case "$rank" in
+          3) bump="major" ;;
+          2) bump="minor" ;;
+          1) bump="patch" ;;
+          *) bump="none" ;;
+        esac
+
+        echo "bump=${bump}" >> "$GITHUB_OUTPUT"
+        echo "base-sha=${base}" >> "$GITHUB_OUTPUT"
+        echo "head-sha=${head_sha}" >> "$GITHUB_OUTPUT"
+        echo "merge-sha=${merge_sha}" >> "$GITHUB_OUTPUT"
+
+        {
+          echo "### Detect Bump"
+          echo ""
+          echo "| | |"
+          echo "|---|---|"
+          echo "| Bump | \`${bump}\` |"
+          echo "| PR head | \`${head_sha}\` |"
+          echo "| Base (master merge) | \`${base}\` |"
+          echo "| PR merge commit | \`${merge_sha:-—}\` |"
+          echo "| Commits analyzed | ${count} |"
+        } >> "$GITHUB_STEP_SUMMARY"

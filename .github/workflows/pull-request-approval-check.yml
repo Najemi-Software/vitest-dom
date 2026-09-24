@@ -1,0 +1,73 @@
+name: "Pull Request ~ Status Check"
+
+on:
+  pull_request_review:
+    types:
+      - submitted
+      - dismissed
+
+permissions:
+  pull-requests: read
+
+jobs:
+  cancel-previous-runs:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Cancel previous pull-request-approval-check runs for this PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CURRENT_RUN_ID="${{ github.run_id }}"
+          REPO="${{ github.repository }}"
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          
+          # Cancel all in-progress, queued, and waiting runs on the same branch (excluding self)
+          for STATUS in in_progress queued waiting; do
+            gh api "repos/${REPO}/actions/workflows/pull-request-approval-check.yml/runs?status=${STATUS}&branch=${BRANCH}&per_page=100" \
+              --jq ".workflow_runs[] | select(.id != ${CURRENT_RUN_ID}) | .id" \
+            | while read -r RUN_ID; do
+              echo "Cancelling ${STATUS} run ${RUN_ID}"
+              gh api "repos/${REPO}/actions/runs/${RUN_ID}/cancel" -X POST || true
+            done
+          done
+
+  approval-check:
+    if: ${{ github.event.pull_request.state == 'open' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require martinnaj's approval unless martinnaj is the author
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const requiredApprover = 'martinnaj';
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+
+            if (author === requiredApprover) {
+              core.info(`PR author is ${author} — no approval required.`);
+              return;
+            }
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+
+            // Only the approver's substantive reviews; comments don't change approval state
+            const relevant = reviews
+              .filter((r) => r.user?.login === requiredApprover)
+              .filter((r) => r.state !== 'COMMENTED')
+              .sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+
+            const latest = relevant.at(-1);
+            if (latest?.state === 'APPROVED') {
+              core.info(`Approved by ${requiredApprover}.`);
+            } else {
+              core.setFailed(
+                `PR author is ${author} — approval from ${requiredApprover} is required ` +
+                  `(current review state: ${latest?.state ?? 'no review'}).`
+              );
+            }
