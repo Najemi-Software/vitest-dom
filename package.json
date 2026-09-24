@@ -28,6 +28,16 @@
     }
   ],
   "type": "module",
+  "exports": {
+    "./matchers": {
+      "types": "./matchers.d.ts",
+      "default": "./matchers.js"
+    },
+    "./extend-expect": {
+      "types": "./extend-expect.d.ts",
+      "default": "./extend-expect.js"
+    }
+  },
   "packageManager": "pnpm@10.15.0",
   "files": [
     "CHANGELOG.md",
