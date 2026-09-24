@@ -1,8 +1,27 @@
-.DS_Store
-*.pem
-*.log
-*.log*
-node_modules
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+/node_modules
 /dist
-.cache
-coverage
+/.npm
+/.cache
+
+*.tsbuildinfo
+*.log
+
+.DS_STORE
+.env
+.env.*
+!.env.template
+!.env.test
+
+.idea/*
+*.iml
+
+*.tgz
+package
+
+npm-debug.log*
+.eslintcache
+
+# Vim
+*.swp
