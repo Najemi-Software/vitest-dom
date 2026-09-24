@@ -1,7 +1,7 @@
 import redent from "redent";
 import cssParse from "./css-parse";
-import isEqual from "lodash-es/isEqual";
-import isFunction from "lodash-es/isFunction";
+import isEqual from "lodash-es/isEqual.js";
+import isFunction from "lodash-es/isFunction.js";
 import type { MatcherFn, MatcherState } from "./types";
 
 type ErrorUtils = MatcherState["utils"];
