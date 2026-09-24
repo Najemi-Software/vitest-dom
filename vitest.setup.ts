@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import { plugins } from "pretty-format";
 import { createColors, setupColors } from "vitest/utils";
-import "./src/extend-expect";
+import "./src/matchers/extend-expect";
 
 // The inline snapshots serialize matcher-message colors (via ConvertAnsi),
 // but vitest enables those colors from the environment — @vitest/utils'
