@@ -60,9 +60,9 @@ import "@najemi-software/vitest-dom/extend-expect";
 
 // In vitest.config.js, add the following
 export default defineConfig({
-  test: {
-    setupFiles: ["vitest-setup.js"],
-  },
+    test: {
+        setupFiles: ["vitest-setup.js"],
+    },
 });
 ```
 
@@ -82,17 +82,17 @@ import "@najemi-software/vitest-dom/extend-expect";
 If you want to run `extend.expect` yourself, you will need to include the type defintions either with a `/// <reference />` directive or including the type in your `compilerOptions`:
 
 1. In your test file via a reference directive:
-   ```typescript
-   /// <reference types="@najemi-software/vitest-dom/extend-expect" />
-   ```
+    ```typescript
+    /// <reference types="@najemi-software/vitest-dom/extend-expect" />
+    ```
 2. In your `tsconfig.json` via the `types` compiler option:
-   ```json
-   {
-     "compilerOptions": {
-       "types": ["@najemi-software/vitest-dom/extend-expect"]
-     }
-   }
-   ```
+    ```json
+    {
+        "compilerOptions": {
+            "types": ["@najemi-software/vitest-dom/extend-expect"]
+        }
+    }
+    ```
 
 <!-- prettier-ignore-start -->
 [vitest]: https://vitest.dev/

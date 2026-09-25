@@ -1,45 +1,45 @@
 name: "Set Version"
 description: >
-  Sets the given version in package.json in the current worktree.
-  Does not commit, tag or publish. Assumes the repository is checked
-  out and node/npm are available. (pnpm-lock.yaml does not embed the
-  package's own version, so only package.json needs updating.)
+    Sets the given version in package.json in the current worktree.
+    Does not commit, tag or publish. Assumes the repository is checked
+    out and node/npm are available. (pnpm-lock.yaml does not embed the
+    package's own version, so only package.json needs updating.)
 
 inputs:
-  version:
-    description: "Exact version to set (X.Y.Z or X.Y.Z-alpha.<pr>.<n>)"
-    required: true
+    version:
+        description: "Exact version to set (X.Y.Z or X.Y.Z-alpha.<pr>.<n>)"
+        required: true
 
 runs:
-  using: "composite"
-  steps:
-    - name: Set version in source
-      shell: bash
-      env:
-        VERSION: ${{ inputs.version }}
-      run: |
-        set -euo pipefail
+    using: "composite"
+    steps:
+        - name: Set version in source
+          shell: bash
+          env:
+              VERSION: ${{ inputs.version }}
+          run: |
+              set -euo pipefail
 
-        if ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+\.[0-9]+)?$' <<< "$VERSION"; then
-          echo "::error::version '${VERSION}' is not X.Y.Z or X.Y.Z-alpha.<pr>.<n>."
-          exit 1
-        fi
+              if ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-alpha\.[0-9]+\.[0-9]+)?$' <<< "$VERSION"; then
+                echo "::error::version '${VERSION}' is not X.Y.Z or X.Y.Z-alpha.<pr>.<n>."
+                exit 1
+              fi
 
-        npm version "$VERSION" --no-git-tag-version --allow-same-version --ignore-scripts > /dev/null
+              npm version "$VERSION" --no-git-tag-version --allow-same-version --ignore-scripts > /dev/null
 
-        pkg="$(npm pkg get version | tr -d '"')"
-        if [ "$pkg" != "$VERSION" ]; then
-          echo "::error::Version field disagrees after update: package.json=${pkg}."
-          exit 1
-        fi
+              pkg="$(npm pkg get version | tr -d '"')"
+              if [ "$pkg" != "$VERSION" ]; then
+                echo "::error::Version field disagrees after update: package.json=${pkg}."
+                exit 1
+              fi
 
-        echo "Version set to ${VERSION} in package.json."
+              echo "Version set to ${VERSION} in package.json."
 
-        {
-          echo "### Set Version"
-          echo ""
-          echo "| | |"
-          echo "|---|---|"
-          echo "| Version | \`${VERSION}\` |"
-          echo "| package.json | \`${pkg}\` |"
-        } >> "$GITHUB_STEP_SUMMARY"
+              {
+                echo "### Set Version"
+                echo ""
+                echo "| | |"
+                echo "|---|---|"
+                echo "| Version | \`${VERSION}\` |"
+                echo "| package.json | \`${pkg}\` |"
+              } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,32 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 110,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "sortImports": {
+        "order": "asc",
+        "ignoreCase": true,
+        "newlinesBetween": true,
+        "internalPattern": [],
+        "groups": [
+            "builtin",
+            "react-group",
+            "external",
+            "internal",
+            "parent",
+            ["sibling", "index"],
+            "unknown"
+        ],
+        "customGroups": [
+            {
+                "groupName": "react-group",
+                "elementNamePattern": ["react"],
+                "modifiers": ["value"]
+            }
+        ]
+    },
+    "sortPackageJson": {
+        "sortScripts": true
+    },
+    "ignorePatterns": ["**/node_modules/**", "**/dist/**"]
+}

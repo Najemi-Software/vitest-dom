@@ -1,8 +1,9 @@
-import { render } from "./helpers/test-utils";
 import { test, expect } from "vitest";
 
+import { render } from "./helpers/test-utils";
+
 test(".toBeRequired", () => {
-  const { queryByTestId } = render(`
+    const { queryByTestId } = render(`
     <div>
       <input data-testid="required-input" required>
       <input data-testid="aria-required-input" aria-required="true">
@@ -17,46 +18,26 @@ test(".toBeRequired", () => {
     </div>
     `);
 
-  expect(queryByTestId("required-input")).toBeRequired();
-  expect(queryByTestId("aria-required-input")).toBeRequired();
-  expect(queryByTestId("conflicted-input")).toBeRequired();
-  expect(queryByTestId("not-required-input")).not.toBeRequired();
-  expect(queryByTestId("basic-input")).not.toBeRequired();
-  expect(queryByTestId("unsupported-type")).not.toBeRequired();
-  expect(queryByTestId("select")).toBeRequired();
-  expect(queryByTestId("textarea")).toBeRequired();
-  expect(queryByTestId("supported-role")).not.toBeRequired();
-  expect(queryByTestId("supported-role-aria")).toBeRequired();
+    expect(queryByTestId("required-input")).toBeRequired();
+    expect(queryByTestId("aria-required-input")).toBeRequired();
+    expect(queryByTestId("conflicted-input")).toBeRequired();
+    expect(queryByTestId("not-required-input")).not.toBeRequired();
+    expect(queryByTestId("basic-input")).not.toBeRequired();
+    expect(queryByTestId("unsupported-type")).not.toBeRequired();
+    expect(queryByTestId("select")).toBeRequired();
+    expect(queryByTestId("textarea")).toBeRequired();
+    expect(queryByTestId("supported-role")).not.toBeRequired();
+    expect(queryByTestId("supported-role-aria")).toBeRequired();
 
-  // negative test cases wrapped in throwError assertions for coverage.
-  expect(() =>
-    expect(queryByTestId("required-input")).not.toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("aria-required-input")).not.toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("conflicted-input")).not.toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("not-required-input")).toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("basic-input")).toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("unsupported-type")).toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("select")).not.toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("textarea")).not.toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("supported-role")).toBeRequired(),
-  ).toThrowError();
-  expect(() =>
-    expect(queryByTestId("supported-role-aria")).not.toBeRequired(),
-  ).toThrowError();
+    // negative test cases wrapped in throwError assertions for coverage.
+    expect(() => expect(queryByTestId("required-input")).not.toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("aria-required-input")).not.toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("conflicted-input")).not.toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("not-required-input")).toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("basic-input")).toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("unsupported-type")).toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("select")).not.toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("textarea")).not.toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("supported-role")).toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("supported-role-aria")).not.toBeRequired()).toThrowError();
 });

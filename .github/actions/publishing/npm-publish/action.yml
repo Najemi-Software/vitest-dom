@@ -1,133 +1,133 @@
 name: "NPM Publish"
 description: >
-  Publishes the checked-out package to npm, idempotently. Reads the version
-  from package.json. Stable versions (X.Y.Z) publish to dist-tag "latest", then get
-  a git tag v<version> at HEAD and a GitHub release. Alpha versions
-  (X.Y.Z-alpha.<pr>.<n>) publish to dist-tag "alpha-<pr>" and get no tag or
-  release. If the version is already on the registry: alpha -> everything
-  is skipped; stable -> the publish is skipped but a missing tag/release is
-  still created (repairs a previous run that failed after publishing).
-  Assumes checkout, node/pnpm setup, pnpm install and the build have run
-  and the version was stamped (set-version). Registry operations
-  intentionally use the npm CLI.
+    Publishes the checked-out package to npm, idempotently. Reads the version
+    from package.json. Stable versions (X.Y.Z) publish to dist-tag "latest", then get
+    a git tag v<version> at HEAD and a GitHub release. Alpha versions
+    (X.Y.Z-alpha.<pr>.<n>) publish to dist-tag "alpha-<pr>" and get no tag or
+    release. If the version is already on the registry: alpha -> everything
+    is skipped; stable -> the publish is skipped but a missing tag/release is
+    still created (repairs a previous run that failed after publishing).
+    Assumes checkout, node/pnpm setup, pnpm install and the build have run
+    and the version was stamped (set-version). Registry operations
+    intentionally use the npm CLI.
 
 inputs:
-  npm-token:
-    description: "npm token with publish rights (used via a temporary npmrc, no repo .npmrc needed)"
-    required: true
-  github-token:
-    description: "Token used for tag/release API calls (needs contents: write for stable versions)"
-    required: false
-    default: ${{ github.token }}
+    npm-token:
+        description: "npm token with publish rights (used via a temporary npmrc, no repo .npmrc needed)"
+        required: true
+    github-token:
+        description: "Token used for tag/release API calls (needs contents: write for stable versions)"
+        required: false
+        default: ${{ github.token }}
 
 outputs:
-  version:
-    description: "The version that was published (or found already published)"
-    value: ${{ steps.publish.outputs.version }}
-  dist-tag:
-    description: "The npm dist-tag the version was published under"
-    value: ${{ steps.publish.outputs.dist-tag }}
-  published:
-    description: "true if npm publish ran, false if the version was already on the registry"
-    value: ${{ steps.publish.outputs.published }}
+    version:
+        description: "The version that was published (or found already published)"
+        value: ${{ steps.publish.outputs.version }}
+    dist-tag:
+        description: "The npm dist-tag the version was published under"
+        value: ${{ steps.publish.outputs.dist-tag }}
+    published:
+        description: "true if npm publish ran, false if the version was already on the registry"
+        value: ${{ steps.publish.outputs.published }}
 
 runs:
-  using: "composite"
-  steps:
-    - name: Publish
-      id: publish
-      shell: bash
-      env:
-        NPM_TOKEN: ${{ inputs.npm-token }}
-        GH_TOKEN: ${{ inputs.github-token }}
-        REPO: ${{ github.repository }}
-      run: |
-        set -euo pipefail
+    using: "composite"
+    steps:
+        - name: Publish
+          id: publish
+          shell: bash
+          env:
+              NPM_TOKEN: ${{ inputs.npm-token }}
+              GH_TOKEN: ${{ inputs.github-token }}
+              REPO: ${{ github.repository }}
+          run: |
+              set -euo pipefail
 
-        pkg_name="$(npm pkg get name | tr -d '"')"
-        version="$(npm pkg get version | tr -d '"')"
+              pkg_name="$(npm pkg get name | tr -d '"')"
+              version="$(npm pkg get version | tr -d '"')"
 
-        if [ "$version" = "0.0.0" ] || grep -qE '^0\.0\.0-' <<< "$version"; then
-          echo "::error::Version is still the 0.0.0 source placeholder; run set-version before publishing."
-          exit 1
-        fi
+              if [ "$version" = "0.0.0" ] || grep -qE '^0\.0\.0-' <<< "$version"; then
+                echo "::error::Version is still the 0.0.0 source placeholder; run set-version before publishing."
+                exit 1
+              fi
 
-        if grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' <<< "$version"; then
-          stable=true
-          dist_tag="latest"
-        elif grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+\.[0-9]+$' <<< "$version"; then
-          stable=false
-          pr_number="$(sed -E 's/^.*-alpha\.([0-9]+)\.[0-9]+$/\1/' <<< "$version")"
-          dist_tag="alpha-${pr_number}"
-        else
-          echo "::error::Version '${version}' is neither stable X.Y.Z nor X.Y.Z-alpha.<pr>.<n>."
-          exit 1
-        fi
+              if grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' <<< "$version"; then
+                stable=true
+                dist_tag="latest"
+              elif grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+\.[0-9]+$' <<< "$version"; then
+                stable=false
+                pr_number="$(sed -E 's/^.*-alpha\.([0-9]+)\.[0-9]+$/\1/' <<< "$version")"
+                dist_tag="alpha-${pr_number}"
+              else
+                echo "::error::Version '${version}' is neither stable X.Y.Z nor X.Y.Z-alpha.<pr>.<n>."
+                exit 1
+              fi
 
-        # Availability is decided on output, not exit code: npm view of a
-        # missing version exits 0 with empty output on some npm versions.
-        on_registry="$(npm view "${pkg_name}@${version}" version 2> /dev/null || true)"
+              # Availability is decided on output, not exit code: npm view of a
+              # missing version exits 0 with empty output on some npm versions.
+              on_registry="$(npm view "${pkg_name}@${version}" version 2> /dev/null || true)"
 
-        published=false
-        if [ -z "$on_registry" ]; then
-          # Auth via a throwaway user-level npmrc so the repo needs no .npmrc;
-          # the file holds only the env reference, never the token itself.
-          NPM_CONFIG_USERCONFIG="$(mktemp)"
-          export NPM_CONFIG_USERCONFIG
-          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > "$NPM_CONFIG_USERCONFIG"
-          npm publish --access public --tag "$dist_tag"
-          rm -f "$NPM_CONFIG_USERCONFIG"
-          unset NPM_CONFIG_USERCONFIG
-          published=true
-          npm_result="published"
-          echo "Published ${pkg_name}@${version} (dist-tag: ${dist_tag})."
-        else
-          npm_result="already on registry, skipped"
-          echo "${pkg_name}@${version} is already on the registry; skipping npm publish."
-        fi
+              published=false
+              if [ -z "$on_registry" ]; then
+                # Auth via a throwaway user-level npmrc so the repo needs no .npmrc;
+                # the file holds only the env reference, never the token itself.
+                NPM_CONFIG_USERCONFIG="$(mktemp)"
+                export NPM_CONFIG_USERCONFIG
+                echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > "$NPM_CONFIG_USERCONFIG"
+                npm publish --access public --tag "$dist_tag"
+                rm -f "$NPM_CONFIG_USERCONFIG"
+                unset NPM_CONFIG_USERCONFIG
+                published=true
+                npm_result="published"
+                echo "Published ${pkg_name}@${version} (dist-tag: ${dist_tag})."
+              else
+                npm_result="already on registry, skipped"
+                echo "${pkg_name}@${version} is already on the registry; skipping npm publish."
+              fi
 
-        tag_result="not applicable (alpha)"
-        release_result="not applicable (alpha)"
-        if [ "$stable" = true ]; then
-          git_tag="v${version}"
-          sha="$(git rev-parse HEAD)"
+              tag_result="not applicable (alpha)"
+              release_result="not applicable (alpha)"
+              if [ "$stable" = true ]; then
+                git_tag="v${version}"
+                sha="$(git rev-parse HEAD)"
 
-          if gh api "repos/${REPO}/git/ref/tags/${git_tag}" > /dev/null 2>&1; then
-            tag_result="already existed"
-          else
-            gh api "repos/${REPO}/git/refs" \
-              -f ref="refs/tags/${git_tag}" -f sha="${sha}" > /dev/null
-            tag_result="created at ${sha}"
-          fi
-          echo "Git tag ${git_tag}: ${tag_result}."
+                if gh api "repos/${REPO}/git/ref/tags/${git_tag}" > /dev/null 2>&1; then
+                  tag_result="already existed"
+                else
+                  gh api "repos/${REPO}/git/refs" \
+                    -f ref="refs/tags/${git_tag}" -f sha="${sha}" > /dev/null
+                  tag_result="created at ${sha}"
+                fi
+                echo "Git tag ${git_tag}: ${tag_result}."
 
-          if gh release view "${git_tag}" --repo "${REPO}" > /dev/null 2>&1; then
-            release_result="already existed"
-          else
-            gh release create "${git_tag}" --repo "${REPO}" \
-              --title "${git_tag}" --generate-notes --verify-tag > /dev/null
-            release_result="created"
-          fi
-          echo "GitHub release ${git_tag}: ${release_result}."
-        fi
+                if gh release view "${git_tag}" --repo "${REPO}" > /dev/null 2>&1; then
+                  release_result="already existed"
+                else
+                  gh release create "${git_tag}" --repo "${REPO}" \
+                    --title "${git_tag}" --generate-notes --verify-tag > /dev/null
+                  release_result="created"
+                fi
+                echo "GitHub release ${git_tag}: ${release_result}."
+              fi
 
-        echo "version=${version}" >> "$GITHUB_OUTPUT"
-        echo "dist-tag=${dist_tag}" >> "$GITHUB_OUTPUT"
-        echo "published=${published}" >> "$GITHUB_OUTPUT"
+              echo "version=${version}" >> "$GITHUB_OUTPUT"
+              echo "dist-tag=${dist_tag}" >> "$GITHUB_OUTPUT"
+              echo "published=${published}" >> "$GITHUB_OUTPUT"
 
-        {
-          echo "### NPM Publish"
-          echo ""
-          echo "| | |"
-          echo "|---|---|"
-          echo "| Package | \`${pkg_name}\` |"
-          echo "| Version | \`${version}\` |"
-          echo "| Dist-tag | \`${dist_tag}\` |"
-          echo "| npm publish | ${npm_result} |"
-          echo "| Git tag | ${tag_result} |"
-          echo "| GitHub release | ${release_result} |"
-          echo ""
-          echo "\`\`\`"
-          echo "npm i ${pkg_name}@${dist_tag}"
-          echo "\`\`\`"
-        } >> "$GITHUB_STEP_SUMMARY"
+              {
+                echo "### NPM Publish"
+                echo ""
+                echo "| | |"
+                echo "|---|---|"
+                echo "| Package | \`${pkg_name}\` |"
+                echo "| Version | \`${version}\` |"
+                echo "| Dist-tag | \`${dist_tag}\` |"
+                echo "| npm publish | ${npm_result} |"
+                echo "| Git tag | ${tag_result} |"
+                echo "| GitHub release | ${release_result} |"
+                echo ""
+                echo "\`\`\`"
+                echo "npm i ${pkg_name}@${dist_tag}"
+                echo "\`\`\`"
+              } >> "$GITHUB_STEP_SUMMARY"
