@@ -1,6 +1,7 @@
+// @vitest-environment jsdom
+
 import { expect, test } from "vitest";
 
-import document from "./helpers/document";
 import { render } from "./helpers/test-utils";
 
 test(".toHaveFocus", () => {

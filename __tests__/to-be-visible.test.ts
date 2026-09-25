@@ -1,6 +1,7 @@
+// @vitest-environment jsdom
+
 import { afterEach, beforeEach, describe, it, test, expect } from "vitest";
 
-import document from "./helpers/document";
 import { render } from "./helpers/test-utils";
 
 describe(".toBeVisible", () => {

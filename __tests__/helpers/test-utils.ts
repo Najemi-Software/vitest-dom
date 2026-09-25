@@ -1,6 +1,4 @@
-import document from "./document";
-
-function render(html: string) {
+export function render(html: string) {
     const container = document.createElement("div");
     container.innerHTML = html;
 
@@ -20,5 +18,3 @@ function render(html: string) {
 
     return { container, queryByTestId, asFragment };
 }
-
-export { render };

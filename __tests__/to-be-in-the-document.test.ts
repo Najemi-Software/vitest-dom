@@ -1,10 +1,9 @@
+// @vitest-environment jsdom
+
 import { test, expect } from "vitest";
 
 import { HtmlElementTypeError } from "../src/matchers/utils";
 
-import document from "./helpers/document";
-
-const window = document.defaultView!;
 const HTMLElement = window.HTMLElement;
 
 test(".toBeInTheDocument", () => {
