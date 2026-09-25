@@ -1,9 +1,16 @@
-// import { roles } from "aria-query";
-import { createRequire } from "node:module";
-
 import { checkHtmlElement, toSentence } from "./utils";
-const require = createRequire(import.meta.url);
-const { roles } = require("aria-query");
+
+// WAI-ARIA roles supporting the aria-checked state
+// (https://www.w3.org/TR/wai-aria-1.2/#aria-checked).
+const ROLES_SUPPORTING_CHECKED = [
+    "checkbox",
+    "menuitemcheckbox",
+    "menuitemradio",
+    "option",
+    "radio",
+    "switch",
+    "treeitem",
+];
 
 export function toBeChecked(element) {
     checkHtmlElement(element, toBeChecked, this);
@@ -48,15 +55,11 @@ export function toBeChecked(element) {
 
 function supportedRolesSentence() {
     return toSentence(
-        supportedRoles().map((role) => `role="${role}"`),
+        ROLES_SUPPORTING_CHECKED.map((role) => `role="${role}"`),
         { lastWordConnector: " or " },
     );
 }
 
-function supportedRoles() {
-    return roles.keys().filter(roleSupportsChecked);
-}
-
 function roleSupportsChecked(role) {
-    return roles.get(role)?.props["aria-checked"] !== undefined;
+    return ROLES_SUPPORTING_CHECKED.includes(role);
 }
