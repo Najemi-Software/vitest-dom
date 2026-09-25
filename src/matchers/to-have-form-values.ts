@@ -1,7 +1,7 @@
 import { isEqualWith, uniq } from "lodash-es";
 
-import type { MatcherResult } from "./types";
-import { checkHtmlElement, compareArraysAsSet, getSingleElementValue } from "./utils";
+import type { MatcherResult } from "./types.js";
+import { checkHtmlElement, compareArraysAsSet, getSingleElementValue } from "./utils.js";
 
 // Returns the combined value of several elements that have the same name
 // e.g. radio buttons or groups of checkboxes
@@ -69,15 +69,15 @@ function getAllFormValues(container: HTMLFormElement | HTMLFieldSetElement) {
 
 export function toHaveFormValues(
     this: any,
-    formElement: HTMLFormElement | HTMLFieldSetElement,
+    formElement: Element,
     expectedValues: Record<string, unknown>,
 ): MatcherResult {
     checkHtmlElement(formElement, toHaveFormValues, this);
-    if (!formElement.elements) {
+    if (!(formElement as HTMLFormElement | HTMLFieldSetElement).elements) {
         // TODO: Change condition to use instanceof against the appropriate element classes instead
         throw new Error("toHaveFormValues must be called on a form or a fieldset");
     }
-    const formValues = getAllFormValues(formElement);
+    const formValues = getAllFormValues(formElement as HTMLFormElement | HTMLFieldSetElement);
     return {
         pass: Object.entries(expectedValues).every(([name, expectedValue]) =>
             isEqualWith(formValues[name], expectedValue, compareArraysAsSet),

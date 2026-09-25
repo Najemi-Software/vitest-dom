@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 const categories = [
     { value: "", label: "–" },

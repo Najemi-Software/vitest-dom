@@ -2,8 +2,8 @@ import isEqual from "lodash-es/isEqual.js";
 import isFunction from "lodash-es/isFunction.js";
 import redent from "redent";
 
-import cssParse from "./css-parse";
-import type { MatcherFn, MatcherState } from "./types";
+import cssParse from "./css-parse.js";
+import type { MatcherFn, MatcherState } from "./types.js";
 
 type ErrorUtils = MatcherState["utils"];
 

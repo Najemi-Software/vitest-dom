@@ -2,7 +2,7 @@
 
 import { beforeAll, afterAll, describe, expect, test, vi } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 describe(".toHaveDescription", () => {
     let spy;

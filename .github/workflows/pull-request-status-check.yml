@@ -164,14 +164,14 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Lint
-              run: pnpm run lint
+            - name: Build
+              run: pnpm run build
 
-            - name: Format
-              run: pnpm run format
+            - name: Validate
+              run: pnpm run validate
 
             - name: Test
-              run: pnpm test-once
+              run: pnpm run test-once
 
     publish-alpha:
         needs:
