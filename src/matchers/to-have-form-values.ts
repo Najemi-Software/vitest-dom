@@ -1,4 +1,3 @@
-import escape from "css.escape";
 import { isEqualWith, uniq } from "lodash-es";
 
 import type { MatcherResult } from "./types";
@@ -38,7 +37,9 @@ type FormElement =
 
 function getFormValue(container: HTMLFormElement | HTMLFieldSetElement, name: string) {
     container.elements;
-    const elements = [...container.querySelectorAll(`[name="${escape(name)}"]`)] as FormElement[];
+    const elements = [...container.querySelectorAll("[name]")].filter(
+        (element) => element.getAttribute("name") === name,
+    ) as FormElement[];
     if (elements.length === 0) {
         return undefined; // shouldn't happen, but just in case
     }

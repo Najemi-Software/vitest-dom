@@ -11,9 +11,6 @@ importers:
       chalk:
         specifier: ^5.3.0
         version: 5.6.2
-      css.escape:
-        specifier: ^1.5.1
-        version: 1.5.1
       dom-accessibility-api:
         specifier: ^0.6.1
         version: 0.6.3
@@ -24,9 +21,6 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
     devDependencies:
-      '@types/css.escape':
-        specifier: ^1.5.0
-        version: 1.5.2
       '@types/lodash-es':
         specifier: ^4.17.9
         version: 4.17.12
@@ -704,9 +698,6 @@ packages:
   '@types/chai@4.3.20':
     resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
 
-  '@types/css.escape@1.5.2':
-    resolution: {integrity: sha512-sq0h0y8i83T20MB434AZWgK3byezbBG48jllitFpVXlPOjHc5RNs3bg6rUen/EtMUjM4ZJjD4x+0aik9AXqLdQ==}
-
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
@@ -1120,9 +1111,6 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
-
-  css.escape@1.5.1:
-    resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
 
   cssstyle@3.0.0:
     resolution: {integrity: sha512-N4u2ABATi3Qplzf0hWbVCdjenim8F3ojEXpBDF5hBpjzW182MjNGLqfmQ0SkSPeQ+V86ZXgeH8aXj6kayd4jgg==}
@@ -3016,8 +3004,6 @@ snapshots:
 
   '@types/chai@4.3.20': {}
 
-  '@types/css.escape@1.5.2': {}
-
   '@types/estree@1.0.9': {}
 
   '@types/json-schema@7.0.15': {}
@@ -3467,8 +3453,6 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
-
-  css.escape@1.5.1: {}
 
   cssstyle@3.0.0:
     dependencies:
