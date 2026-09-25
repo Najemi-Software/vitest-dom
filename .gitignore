@@ -2,7 +2,7 @@
 .github/.bin/
 
 node_modules/
-dist/
+esm/
 .npm
 .cache
 .npmrc

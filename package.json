@@ -28,17 +28,17 @@
         "CHANGELOG.md",
         "LICENSE",
         "README.md",
-        "dist"
+        "esm"
     ],
     "type": "module",
     "exports": {
         "./matchers": {
-            "types": "./dist/matchers.d.ts",
-            "default": "./dist/matchers.js"
+            "types": "./esm/matchers.d.ts",
+            "default": "./esm/matchers.js"
         },
         "./extend-expect": {
-            "types": "./dist/extend-expect.d.ts",
-            "default": "./dist/extend-expect.js"
+            "types": "./esm/extend-expect.d.ts",
+            "default": "./esm/extend-expect.js"
         }
     },
     "publishConfig": {
@@ -49,7 +49,7 @@
         "build-check": "tsc",
         "build-future": "pnpm run clean && npm-run-all -p build-ts build-check",
         "build-ts": "tsc -p tsconfig.build.json",
-        "clean": "rm -rf ./dist",
+        "clean": "rm -rf ./esm",
         "format": "oxfmt --check",
         "format-fix": "oxfmt",
         "lint": "eslint .",
