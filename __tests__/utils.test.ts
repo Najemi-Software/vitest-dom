@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { beforeAll, describe, expect, it, test, vi } from "vitest";
 

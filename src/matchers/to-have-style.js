@@ -9,7 +9,16 @@ function getStyleDeclaration(document, css) {
     const copy = document.createElement("div");
     Object.keys(css).forEach((property) => {
         copy.style[property] = css[property];
-        styles[property] = copy.style[property];
+        // Number values default to px. jsdom's CSSOM did this coercion
+        // itself; happy-dom rejects bare numbers, so retry with px appended.
+        if (copy.style[property] === "" && typeof css[property] === "number") {
+            copy.style[property] = `${css[property]}px`;
+        }
+        // Fall back to the raw value for properties the style declaration
+        // swallows instead of echoing back (happy-dom does this for unknown
+        // and custom properties); otherwise expected `undefined` would
+        // spuriously match any element missing that property.
+        styles[property] = copy.style[property] || css[property];
     });
 
     return styles;
