@@ -4,7 +4,6 @@ import type { expect } from "vitest";
 import type { MatcherResult } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
-/** @deprecated */
 export function toHaveAccessibleDescription(
     htmlElement: Element,
     expectedAccessibleDescription?: string | RegExp | typeof expect.stringContaining,
