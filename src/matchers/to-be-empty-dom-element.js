@@ -1,23 +1,19 @@
 import { checkHtmlElement } from "./utils";
 
 export function toBeEmptyDOMElement(element) {
-  checkHtmlElement(element, toBeEmptyDOMElement, this);
+    checkHtmlElement(element, toBeEmptyDOMElement, this);
 
-  return {
-    pass: isEmptyElement(element),
-    message: () => {
-      return [
-        this.utils.matcherHint(
-          `${this.isNot ? ".not" : ""}.toBeEmptyDOMElement`,
-          "element",
-          "",
-        ),
-        "",
-        "Received:",
-        `  ${this.utils.printReceived(element.innerHTML)}`,
-      ].join("\n");
-    },
-  };
+    return {
+        pass: isEmptyElement(element),
+        message: () => {
+            return [
+                this.utils.matcherHint(`${this.isNot ? ".not" : ""}.toBeEmptyDOMElement`, "element", ""),
+                "",
+                "Received:",
+                `  ${this.utils.printReceived(element.innerHTML)}`,
+            ].join("\n");
+        },
+    };
 }
 
 /**
@@ -29,8 +25,6 @@ export function toBeEmptyDOMElement(element) {
  * @return {*} true if the element only contains comments or none
  */
 function isEmptyElement(element) {
-  const nonCommentChildNodes = [...element.childNodes].filter(
-    (node) => node.nodeType !== 8,
-  );
-  return nonCommentChildNodes.length === 0;
+    const nonCommentChildNodes = [...element.childNodes].filter((node) => node.nodeType !== 8);
+    return nonCommentChildNodes.length === 0;
 }

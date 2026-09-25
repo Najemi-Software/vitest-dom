@@ -1,88 +1,88 @@
 name: "Calculate Next Version"
 description: >
-  Calculates the next version from the latest stable version and a bump.
-  Without pr-number, outputs the bumped stable version. With pr-number,
-  outputs the first alpha version `<stable>-alpha.<pr>.<n>` not yet
-  published on npm. Assumes the repository is checked out (reads the
-  package name from package.json) and node/npm are set up.
+    Calculates the next version from the latest stable version and a bump.
+    Without pr-number, outputs the bumped stable version. With pr-number,
+    outputs the first alpha version `<stable>-alpha.<pr>.<n>` not yet
+    published on npm. Assumes the repository is checked out (reads the
+    package name from package.json) and node/npm are set up.
 
 inputs:
-  latest-version:
-    description: "Latest stable version, e.g. 10.2.0 (leading v is tolerated)"
-    required: true
-  bump:
-    description: "Bump to apply: major, minor or patch"
-    required: true
-  pr-number:
-    description: "If set, output an alpha version for this PR"
-    required: false
-    default: ""
+    latest-version:
+        description: "Latest stable version, e.g. 10.2.0 (leading v is tolerated)"
+        required: true
+    bump:
+        description: "Bump to apply: major, minor or patch"
+        required: true
+    pr-number:
+        description: "If set, output an alpha version for this PR"
+        required: false
+        default: ""
 
 outputs:
-  version:
-    description: "The calculated next version (stable, or alpha if pr-number was given)"
-    value: ${{ steps.calc.outputs.version }}
+    version:
+        description: "The calculated next version (stable, or alpha if pr-number was given)"
+        value: ${{ steps.calc.outputs.version }}
 
 runs:
-  using: "composite"
-  steps:
-    - name: Calculate next version
-      id: calc
-      shell: bash
-      env:
-        LATEST_VERSION: ${{ inputs.latest-version }}
-        BUMP: ${{ inputs.bump }}
-        PR_NUMBER: ${{ inputs.pr-number }}
-      run: |
-        set -euo pipefail
+    using: "composite"
+    steps:
+        - name: Calculate next version
+          id: calc
+          shell: bash
+          env:
+              LATEST_VERSION: ${{ inputs.latest-version }}
+              BUMP: ${{ inputs.bump }}
+              PR_NUMBER: ${{ inputs.pr-number }}
+          run: |
+              set -euo pipefail
 
-        latest="${LATEST_VERSION#v}"
-        if ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' <<< "$latest"; then
-          echo "::error::latest-version '${LATEST_VERSION}' is not a stable semver (X.Y.Z)."
-          exit 1
-        fi
+              latest="${LATEST_VERSION#v}"
+              if ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' <<< "$latest"; then
+                echo "::error::latest-version '${LATEST_VERSION}' is not a stable semver (X.Y.Z)."
+                exit 1
+              fi
 
-        IFS=. read -r major minor patch <<< "$latest"
-        case "$BUMP" in
-          major) version="$((major + 1)).0.0" ;;
-          minor) version="${major}.$((minor + 1)).0" ;;
-          patch) version="${major}.${minor}.$((patch + 1))" ;;
-          *)
-            echo "::error::Unsupported bump '${BUMP}' (expected major, minor or patch)."
-            exit 1
-            ;;
-        esac
+              IFS=. read -r major minor patch <<< "$latest"
+              case "$BUMP" in
+                major) version="$((major + 1)).0.0" ;;
+                minor) version="${major}.$((minor + 1)).0" ;;
+                patch) version="${major}.${minor}.$((patch + 1))" ;;
+                *)
+                  echo "::error::Unsupported bump '${BUMP}' (expected major, minor or patch)."
+                  exit 1
+                  ;;
+              esac
 
-        if [ -n "$PR_NUMBER" ]; then
-          pkg="$(npm pkg get name | tr -d '"')"
-          stable="$version"
-          version=""
-          for ((i = 1; i <= 1000; i++)); do
-            candidate="${stable}-alpha.${PR_NUMBER}.${i}"
-            # Availability is decided on output, not exit code: npm view of a
-            # missing version exits 0 with empty output on some npm versions.
-            published="$(npm view "${pkg}@${candidate}" version 2> /dev/null || true)"
-            if [ -n "$published" ]; then
-              continue
-            fi
-            version="$candidate"
-            break
-          done
-          if [ -z "$version" ]; then
-            echo "::error::No free alpha slot for ${stable}-alpha.${PR_NUMBER}.* within 1000 attempts."
-            exit 1
-          fi
-        fi
+              if [ -n "$PR_NUMBER" ]; then
+                pkg="$(npm pkg get name | tr -d '"')"
+                stable="$version"
+                version=""
+                for ((i = 1; i <= 1000; i++)); do
+                  candidate="${stable}-alpha.${PR_NUMBER}.${i}"
+                  # Availability is decided on output, not exit code: npm view of a
+                  # missing version exits 0 with empty output on some npm versions.
+                  published="$(npm view "${pkg}@${candidate}" version 2> /dev/null || true)"
+                  if [ -n "$published" ]; then
+                    continue
+                  fi
+                  version="$candidate"
+                  break
+                done
+                if [ -z "$version" ]; then
+                  echo "::error::No free alpha slot for ${stable}-alpha.${PR_NUMBER}.* within 1000 attempts."
+                  exit 1
+                fi
+              fi
 
-        echo "version=${version}" >> "$GITHUB_OUTPUT"
-        echo "Next version: ${version}"
+              echo "version=${version}" >> "$GITHUB_OUTPUT"
+              echo "Next version: ${version}"
 
-        {
-          echo "### Calculate Next Version"
-          echo ""
-          echo "| | |"
-          echo "|---|---|"
-          echo "| Latest stable | \`${latest}\` |"
-          echo "| Bump | \`${BUMP}\` |"
-          echo "| Next version | \`${version}\` |"
-        } >> "$GITHUB_STEP_SUMMARY"
+              {
+                echo "### Calculate Next Version"
+                echo ""
+                echo "| | |"
+                echo "|---|---|"
+                echo "| Latest stable | \`${latest}\` |"
+                echo "| Bump | \`${BUMP}\` |"
+                echo "| Next version | \`${version}\` |"
+              } >> "$GITHUB_STEP_SUMMARY"

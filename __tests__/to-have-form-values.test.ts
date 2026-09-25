@@ -1,44 +1,45 @@
-import { render } from "./helpers/test-utils";
 import { describe, expect, it } from "vitest";
 
+import { render } from "./helpers/test-utils";
+
 const categories = [
-  { value: "", label: "–" },
-  { value: "design", label: "Design" },
-  { value: "ux", label: "User Experience" },
-  { value: "programming", label: "Programming" },
+    { value: "", label: "–" },
+    { value: "design", label: "Design" },
+    { value: "ux", label: "User Experience" },
+    { value: "programming", label: "Programming" },
 ];
 
 const skills = [
-  { value: "c-sharp", label: "C#" },
-  { value: "graphql", label: "GraphQl" },
-  { value: "javascript", label: "JavaScript" },
-  { value: "ruby-on-rails", label: "Ruby on Rails" },
-  { value: "python", label: "Python" },
+    { value: "c-sharp", label: "C#" },
+    { value: "graphql", label: "GraphQl" },
+    { value: "javascript", label: "JavaScript" },
+    { value: "ruby-on-rails", label: "Ruby on Rails" },
+    { value: "python", label: "Python" },
 ];
 
 const defaultValues = {
-  title: "Full-stack developer",
-  salary: 12345,
-  category: "programming",
-  skills: ["javascript", "ruby-on-rails"],
-  description: "You need to know your stuff",
-  remote: true,
-  freelancing: false,
-  "is%Private^": true,
-  "benefits[0]": "Fruit & free drinks everyday",
-  "benefits[1]": "Multicultural environment",
+    title: "Full-stack developer",
+    salary: 12345,
+    category: "programming",
+    skills: ["javascript", "ruby-on-rails"],
+    description: "You need to know your stuff",
+    remote: true,
+    freelancing: false,
+    "is%Private^": true,
+    "benefits[0]": "Fruit & free drinks everyday",
+    "benefits[1]": "Multicultural environment",
 };
 
 function renderForm({
-  selectSingle = renderSelectSingle,
-  selectMultiple = renderSelectMultiple,
-  values: valueOverrides = {},
+    selectSingle = renderSelectSingle,
+    selectMultiple = renderSelectMultiple,
+    values: valueOverrides = {},
 } = {}) {
-  const values = {
-    ...defaultValues,
-    ...valueOverrides,
-  };
-  const { container } = render(`
+    const values = {
+        ...defaultValues,
+        ...valueOverrides,
+    };
+    const { container } = render(`
     <form>
       <label for="title">Job title</label>
       <input
@@ -57,9 +58,7 @@ function renderForm({
       />
 
       <label for="description">Description</label>
-      <textarea id="description" name="description">${
-        values.description
-      }</textarea>
+      <textarea id="description" name="description">${values.description}</textarea>
 
       <input
         type="checkbox"
@@ -103,178 +102,178 @@ function renderForm({
       ${selectMultiple("skills", "Skills", skills, values.skills)}
     </form>
   `);
-  return container.querySelector("form");
+    return container.querySelector("form");
 }
 
 describe(".toHaveFormValues", () => {
-  it("works as expected", () => {
-    expect(renderForm()).toHaveFormValues(defaultValues);
-  });
+    it("works as expected", () => {
+        expect(renderForm()).toHaveFormValues(defaultValues);
+    });
 
-  it("allows to match partially", () => {
-    expect(renderForm()).toHaveFormValues({
-      category: "programming",
-      salary: 12345,
+    it("allows to match partially", () => {
+        expect(renderForm()).toHaveFormValues({
+            category: "programming",
+            salary: 12345,
+        });
     });
-  });
 
-  it("supports checkboxes for multiple selection", () => {
-    expect(renderForm({ selectMultiple: renderCheckboxes })).toHaveFormValues({
-      skills: ["javascript", "ruby-on-rails"],
+    it("supports checkboxes for multiple selection", () => {
+        expect(renderForm({ selectMultiple: renderCheckboxes })).toHaveFormValues({
+            skills: ["javascript", "ruby-on-rails"],
+        });
     });
-  });
 
-  it("supports radio-buttons for single selection", () => {
-    expect(renderForm({ selectSingle: renderRadioButtons })).toHaveFormValues({
-      category: "programming",
+    it("supports radio-buttons for single selection", () => {
+        expect(renderForm({ selectSingle: renderRadioButtons })).toHaveFormValues({
+            category: "programming",
+        });
     });
-  });
 
-  it("matches sets of selected values regardless of the order", () => {
-    const form = renderForm();
-    expect(form).toHaveFormValues({
-      skills: ["ruby-on-rails", "javascript"],
+    it("matches sets of selected values regardless of the order", () => {
+        const form = renderForm();
+        expect(form).toHaveFormValues({
+            skills: ["ruby-on-rails", "javascript"],
+        });
+        expect(form).toHaveFormValues({
+            skills: ["javascript", "ruby-on-rails"],
+        });
     });
-    expect(form).toHaveFormValues({
-      skills: ["javascript", "ruby-on-rails"],
-    });
-  });
 
-  it("correctly handles empty values", () => {
-    expect(
-      renderForm({
-        values: {
-          title: "",
-          salary: null,
-          category: null,
-          skills: [],
-          description: "",
-        },
-      }),
-    ).toHaveFormValues({
-      title: "",
-      salary: null,
-      category: "",
-      skills: [],
-      description: "",
+    it("correctly handles empty values", () => {
+        expect(
+            renderForm({
+                values: {
+                    title: "",
+                    salary: null,
+                    category: null,
+                    skills: [],
+                    description: "",
+                },
+            }),
+        ).toHaveFormValues({
+            title: "",
+            salary: null,
+            category: "",
+            skills: [],
+            description: "",
+        });
     });
-  });
 
-  it('handles <input type="number"> values correctly', () => {
-    expect(renderForm({ values: { salary: 123.456 } })).toHaveFormValues({
-      salary: 123.456,
+    it('handles <input type="number"> values correctly', () => {
+        expect(renderForm({ values: { salary: 123.456 } })).toHaveFormValues({
+            salary: 123.456,
+        });
+        expect(renderForm({ values: { salary: "1e5" } })).toHaveFormValues({
+            salary: 1e5,
+        });
+        expect(renderForm({ values: { salary: "1.35e5" } })).toHaveFormValues({
+            salary: 135000,
+        });
+        expect(renderForm({ values: { salary: "-5.9" } })).toHaveFormValues({
+            salary: -5.9,
+        });
     });
-    expect(renderForm({ values: { salary: "1e5" } })).toHaveFormValues({
-      salary: 1e5,
-    });
-    expect(renderForm({ values: { salary: "1.35e5" } })).toHaveFormValues({
-      salary: 135000,
-    });
-    expect(renderForm({ values: { salary: "-5.9" } })).toHaveFormValues({
-      salary: -5.9,
-    });
-  });
 
-  describe("edge cases", () => {
-    // This is also to ensure 100% code coverage for edge cases
-    it("detects multiple elements with the same name but different type", () => {
-      const { container } = render(`
+    describe("edge cases", () => {
+        // This is also to ensure 100% code coverage for edge cases
+        it("detects multiple elements with the same name but different type", () => {
+            const { container } = render(`
         <form>
           <input type="checkbox" name="accept">
           <input type="radio" name="accept">
         </form>
       `);
-      const form = container.querySelector("form");
-      expect(() => {
-        expect(form).toHaveFormValues({});
-      }).toThrowError(/must be of the same type/);
-    });
+            const form = container.querySelector("form");
+            expect(() => {
+                expect(form).toHaveFormValues({});
+            }).toThrowError(/must be of the same type/);
+        });
 
-    it("detects multiple elements with the same type and name", () => {
-      const { container } = render(`
+        it("detects multiple elements with the same type and name", () => {
+            const { container } = render(`
         <form>
           <input type="text" name="title" value="one">
           <input type="text" name="title" value="two">
         </form>
       `);
-      const form = container.querySelector("form");
-      expect(form).toHaveFormValues({
-        title: ["one", "two"],
-      });
-    });
+            const form = container.querySelector("form");
+            expect(form).toHaveFormValues({
+                title: ["one", "two"],
+            });
+        });
 
-    it("supports radio buttons with none selected", () => {
-      expect(
-        renderForm({
-          selectSingle: renderRadioButtons,
-          values: { category: undefined },
-        }),
-      ).toHaveFormValues({
-        category: undefined,
-      });
-    });
+        it("supports radio buttons with none selected", () => {
+            expect(
+                renderForm({
+                    selectSingle: renderRadioButtons,
+                    values: { category: undefined },
+                }),
+            ).toHaveFormValues({
+                category: undefined,
+            });
+        });
 
-    it("supports being called only on form and fieldset elements", () => {
-      const expectedValues = { title: "one", description: "two" };
-      const { container } = render(`
+        it("supports being called only on form and fieldset elements", () => {
+            const expectedValues = { title: "one", description: "two" };
+            const { container } = render(`
         <form>
           <input type="text" name="title" value="one">
           <input type="text" name="description" value="two">
         </form>
       `);
-      const form = container.querySelector("form");
-      expect(() => {
-        expect(container).toHaveFormValues(expectedValues);
-      }).toThrowError(/a form or a fieldset/);
-      expect(() => {
-        expect(form).toHaveFormValues(expectedValues);
-      }).not.toThrowError();
-    });
+            const form = container.querySelector("form");
+            expect(() => {
+                expect(container).toHaveFormValues(expectedValues);
+            }).toThrowError(/a form or a fieldset/);
+            expect(() => {
+                expect(form).toHaveFormValues(expectedValues);
+            }).not.toThrowError();
+        });
 
-    it("matches change in selected value of select", () => {
-      const oldValue = "";
-      const newValue = "design";
+        it("matches change in selected value of select", () => {
+            const oldValue = "";
+            const newValue = "design";
 
-      const { container } = render(`
+            const { container } = render(`
         <form>
           ${renderSelectSingle("category", "Category", categories, oldValue)}
         </form>
       `);
 
-      const form = container.querySelector("form");
-      const select = container.querySelector("select");
-      expect(form).toHaveFormValues({ category: oldValue });
+            const form = container.querySelector("form");
+            const select = container.querySelector("select");
+            expect(form).toHaveFormValues({ category: oldValue });
 
-      select.value = newValue;
-      expect(form).toHaveFormValues({ category: newValue });
+            select.value = newValue;
+            expect(form).toHaveFormValues({ category: newValue });
+        });
     });
-  });
 
-  describe("failed assertions", () => {
-    it("work as expected", () => {
-      expect(() => {
-        expect(renderForm()).not.toHaveFormValues(defaultValues);
-      }).toThrowError(/Expected the element not to have form values/);
-      expect(() => {
-        expect(renderForm()).toHaveFormValues({ something: "missing" });
-      }).toThrowError(/Expected the element to have form values/);
+    describe("failed assertions", () => {
+        it("work as expected", () => {
+            expect(() => {
+                expect(renderForm()).not.toHaveFormValues(defaultValues);
+            }).toThrowError(/Expected the element not to have form values/);
+            expect(() => {
+                expect(renderForm()).toHaveFormValues({ something: "missing" });
+            }).toThrowError(/Expected the element to have form values/);
+        });
     });
-  });
 });
 
 // Form control renderers
 
 function isSelected(value, option) {
-  return Array.isArray(value) && value.indexOf(option.value) >= 0;
+    return Array.isArray(value) && value.indexOf(option.value) >= 0;
 }
 
 function renderCheckboxes(name, label, options, value = []) {
-  return `
+    return `
     <fieldset>
       <legend>${label}</legend>
       ${renderList(
-        options,
-        (option) => `
+          options,
+          (option) => `
           <div>
             <input
               type="checkbox"
@@ -292,12 +291,12 @@ function renderCheckboxes(name, label, options, value = []) {
 }
 
 function renderRadioButtons(name, label, options, value = undefined) {
-  return `
+    return `
     <fieldset>
       <legend>${label}</legend>
       ${renderList(
-        options,
-        (option) => `
+          options,
+          (option) => `
           <div>
             <input
               type="radio"
@@ -315,12 +314,12 @@ function renderRadioButtons(name, label, options, value = undefined) {
 }
 
 function renderSelect(name, label, options, value, multiple) {
-  return `
+    return `
     <label for="${name}">${label}</label>
     <select id="${name}" name="${name}" ${multiple ? "multiple" : ""}>
       ${renderList(
-        options,
-        (option) => `
+          options,
+          (option) => `
           <option
             value="${option.value}"
             ${isSelected(value, option) ? "selected" : ""}
@@ -334,19 +333,13 @@ function renderSelect(name, label, options, value, multiple) {
 }
 
 function renderSelectSingle(name, label, options, value = undefined) {
-  return renderSelect(
-    name,
-    label,
-    options,
-    value === undefined || value === null ? [] : [value],
-    false,
-  );
+    return renderSelect(name, label, options, value === undefined || value === null ? [] : [value], false);
 }
 
 function renderSelectMultiple(name, label, options, value = []) {
-  return renderSelect(name, label, options, value, true);
+    return renderSelect(name, label, options, value, true);
 }
 
 function renderList(items, mapper) {
-  return items.map(mapper).join("");
+    return items.map(mapper).join("");
 }
