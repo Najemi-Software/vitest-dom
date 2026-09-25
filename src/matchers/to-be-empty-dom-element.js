@@ -18,8 +18,11 @@ export function toBeEmptyDOMElement(element) {
 
 /**
  * Identifies if an element doesn't contain child nodes (excluding comments)
- * ℹ Node.COMMENT_NODE can't be used because of the following issue
- * https://github.com/jsdom/jsdom/issues/2220
+ * ℹ The literal 8 is Node.COMMENT_NODE. It is used directly instead of the
+ * Node constant so the matcher doesn't depend on a global Node existing in
+ * the consumer's test environment (this project tests with happy-dom, but
+ * consumers may run any environment; historically this guarded against
+ * https://github.com/jsdom/jsdom/issues/2220 under jsdom).
  *
  * @param {*} element an HtmlElement or SVGElement
  * @return {*} true if the element only contains comments or none

@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { describe, expect, it } from "vitest";
 
@@ -56,7 +56,7 @@ function renderForm({
         type="number"
         id="salary"
         name="salary"
-        value="${values.salary}"
+        value="${values.salary ?? ""}"
       />
 
       <label for="description">Description</label>
@@ -104,6 +104,16 @@ function renderForm({
       ${selectMultiple("skills", "Skills", skills, values.skills)}
     </form>
   `);
+    // happy-dom does not reliably apply the `selected` attribute of parsed
+    // markup to the option's selectedness (it can land on the wrong option),
+    // so sync it manually.
+    for (const select of container.querySelectorAll("select")) {
+        if (select.querySelector("option[selected]")) {
+            for (const option of select.options) {
+                option.selected = option.hasAttribute("selected");
+            }
+        }
+    }
     return container.querySelector("form");
 }
 

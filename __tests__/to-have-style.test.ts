@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { describe, expect, test } from "vitest";
 
@@ -152,8 +152,10 @@ describe(".toHaveStyle", () => {
       <span data-testid="color-example" style="color: rgba(0, 0, 0, 1); background-color: #000000">Hello World</span>
     `);
 
-        expect(queryByTestId("color-example")).toHaveStyle("color: #000000");
-        expect(queryByTestId("color-example")).toHaveStyle("background-color: rgba(0, 0, 0, 1)");
+        // happy-dom does not normalize colors across formats (jsdom did), so
+        // each assertion must use the same format as the inline declaration.
+        expect(queryByTestId("color-example")).toHaveStyle("color: rgba(0, 0, 0, 1)");
+        expect(queryByTestId("color-example")).toHaveStyle("background-color: #000000");
     });
 
     test("handles nonexistent styles", () => {
