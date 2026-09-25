@@ -3,7 +3,7 @@
     "compilerOptions": {
         "noCheck": true,
         "rootDir": "./src",
-        "outDir": "./dist",
+        "outDir": "./esm",
         "composite": false,
         "declaration": true,
         "sourceMap": true,
