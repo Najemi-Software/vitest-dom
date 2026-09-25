@@ -50,9 +50,8 @@
         "format-fix": "oxfmt",
         "lint": "eslint .",
         "lint-fix": "eslint . --fix",
-        "test": "run-p test:*",
-        "test:dom": "vitest --config vitest.config.dom.ts",
-        "test:node": "vitest --config vitest.config.node.js"
+        "test": "vitest",
+        "test-once": "vitest run --silent"
     },
     "dependencies": {
         "aria-query": "^5.3.0",
