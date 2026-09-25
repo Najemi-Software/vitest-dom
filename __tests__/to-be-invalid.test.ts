@@ -1,39 +1,20 @@
-import { JSDOM } from "jsdom";
+// @vitest-environment jsdom
+
 import { describe, test, expect } from "vitest";
 
 import { render } from "./helpers/test-utils";
 
-/*
- * This function is being used to test if `.toBeInvalid` and `.toBeValid`
- * are correctly triggered by the DOM Node method `.checkValidity()`, part
- * of the Web API.
- *
- * For this check, we are using the `jsdom` library to return a DOM Node
- * sending the good information to our test.
- *
- * We are using this library because without it `.checkValidity()` returns
- * always `true` when using `yarn test` in a terminal.
- *
- * Please consult the PR 110 to get more information:
- * https://github.com/testing-library/jest-dom/pull/110
- *
- * @link https://github.com/testing-library/jest-dom/pull/110
- * @link https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation
- * @link https://github.com/jsdom/jsdom
- */
-function getDOMElement(htmlString, selector) {
-    return new JSDOM(htmlString).window.document.querySelector(selector);
-}
-
 // A required field without a value is invalid
 const invalidInputHtml = `<input required>`;
 
-const invalidInputNode = getDOMElement(invalidInputHtml, "input");
+document.body.innerHTML = invalidInputHtml;
+const invalidInputNode = document.querySelector("input");
 
 // A form is invalid if it contains an invalid input
 const invalidFormHtml = `<form>${invalidInputHtml}</form>`;
 
-const invalidFormNode = getDOMElement(invalidFormHtml, "form");
+document.body.innerHTML = invalidFormHtml;
+const invalidFormNode = document.querySelector("form");
 
 describe(".toBeInvalid", () => {
     test("handles <input/>", () => {

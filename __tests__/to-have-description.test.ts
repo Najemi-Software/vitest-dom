@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { beforeAll, afterAll, describe, expect, test, vi } from "vitest";
 
 import { render } from "./helpers/test-utils";

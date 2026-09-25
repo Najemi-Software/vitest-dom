@@ -1,9 +1,8 @@
+// @vitest-environment jsdom
+
 import { test, expect } from "vitest";
 
-import document from "./helpers/document";
 import { render } from "./helpers/test-utils";
-
-const window = document.defaultView;
 
 window.customElements.define("custom-element", class extends window.HTMLElement {});
 

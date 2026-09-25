@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { beforeAll, describe, expect, it, test, vi } from "vitest";
 
 import {
@@ -8,8 +10,6 @@ import {
     NodeTypeError,
     toSentence,
 } from "../src/matchers/utils";
-
-import document from "./helpers/document";
 
 test("deprecate", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
