@@ -30,12 +30,12 @@
   "type": "module",
   "exports": {
     "./matchers": {
-      "types": "./matchers.d.ts",
-      "default": "./matchers.js"
+      "types": "./dist/matchers.d.ts",
+      "default": "./dist/matchers.js"
     },
     "./extend-expect": {
-      "types": "./extend-expect.d.ts",
-      "default": "./extend-expect.js"
+      "types": "./dist/extend-expect.d.ts",
+      "default": "./dist/extend-expect.js"
     }
   },
   "packageManager": "pnpm@10.15.0",
@@ -43,11 +43,7 @@
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
-    "dist",
-    "extend-expect.d.ts",
-    "extend-expect.js",
-    "matchers.d.ts",
-    "matchers.js"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

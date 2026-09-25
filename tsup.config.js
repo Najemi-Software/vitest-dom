@@ -1,14 +1,18 @@
 import { defineConfig } from "tsup";
 
-const entry = ["./src/matchers.ts", "./src/extend-expect.ts"];
-
 export default defineConfig([
   {
-    entry,
+    entry: {
+      matchers: "./src/matchers.ts",
+      "extend-expect": "./src/extend-expect.ts",
+    },
     format: "esm",
     sourcemap: true,
     dts: {
-      entry: entry.filter((e) => !e.includes("extend-expect")),
+      // The d.ts must import "vitest" for the `declare module "vitest"`
+      // augmentation to merge in consumers; rollup-plugin-dts strips
+      // side-effect imports, so inject it as a banner.
+      banner: 'import "vitest";',
     },
     outDir: "dist",
   },

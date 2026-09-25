@@ -1,5 +1,8 @@
-import "vitest";
-import type { TestingLibraryMatchers } from "./dist/matchers";
+import { expect } from "vitest";
+import * as matchers from "./matchers";
+import type { TestingLibraryMatchers } from "./matchers";
+
+expect.extend(matchers);
 
 declare module "vitest" {
   interface Assertion<T = any>
