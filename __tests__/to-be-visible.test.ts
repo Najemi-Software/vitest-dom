@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, it, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 describe(".toBeVisible", () => {
     it("returns the visibility of an element", () => {

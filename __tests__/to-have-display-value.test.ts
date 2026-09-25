@@ -2,7 +2,7 @@
 
 import { describe, expect, it, test } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 test("it should work as expected", () => {
     const { queryByTestId } = render(`

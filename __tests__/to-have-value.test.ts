@@ -2,7 +2,7 @@
 
 import { describe, expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 describe(".toHaveValue", () => {
     test("handles value of text input", () => {

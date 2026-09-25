@@ -1,5 +1,5 @@
-import type { MatcherFn, MatcherResult, MatcherState } from "./types";
-import { checkHtmlElement, getMessage, normalize } from "./utils";
+import type { MatcherFn, MatcherResult, MatcherState } from "./types.js";
+import { checkHtmlElement, getMessage, normalize } from "./utils.js";
 
 const ariaInvalidName = "aria-invalid";
 const validStates = ["false"];

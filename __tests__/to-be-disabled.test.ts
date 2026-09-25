@@ -2,7 +2,7 @@
 
 import { test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 window.customElements.define("custom-element", class extends window.HTMLElement {});
 

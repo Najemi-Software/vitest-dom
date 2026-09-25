@@ -2,7 +2,7 @@
 
 import { test, expect, vi } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 test(".toBeInTheDOM", () => {
     // @deprecated intentionally hiding warnings for test clarity

@@ -2,7 +2,7 @@
 
 import { test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 const { queryByTestId } = render(`
 <span data-testid="grandparent">

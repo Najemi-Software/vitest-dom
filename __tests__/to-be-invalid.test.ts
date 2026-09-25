@@ -2,7 +2,7 @@
 
 import { describe, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 // A required field without a value is invalid
 const invalidInputHtml = `<input required>`;

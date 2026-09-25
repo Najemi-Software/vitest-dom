@@ -2,7 +2,7 @@
 
 import { describe, expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 describe(".toHaveTextContent", () => {
     test("handles positive test cases", () => {

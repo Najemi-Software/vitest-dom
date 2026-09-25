@@ -2,7 +2,7 @@
 
 import { expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 test(".toHaveAttribute", () => {
     const { queryByTestId } = render(`

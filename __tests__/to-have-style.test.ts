@@ -2,7 +2,7 @@
 
 import { describe, expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils";
+import { render } from "./helpers/test-utils.js";
 
 // eslint-disable-next-line max-lines-per-function
 describe(".toHaveStyle", () => {
