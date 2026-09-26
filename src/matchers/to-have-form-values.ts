@@ -36,7 +36,6 @@ type FormElement =
     | HTMLProgressElement;
 
 function getFormValue(container: HTMLFormElement | HTMLFieldSetElement, name: string) {
-    container.elements;
     const elements = Array.from(container.querySelectorAll("[name]")).filter(
         (element) => element.getAttribute("name") === name,
     ) as FormElement[];
