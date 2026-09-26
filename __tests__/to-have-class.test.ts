@@ -85,18 +85,24 @@ test(".toHaveClass with exact mode option", () => {
     });
     expect(queryByTestId("delete-button")).not.toHaveClass("btn extra btn-danger foo", { exact: false });
 
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("delete-button")).toHaveClass("btn", "extra", "btn-danger", { exact: true });
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("delete-button")).not.toHaveClass("btn", "extra", {
         exact: true,
     });
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("delete-button")).not.toHaveClass("btn", "extra", "btn-danger", "foo", {
         exact: true,
     });
 
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("delete-button")).toHaveClass("btn", "extra", "btn-danger", { exact: false });
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("delete-button")).toHaveClass("btn", "extra", {
         exact: false,
     });
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("delete-button")).not.toHaveClass("btn", "extra", "btn-danger", "foo", {
         exact: false,
     });
@@ -105,6 +111,7 @@ test(".toHaveClass with exact mode option", () => {
     expect(queryByTestId("only-one-class")).not.toHaveClass("alone foo", {
         exact: true,
     });
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("only-one-class")).not.toHaveClass("alone", "foo", {
         exact: true,
     });
@@ -115,6 +122,7 @@ test(".toHaveClass with exact mode option", () => {
     expect(queryByTestId("only-one-class")).not.toHaveClass("alone foo", {
         exact: false,
     });
+    // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
     expect(queryByTestId("only-one-class")).not.toHaveClass("alone", "foo", {
         exact: false,
     });
@@ -126,6 +134,7 @@ test(".toHaveClass with exact mode option", () => {
     ).toThrowError(/Expected the element not to have EXACTLY defined classes/);
 
     expect(() =>
+        // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
         expect(queryByTestId("only-one-class")).toHaveClass("alone", "foo", {
             exact: true,
         }),

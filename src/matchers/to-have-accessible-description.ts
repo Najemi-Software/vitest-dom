@@ -1,10 +1,11 @@
 import { computeAccessibleDescription } from "dom-accessibility-api";
 import type { expect } from "vitest";
 
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 export function toHaveAccessibleDescription(
+    this: MatcherState,
     htmlElement: Element,
     expectedAccessibleDescription?: string | RegExp | typeof expect.stringContaining,
 ): MatcherResult {

@@ -1,7 +1,8 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 export function toHaveDisplayValue(
+    this: MatcherState,
     htmlElement: Element,
     expectedValue: string | RegExp | Array<string | RegExp>,
 ): MatcherResult {
@@ -14,9 +15,9 @@ export function toHaveDisplayValue(
         );
     }
 
-    if (tagName === "input" && ["radio", "checkbox"].includes(htmlElement.type)) {
+    if (tagName === "input" && ["radio", "checkbox"].includes((htmlElement as HTMLInputElement).type)) {
         throw new Error(
-            `.toHaveDisplayValue() currently does not support input[type="${htmlElement.type}"], try with another matcher instead.`,
+            `.toHaveDisplayValue() currently does not support input[type="${(htmlElement as HTMLInputElement).type}"], try with another matcher instead.`,
         );
     }
 
@@ -45,14 +46,14 @@ export function toHaveDisplayValue(
     };
 }
 
-function getValues(tagName, htmlElement) {
+function getValues(tagName: string, htmlElement: Element): string[] {
     return tagName === "select"
-        ? Array.from(htmlElement)
+        ? Array.from((htmlElement as HTMLSelectElement).options)
               .filter((option) => option.selected)
-              .map((option) => option.textContent)
-        : [htmlElement.value];
+              .map((option) => option.textContent ?? "")
+        : [(htmlElement as HTMLInputElement | HTMLTextAreaElement).value];
 }
 
-function getExpectedValues(expectedValue) {
+function getExpectedValues(expectedValue: string | RegExp | Array<string | RegExp>): Array<string | RegExp> {
     return expectedValue instanceof Array ? expectedValue : [expectedValue];
 }

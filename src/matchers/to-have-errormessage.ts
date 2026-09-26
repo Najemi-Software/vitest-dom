@@ -1,10 +1,11 @@
 import type { expect } from "vitest";
 
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage, normalize } from "./utils.js";
 
 // See aria-errormessage spec https://www.w3.org/TR/wai-aria-1.2/#aria-errormessage
 export function toHaveErrorMessage(
+    this: MatcherState,
     htmlElement: Element,
     checkWith?: string | RegExp | typeof expect.stringContaining,
 ): MatcherResult {
@@ -41,7 +42,7 @@ export function toHaveErrorMessage(
 
         const errormessageEls = errormessageIDs
             .map((errormessageID) => document.getElementById(errormessageID))
-            .filter(Boolean);
+            .filter((el): el is HTMLElement => el !== null);
 
         errormessage = normalize(errormessageEls.map((el) => el.textContent).join(" "));
     }

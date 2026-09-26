@@ -28,6 +28,7 @@ test(".toHaveAttribute", () => {
     expect(() => expect(queryByTestId("ok-button")).toHaveAttribute("type", "button")).toThrowError();
     expect(() => expect(queryByTestId("svg-element")).not.toHaveAttribute("width")).toThrowError();
     expect(() => expect(queryByTestId("svg-element")).not.toHaveAttribute("width", "12")).toThrowError();
+    // @ts-expect-error: testing a missing argument
     expect(() => expect({ thisIsNot: "an html element" }).not.toHaveAttribute()).toThrowError();
 
     // Asymmetric matchers

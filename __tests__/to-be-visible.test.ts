@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { afterEach, beforeEach, describe, it, test, expect } from "vitest";
+import { beforeEach, describe, it, test, expect } from "vitest";
 
 import { render } from "./helpers/test-utils.js";
 
@@ -42,11 +42,7 @@ describe(".toBeVisible", () => {
     });
 
     describe("with a <details /> element", () => {
-        let subject;
-
-        afterEach(() => {
-            subject = undefined;
-        });
+        let subject: ReturnType<typeof render>;
 
         describe("when the details is opened", () => {
             beforeEach(() => {
@@ -71,7 +67,7 @@ describe(".toBeVisible", () => {
             });
 
             describe("when the user clicks on the summary", () => {
-                beforeEach(() => subject.container.querySelector("summary").click());
+                beforeEach(() => subject.container.querySelector("summary")!.click());
 
                 it("returns false to the details content", () => {
                     expect(subject.container.querySelector("div")).not.toBeVisible();
@@ -102,7 +98,7 @@ describe(".toBeVisible", () => {
             });
 
             describe("when the user clicks on the summary", () => {
-                beforeEach(() => subject.container.querySelector("summary").click());
+                beforeEach(() => subject.container.querySelector("summary")!.click());
 
                 it("returns true to the details content", () => {
                     expect(subject.container.querySelector("div")).toBeVisible();
@@ -153,7 +149,7 @@ describe(".toBeVisible", () => {
                 });
 
                 describe("when the user clicks on the summary", () => {
-                    beforeEach(() => subject.container.querySelector("summary").click());
+                    beforeEach(() => subject.container.querySelector("summary")!.click());
 
                     it("returns true to the details content", () => {
                         expect(subject.container.querySelector("details")).toBeVisible();
@@ -184,7 +180,7 @@ describe(".toBeVisible", () => {
                 });
 
                 describe("when the user clicks on the summary", () => {
-                    beforeEach(() => subject.container.querySelector("summary").click());
+                    beforeEach(() => subject.container.querySelector("summary")!.click());
 
                     it("returns false to the details content", () => {
                         expect(subject.container.querySelector("details")).not.toBeVisible();

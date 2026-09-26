@@ -20,7 +20,7 @@ test("it should work as expected", () => {
     expect(() => expect(queryByTestId("select")).not.toHaveDisplayValue("Select a fruit...")).toThrow();
     expect(() => expect(queryByTestId("select")).toHaveDisplayValue("Ananas")).toThrow();
 
-    queryByTestId("select").value = "banana";
+    queryByTestId<HTMLSelectElement>("select")!.value = "banana";
     expect(queryByTestId("select")).toHaveDisplayValue("Banana");
     expect(queryByTestId("select")).toHaveDisplayValue(/[bB]ana/);
 });
@@ -47,7 +47,7 @@ describe("with multiple select", () => {
         expect(subject.queryByTestId("select")).not.toHaveDisplayValue("Ananas");
         expect(() => expect(subject.queryByTestId("select")).toHaveDisplayValue("Ananas")).toThrow();
 
-        Array.from(subject.queryByTestId("select").options).forEach((option) => {
+        Array.from(subject.queryByTestId<HTMLSelectElement>("select")!.options).forEach((option) => {
             option.selected = ["ananas", "banana"].includes(option.value);
         });
 
@@ -73,7 +73,7 @@ test("it should work with input elements", () => {
     expect(queryByTestId("input")).toHaveDisplayValue("Luca");
     expect(queryByTestId("input")).toHaveDisplayValue(/Luc/);
 
-    queryByTestId("input").value = "Piero";
+    queryByTestId<HTMLInputElement>("input")!.value = "Piero";
     expect(queryByTestId("input")).toHaveDisplayValue("Piero");
 });
 
@@ -85,7 +85,7 @@ test("it should work with textarea elements", () => {
     expect(queryByTestId("textarea-example")).toHaveDisplayValue("An example description here.");
     expect(queryByTestId("textarea-example")).toHaveDisplayValue(/example/);
 
-    queryByTestId("textarea-example").value = "Another example";
+    queryByTestId<HTMLTextAreaElement>("textarea-example")!.value = "Another example";
     expect(queryByTestId("textarea-example")).toHaveDisplayValue("Another example");
 });
 
@@ -100,7 +100,7 @@ test("it should throw if element is not valid", () => {
     try {
         expect(queryByTestId("div")).toHaveDisplayValue("Banana");
     } catch (err) {
-        errorMessage = err.message;
+        errorMessage = (err as Error).message;
     }
 
     expect(errorMessage).toMatchInlineSnapshot(
@@ -110,7 +110,7 @@ test("it should throw if element is not valid", () => {
     try {
         expect(queryByTestId("radio")).toHaveDisplayValue("Something");
     } catch (err) {
-        errorMessage = err.message;
+        errorMessage = (err as Error).message;
     }
 
     expect(errorMessage).toMatchInlineSnapshot(
@@ -118,9 +118,10 @@ test("it should throw if element is not valid", () => {
     );
 
     try {
+        // @ts-expect-error: testing an unsupported (non-string) argument
         expect(queryByTestId("checkbox")).toHaveDisplayValue(true);
     } catch (err) {
-        errorMessage = err.message;
+        errorMessage = (err as Error).message;
     }
 
     expect(errorMessage).toMatchInlineSnapshot(
@@ -134,6 +135,8 @@ test("it should work with numbers", () => {
       <option value="">1</option>
     </select>
   `);
+
+    // @ts-expect-error: numbers are stringified at runtime but not allowed by the types
 
     expect(queryByTestId("select")).toHaveDisplayValue(1);
 });

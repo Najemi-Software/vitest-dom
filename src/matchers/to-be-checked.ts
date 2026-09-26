@@ -1,4 +1,4 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, toSentence } from "./utils.js";
 
 // WAI-ARIA roles supporting the aria-checked state
@@ -13,17 +13,20 @@ const ROLES_SUPPORTING_CHECKED = [
     "treeitem",
 ];
 
-export function toBeChecked(element: Element): MatcherResult {
+export function toBeChecked(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeChecked, this);
 
     const isValidInput = () => {
-        return element.tagName.toLowerCase() === "input" && ["checkbox", "radio"].includes(element.type);
+        return (
+            element.tagName.toLowerCase() === "input" &&
+            ["checkbox", "radio"].includes((element as HTMLInputElement).type)
+        );
     };
 
     const isValidAriaElement = () => {
         return (
             roleSupportsChecked(element.getAttribute("role")) &&
-            ["true", "false"].includes(element.getAttribute("aria-checked"))
+            ["true", "false"].includes(element.getAttribute("aria-checked") ?? "")
         );
     };
 
@@ -36,7 +39,7 @@ export function toBeChecked(element: Element): MatcherResult {
     }
 
     const isChecked = () => {
-        if (isValidInput()) return element.checked;
+        if (isValidInput()) return (element as HTMLInputElement).checked;
         return element.getAttribute("aria-checked") === "true";
     };
 
@@ -61,6 +64,6 @@ function supportedRolesSentence() {
     );
 }
 
-function roleSupportsChecked(role) {
-    return ROLES_SUPPORTING_CHECKED.includes(role);
+function roleSupportsChecked(role: string | null) {
+    return role !== null && ROLES_SUPPORTING_CHECKED.includes(role);
 }

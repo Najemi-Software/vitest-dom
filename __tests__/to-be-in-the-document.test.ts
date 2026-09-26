@@ -2,7 +2,7 @@
 
 import { test, expect } from "vitest";
 
-import { HtmlElementTypeError } from "../src/matchers/utils";
+import { HtmlElementTypeError } from "../src/matchers/utils.js";
 
 const HTMLElement = window.HTMLElement;
 

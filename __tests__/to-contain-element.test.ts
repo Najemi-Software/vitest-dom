@@ -13,11 +13,11 @@ const { queryByTestId } = render(`
 </span>
 `);
 
-const grandparent = queryByTestId("grandparent");
-const parent = queryByTestId("parent");
-const child = queryByTestId("child");
-const svgElement = queryByTestId("svg-element");
-const nonExistantElement = queryByTestId("not-exists");
+const grandparent = queryByTestId<HTMLElement>("grandparent");
+const parent = queryByTestId<HTMLElement>("parent");
+const child = queryByTestId<HTMLElement>("child");
+const svgElement = queryByTestId<SVGElement>("svg-element");
+const nonExistantElement = queryByTestId<HTMLElement>("not-exists");
 const fakeElement = { thisIsNot: "an html element" };
 
 test(".toContainElement positive test cases", () => {
@@ -39,13 +39,17 @@ test(".toContainElement negative test cases", () => {
     expect(() => expect(nonExistantElement).toContainElement(grandparent)).toThrowError();
     expect(() => expect(grandparent).toContainElement(nonExistantElement)).toThrowError();
     expect(() => expect(nonExistantElement).toContainElement(nonExistantElement)).toThrowError();
+    // @ts-expect-error: testing a non-element argument
     expect(() => expect(nonExistantElement).toContainElement(fakeElement)).toThrowError();
     expect(() => expect(fakeElement).toContainElement(nonExistantElement)).toThrowError();
     expect(() => expect(fakeElement).not.toContainElement(nonExistantElement)).toThrowError();
     expect(() => expect(fakeElement).toContainElement(grandparent)).toThrowError();
+    // @ts-expect-error: testing a non-element argument
     expect(() => expect(grandparent).toContainElement(fakeElement)).toThrowError();
+    // @ts-expect-error: testing a non-element argument
     expect(() => expect(fakeElement).toContainElement(fakeElement)).toThrowError();
     expect(() => expect(grandparent).not.toContainElement(child)).toThrowError();
     expect(() => expect(grandparent).not.toContainElement(svgElement)).toThrowError();
+    // @ts-expect-error: testing a non-element argument
     expect(() => expect(grandparent).not.toContainElement(undefined)).toThrowError();
 });

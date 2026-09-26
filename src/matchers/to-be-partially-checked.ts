@@ -1,11 +1,11 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
-export function toBePartiallyChecked(element: Element): MatcherResult {
+export function toBePartiallyChecked(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBePartiallyChecked, this);
 
     const isValidInput = () => {
-        return element.tagName.toLowerCase() === "input" && element.type === "checkbox";
+        return element.tagName.toLowerCase() === "input" && (element as HTMLInputElement).type === "checkbox";
     };
 
     const isValidAriaElement = () => {
@@ -24,7 +24,7 @@ export function toBePartiallyChecked(element: Element): MatcherResult {
         const isAriaMixed = element.getAttribute("aria-checked") === "mixed";
 
         if (isValidInput()) {
-            return element.indeterminate || isAriaMixed;
+            return (element as HTMLInputElement).indeterminate || isAriaMixed;
         }
 
         return isAriaMixed;

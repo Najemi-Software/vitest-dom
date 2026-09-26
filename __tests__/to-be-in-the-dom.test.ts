@@ -14,10 +14,10 @@ test(".toBeInTheDOM", () => {
       <svg data-testid="svg-element"></svg>
     </span>`);
 
-    const containerElement = queryByTestId("count-container");
-    const valueElement = queryByTestId("count-value");
-    const nonExistantElement = queryByTestId("not-exists");
-    const svgElement = queryByTestId("svg-element");
+    const containerElement = queryByTestId<HTMLElement>("count-container")!;
+    const valueElement = queryByTestId<HTMLElement>("count-value")!;
+    const nonExistantElement = queryByTestId<HTMLElement>("not-exists");
+    const svgElement = queryByTestId<SVGElement>("svg-element");
     const fakeElement = { thisIsNot: "an html element" };
 
     // Testing toBeInTheDOM without container
@@ -48,6 +48,7 @@ test(".toBeInTheDOM", () => {
     expect(() => expect(fakeElement).toBeInTheDOM(containerElement)).toThrowError();
 
     expect(() => {
+        // @ts-expect-error: testing a non-element argument
         expect(valueElement).toBeInTheDOM(fakeElement);
     }).toThrowError();
 

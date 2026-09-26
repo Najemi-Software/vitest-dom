@@ -131,7 +131,6 @@ describe(".toHaveStyle", () => {
         Hello world
       </div>
     `,
-            document,
         );
 
         document.body.appendChild(style);

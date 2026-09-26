@@ -1,38 +1,42 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
-function getExpectedClassNamesAndOptions(params) {
+interface ToHaveClassOptions {
+    exact: boolean;
+}
+
+function getExpectedClassNamesAndOptions(params: Array<string | ToHaveClassOptions>) {
     const lastParam = params.pop();
-    let expectedClassNames, options;
+    let expectedClassNames: Array<string | undefined>, options: ToHaveClassOptions;
 
     if (typeof lastParam === "object") {
-        expectedClassNames = params;
+        expectedClassNames = params as string[];
         options = lastParam;
     } else {
-        expectedClassNames = params.concat(lastParam);
+        expectedClassNames = (params as string[]).concat(lastParam as string);
         options = { exact: false };
     }
     return { expectedClassNames, options };
 }
 
-function splitClassNames(str) {
+function splitClassNames(str: string | null | undefined): string[] {
     if (!str) {
         return [];
     }
     return str.split(/\s+/).filter((s) => s.length > 0);
 }
 
-function isSubset(subset, superset) {
+function isSubset(subset: string[], superset: string[]) {
     return subset.every((item) => superset.includes(item));
 }
 
-export function toHaveClass(htmlElement: Element, ...params: string[]): MatcherResult {
+export function toHaveClass(this: MatcherState, htmlElement: Element, ...params: string[]): MatcherResult {
     checkHtmlElement(htmlElement, toHaveClass, this);
     const { expectedClassNames, options } = getExpectedClassNamesAndOptions(params);
 
     const received = splitClassNames(htmlElement.getAttribute("class"));
     const expected = expectedClassNames.reduce(
-        (acc, className) => acc.concat(splitClassNames(className)),
+        (acc: string[], className) => acc.concat(splitClassNames(className)),
         [],
     );
 

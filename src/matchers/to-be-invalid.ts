@@ -1,17 +1,19 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getTag } from "./utils.js";
 
 const FORM_TAGS = ["form", "input", "select", "textarea"];
 
-function isElementHavingAriaInvalid(element) {
+function isElementHavingAriaInvalid(element: Element) {
     return element.hasAttribute("aria-invalid") && element.getAttribute("aria-invalid") !== "false";
 }
 
-function isSupportsValidityMethod(element) {
+function isSupportsValidityMethod(
+    element: Element,
+): element is HTMLFormElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement {
     return FORM_TAGS.includes(getTag(element));
 }
 
-function isElementInvalid(element) {
+function isElementInvalid(element: Element) {
     const isHaveAriaInvalid = isElementHavingAriaInvalid(element);
     if (isSupportsValidityMethod(element)) {
         return isHaveAriaInvalid || !element.checkValidity();
@@ -20,7 +22,7 @@ function isElementInvalid(element) {
     }
 }
 
-export function toBeInvalid(element: Element): MatcherResult {
+export function toBeInvalid(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeInvalid, this);
 
     const isInvalid = isElementInvalid(element);
@@ -39,7 +41,7 @@ export function toBeInvalid(element: Element): MatcherResult {
     };
 }
 
-export function toBeValid(element: Element): MatcherResult {
+export function toBeValid(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeValid, this);
 
     const isValid = !isElementInvalid(element);

@@ -1,21 +1,15 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
-function isStyleVisible(element) {
-    const { getComputedStyle } = element.ownerDocument.defaultView;
+function isStyleVisible(element: Element) {
+    const { getComputedStyle } = element.ownerDocument.defaultView!;
 
     const { display, visibility, opacity } = getComputedStyle(element);
-    return (
-        display !== "none" &&
-        visibility !== "hidden" &&
-        visibility !== "collapse" &&
-        opacity !== "0" &&
-        opacity !== 0
-    );
+    return display !== "none" && visibility !== "hidden" && visibility !== "collapse" && opacity !== "0";
 }
 
-function isAttributeVisible(element, previousElement) {
-    let detailsVisibility;
+function isAttributeVisible(element: Element, previousElement?: Element) {
+    let detailsVisibility: boolean;
 
     if (previousElement) {
         detailsVisibility =
@@ -29,7 +23,7 @@ function isAttributeVisible(element, previousElement) {
     return !element.hasAttribute("hidden") && detailsVisibility;
 }
 
-function isElementVisible(element, previousElement) {
+function isElementVisible(element: Element, previousElement?: Element): boolean {
     return (
         isStyleVisible(element) &&
         isAttributeVisible(element, previousElement) &&
@@ -37,7 +31,7 @@ function isElementVisible(element, previousElement) {
     );
 }
 
-export function toBeVisible(element: Element): MatcherResult {
+export function toBeVisible(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeVisible, this);
     const isInDocument = element.ownerDocument === element.getRootNode({ composed: true });
     const isVisible = isInDocument && isElementVisible(element);

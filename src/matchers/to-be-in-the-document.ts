@@ -1,7 +1,7 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
-export function toBeInTheDocument(element: Element): MatcherResult {
+export function toBeInTheDocument(this: MatcherState, element: Element): MatcherResult {
     if (element !== null || !this.isNot) {
         checkHtmlElement(element, toBeInTheDocument, this);
     }

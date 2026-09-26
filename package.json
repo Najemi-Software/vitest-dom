@@ -45,9 +45,8 @@
         "access": "public"
     },
     "scripts": {
-        "build": "pnpm run clean && pnpm run build-ts",
+        "build": "pnpm run clean && npm-run-all -p build-ts build-check",
         "build-check": "tsc",
-        "build-future": "pnpm run clean && npm-run-all -p build-ts build-check",
         "build-ts": "tsc -p tsconfig.build.json",
         "clean": "rm -rf ./esm",
         "format": "oxfmt --check",

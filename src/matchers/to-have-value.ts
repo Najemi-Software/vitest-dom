@@ -1,15 +1,19 @@
 import { isEqualWith } from "lodash-es";
 
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, compareArraysAsSet, getMessage, getSingleElementValue } from "./utils.js";
 
 export function toHaveValue(
+    this: MatcherState,
     htmlElement: Element,
     expectedValue?: string | string[] | number | null,
 ): MatcherResult {
     checkHtmlElement(htmlElement, toHaveValue, this);
 
-    if (htmlElement.tagName.toLowerCase() === "input" && ["checkbox", "radio"].includes(htmlElement.type)) {
+    if (
+        htmlElement.tagName.toLowerCase() === "input" &&
+        ["checkbox", "radio"].includes((htmlElement as HTMLInputElement).type)
+    ) {
         throw new Error(
             "input with type=checkbox or type=radio cannot be used with .toHaveValue(). Use .toBeChecked() for type=checkbox or .toHaveFormValues() instead",
         );
@@ -34,7 +38,7 @@ export function toHaveValue(
             const matcher = this.utils.matcherHint(
                 `${this.isNot ? ".not" : ""}.toHaveValue`,
                 "element",
-                expectedValue,
+                expectedValue === undefined ? undefined : String(expectedValue),
             );
             return getMessage(
                 this,

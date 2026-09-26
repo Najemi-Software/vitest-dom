@@ -1,8 +1,8 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, deprecate } from "./utils.js";
 
 /** @deprecated */
-export function toBeEmpty(element: Element): MatcherResult {
+export function toBeEmpty(this: MatcherState, element: Element): MatcherResult {
     deprecate("toBeEmpty", "Please use instead toBeEmptyDOMElement for finding empty nodes in the DOM.");
     checkHtmlElement(element, toBeEmpty, this);
 

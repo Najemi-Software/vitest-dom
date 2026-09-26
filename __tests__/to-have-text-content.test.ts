@@ -9,6 +9,7 @@ describe(".toHaveTextContent", () => {
         const { queryByTestId } = render(`<span data-testid="count-value">2</span>`);
 
         expect(queryByTestId("count-value")).toHaveTextContent("2");
+        // @ts-expect-error: numbers are stringified at runtime but not allowed by the types
         expect(queryByTestId("count-value")).toHaveTextContent(2);
         expect(queryByTestId("count-value")).toHaveTextContent(/2/);
         expect(queryByTestId("count-value")).not.toHaveTextContent("21");
@@ -17,7 +18,7 @@ describe(".toHaveTextContent", () => {
     test("handles text nodes", () => {
         const { container } = render(`<span>example</span>`);
 
-        expect(container.querySelector("span").firstChild).toHaveTextContent("example");
+        expect(container.querySelector("span")!.firstChild).toHaveTextContent("example");
     });
 
     test("handles fragments", () => {

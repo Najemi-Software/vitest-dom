@@ -9,35 +9,143 @@ export interface ParserOptions {
     source?: string | undefined;
 }
 
-export interface Stylesheet extends Node {
-    stylesheet?: StyleRules | undefined;
+interface LineColumn {
+    line: number;
+    column: number;
 }
 
-interface Node {
+/** Information about the position in the source string that corresponds to the node. */
+interface NodePosition {
+    start: LineColumn;
+    end: LineColumn;
+    /** The value of options.source if passed to css.parse. Otherwise undefined. */
+    source: string | undefined;
+    /** The full source string passed to css.parse. */
+    content: string;
+}
+
+interface BaseNode {
     /** The possible values are the ones listed in the Types section on https://github.com/reworkcss/css page. */
-    type?: string | undefined;
+    type: string;
+    position?: NodePosition;
     /** A reference to the parent node, or null if the node has no parent. */
-    parent?: Node | undefined;
-    /** Information about the position in the source string that corresponds to the node. */
-    position?:
-        | {
-              start?: Position | undefined;
-              end?: Position | undefined;
-              /** The value of options.source if passed to css.parse. Otherwise undefined. */
-              source?: string | undefined;
-              /** The full source string passed to css.parse. */
-              content?: string | undefined;
-          }
-        | undefined;
+    parent?: BaseNode | null;
 }
 
-interface Position {
-    line?: number | undefined;
-    column?: number | undefined;
+export interface Comment extends BaseNode {
+    type: "comment";
+    comment: string;
+}
+
+export interface Declaration extends BaseNode {
+    type: "declaration";
+    property: string;
+    value: string;
+}
+
+export interface Rule extends BaseNode {
+    type: "rule";
+    selectors: string[];
+    declarations: Array<Declaration | Comment> | undefined;
+}
+
+export interface Keyframe extends BaseNode {
+    type: "keyframe";
+    values: string[];
+    declarations: Array<Declaration | Comment> | undefined;
+}
+
+export interface Keyframes extends BaseNode {
+    type: "keyframes";
+    name: string;
+    vendor: string | undefined;
+    keyframes: Array<Keyframe | Comment>;
+}
+
+export interface Supports extends BaseNode {
+    type: "supports";
+    supports: string;
+    rules: StyleNode[];
+}
+
+export interface Host extends BaseNode {
+    type: "host";
+    rules: StyleNode[];
+}
+
+export interface Media extends BaseNode {
+    type: "media";
+    media: string;
+    rules: StyleNode[];
+}
+
+export interface CustomMedia extends BaseNode {
+    type: "custom-media";
+    name: string;
+    media: string;
+}
+
+export interface Page extends BaseNode {
+    type: "page";
+    selectors: string[];
+    declarations: Array<Declaration | Comment>;
+}
+
+export interface Document extends BaseNode {
+    type: "document";
+    document: string;
+    vendor: string;
+    rules: StyleNode[];
+}
+
+export interface FontFace extends BaseNode {
+    type: "font-face";
+    declarations: Array<Declaration | Comment>;
+}
+
+type SimpleAtRuleName = "import" | "charset" | "namespace";
+
+export interface SimpleAtRule extends BaseNode {
+    type: SimpleAtRuleName;
+    import?: string;
+    charset?: string;
+    namespace?: string;
+}
+
+export type AtRule =
+    | Keyframes
+    | Media
+    | CustomMedia
+    | Supports
+    | SimpleAtRule
+    | Document
+    | Page
+    | Host
+    | FontFace;
+
+export type StyleNode = Rule | Comment | AtRule;
+
+export interface ParseError extends Error {
+    reason: string;
+    filename: string | undefined;
+    line: number;
+    column: number;
+    source: string;
+}
+
+export interface StyleRules {
+    source: string | undefined;
+    rules: StyleNode[];
+    parsingErrors: ParseError[];
+}
+
+export interface Stylesheet extends BaseNode {
+    type: "stylesheet";
+    stylesheet: StyleRules;
 }
 
 function cssParse(css: string, options?: ParserOptions): Stylesheet {
-    options = options || {};
+    const opts: ParserOptions = options || {};
 
     /**
      * Positional.
@@ -50,7 +158,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Update lineno and column based on `str`.
      */
 
-    function updatePosition(str) {
+    function updatePosition(str: string) {
         let lines = str.match(/\n/g);
         if (lines) lineno += lines.length;
         let i = str.lastIndexOf("\n");
@@ -63,7 +171,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
     function position() {
         let start = { line: lineno, column: column };
-        return function (node) {
+        return function <const T extends BaseNode>(node: T): T {
             node.position = new Position(start);
             whitespace();
             return node;
@@ -74,10 +182,17 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Store position information for a node
      */
 
-    function Position(start) {
-        this.start = start;
-        this.end = { line: lineno, column: column };
-        this.source = options.source;
+    class Position implements NodePosition {
+        start: LineColumn;
+        end: LineColumn;
+        source: string | undefined;
+        declare content: string;
+
+        constructor(start: LineColumn) {
+            this.start = start;
+            this.end = { line: lineno, column: column };
+            this.source = opts.source;
+        }
     }
 
     /**
@@ -90,17 +205,21 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Error `msg`.
      */
 
-    let errorsList = [];
+    let errorsList: ParseError[] = [];
 
-    function error(msg) {
-        let err = new Error(options.source + ":" + lineno + ":" + column + ": " + msg);
-        err.reason = msg;
-        err.filename = options.source;
-        err.line = lineno;
-        err.column = column;
-        err.source = css;
+    function error(msg: string): undefined {
+        let err: ParseError = Object.assign(
+            new Error(opts.source + ":" + lineno + ":" + column + ": " + msg),
+            {
+                reason: msg,
+                filename: opts.source,
+                line: lineno,
+                column: column,
+                source: css,
+            },
+        );
 
-        if (options.silent) {
+        if (opts.silent) {
             errorsList.push(err);
         } else {
             throw err;
@@ -111,13 +230,13 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse stylesheet.
      */
 
-    function stylesheet() {
+    function stylesheet(): Stylesheet {
         let rulesList = rules();
 
         return {
             type: "stylesheet",
             stylesheet: {
-                source: options.source,
+                source: opts.source,
                 rules: rulesList,
                 parsingErrors: errorsList,
             },
@@ -144,16 +263,14 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse ruleset.
      */
 
-    function rules() {
-        let node;
-        let rules = [];
+    function rules(): StyleNode[] {
+        let node: StyleNode | undefined;
+        let rules: StyleNode[] = [];
         whitespace();
         comments(rules);
         while (css.length && css.charAt(0) != "}" && (node = atrule() || rule())) {
-            if (node !== false) {
-                rules.push(node);
-                comments(rules);
-            }
+            rules.push(node);
+            comments(rules);
         }
         return rules;
     }
@@ -162,7 +279,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Match `re` and return captures.
      */
 
-    function match(re) {
+    function match(re: RegExp) {
         let m = re.exec(css);
         if (!m) return;
         let str = m[0];
@@ -183,13 +300,10 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse comments;
      */
 
-    function comments(rules) {
-        let c;
-        rules = rules || [];
+    function comments<T>(rules: Array<T | Comment> = []): Array<T | Comment> {
+        let c: Comment | undefined;
         while ((c = comment())) {
-            if (c !== false) {
-                rules.push(c);
-            }
+            rules.push(c);
         }
         return rules;
     }
@@ -198,7 +312,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse comment.
      */
 
-    function comment() {
+    function comment(): Comment | undefined {
         let pos = position();
         if ("/" != css.charAt(0) || "*" != css.charAt(1)) return;
 
@@ -226,7 +340,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse selector.
      */
 
-    function selector() {
+    function selector(): string[] | undefined {
         let m = match(/^([^{]+)/);
         if (!m) return;
         /* @fix Remove all comments from selectors
@@ -246,14 +360,14 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse declaration.
      */
 
-    function declaration() {
+    function declaration(): Declaration | undefined {
         let pos = position();
 
         // prop
         // eslint-disable-next-line no-useless-escape
-        let prop = match(/^(\*?[-#\/\*\\\w]+(\[[0-9a-z_-]+\])?)\s*/);
-        if (!prop) return;
-        prop = trim(prop[0]);
+        let propMatch = match(/^(\*?[-#\/\*\\\w]+(\[[0-9a-z_-]+\])?)\s*/);
+        if (!propMatch) return;
+        let prop = trim(propMatch[0]);
 
         // :
         if (!match(/^:\s*/)) return error("property missing ':'");
@@ -278,19 +392,17 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse declarations.
      */
 
-    function declarations() {
-        let decls = [];
+    function declarations(): Array<Declaration | Comment> | undefined {
+        let decls: Array<Declaration | Comment> = [];
 
         if (!open()) return error("missing '{'");
         comments(decls);
 
         // declarations
-        let decl;
+        let decl: Declaration | undefined;
         while ((decl = declaration())) {
-            if (decl !== false) {
-                decls.push(decl);
-                comments(decls);
-            }
+            decls.push(decl);
+            comments(decls);
         }
 
         if (!close()) return error("missing '}'");
@@ -301,9 +413,9 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse keyframe.
      */
 
-    function keyframe() {
+    function keyframe(): Keyframe | undefined {
         let m;
-        let vals = [];
+        let vals: string[] = [];
         let pos = position();
 
         while ((m = match(/^((\d+\.\d+|\.\d+|\d+)%?|[a-z]+)\s*/))) {
@@ -324,7 +436,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse keyframes.
      */
 
-    function atkeyframes() {
+    function atkeyframes(): Keyframes | undefined {
         let pos = position();
         let m = match(/^@([-\w]+)?keyframes\s*/);
 
@@ -338,11 +450,11 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
         if (!open()) return error("@keyframes missing '{'");
 
-        let frame;
-        let frames = comments();
+        let frame: Keyframe | undefined;
+        let frames = comments<Keyframe>();
         while ((frame = keyframe())) {
             frames.push(frame);
-            frames = frames.concat(comments());
+            frames = frames.concat(comments<Keyframe>());
         }
 
         if (!close()) return error("@keyframes missing '}'");
@@ -359,7 +471,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse supports.
      */
 
-    function atsupports() {
+    function atsupports(): Supports | undefined {
         let pos = position();
         let m = match(/^@supports *([^{]+)/);
 
@@ -368,7 +480,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
         if (!open()) return error("@supports missing '{'");
 
-        let style = comments().concat(rules());
+        let style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@supports missing '}'");
 
@@ -383,7 +495,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse host.
      */
 
-    function athost() {
+    function athost(): Host | undefined {
         let pos = position();
         let m = match(/^@host\s*/);
 
@@ -391,7 +503,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
         if (!open()) return error("@host missing '{'");
 
-        let style = comments().concat(rules());
+        let style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@host missing '}'");
 
@@ -405,7 +517,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse media.
      */
 
-    function atmedia() {
+    function atmedia(): Media | undefined {
         let pos = position();
         let m = match(/^@media *([^{]+)/);
 
@@ -414,7 +526,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
         if (!open()) return error("@media missing '{'");
 
-        let style = comments().concat(rules());
+        let style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@media missing '}'");
 
@@ -429,7 +541,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse custom-media.
      */
 
-    function atcustommedia() {
+    function atcustommedia(): CustomMedia | undefined {
         let pos = position();
         let m = match(/^@custom-media\s+(--[^\s]+)\s*([^{;]+);/);
         if (!m) return;
@@ -445,7 +557,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse paged media.
      */
 
-    function atpage() {
+    function atpage(): Page | undefined {
         let pos = position();
         let m = match(/^@page */);
         if (!m) return;
@@ -453,13 +565,13 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
         let sel = selector() || [];
 
         if (!open()) return error("@page missing '{'");
-        let decls = comments();
+        let decls = comments<Declaration>();
 
         // declarations
-        let decl;
+        let decl: Declaration | undefined;
         while ((decl = declaration())) {
             decls.push(decl);
-            decls = decls.concat(comments());
+            decls = decls.concat(comments<Declaration>());
         }
 
         if (!close()) return error("@page missing '}'");
@@ -475,7 +587,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse document.
      */
 
-    function atdocument() {
+    function atdocument(): Document | undefined {
         let pos = position();
         let m = match(/^@([-\w]+)?document *([^{]+)/);
         if (!m) return;
@@ -485,7 +597,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
         if (!open()) return error("@document missing '{'");
 
-        let style = comments().concat(rules());
+        let style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@document missing '}'");
 
@@ -501,19 +613,19 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse font-face.
      */
 
-    function atfontface() {
+    function atfontface(): FontFace | undefined {
         let pos = position();
         let m = match(/^@font-face\s*/);
         if (!m) return;
 
         if (!open()) return error("@font-face missing '{'");
-        let decls = comments();
+        let decls = comments<Declaration>();
 
         // declarations
-        let decl;
+        let decl: Declaration | undefined;
         while ((decl = declaration())) {
             decls.push(decl);
-            decls = decls.concat(comments());
+            decls = decls.concat(comments<Declaration>());
         }
 
         if (!close()) return error("@font-face missing '}'");
@@ -546,13 +658,13 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse non-block at-rules
      */
 
-    function _compileAtrule(name) {
+    function _compileAtrule(name: SimpleAtRuleName) {
         let re = new RegExp("^@" + name + "\\s*([^;]+);");
-        return function () {
+        return function (): SimpleAtRule | undefined {
             let pos = position();
             let m = match(re);
             if (!m) return;
-            let ret = { type: name };
+            let ret: SimpleAtRule = { type: name };
             ret[name] = m[1].trim();
             return pos(ret);
         };
@@ -562,7 +674,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse at rule.
      */
 
-    function atrule() {
+    function atrule(): AtRule | undefined {
         if (css[0] != "@") return;
 
         return (
@@ -584,7 +696,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse rule.
      */
 
-    function rule() {
+    function rule(): Rule | undefined {
         let pos = position();
         let sel = selector();
 
@@ -605,7 +717,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
  * Trim `str`.
  */
 
-function trim(str) {
+function trim(str: string | undefined) {
     return str ? str.replace(/^\s+|\s+$/g, "") : "";
 }
 
@@ -613,12 +725,13 @@ function trim(str) {
  * Adds non-enumerable parent node reference to each node.
  */
 
-function addParent(obj, parent) {
-    let isNode = obj && typeof obj.type === "string";
-    let childParent = isNode ? obj : parent;
+function addParent<T>(obj: T, parent?: object): T {
+    let record = obj as Record<string, unknown>;
+    let isNode = obj && typeof record.type === "string";
+    let childParent = isNode ? record : parent;
 
-    for (var k in obj) {
-        let value = obj[k];
+    for (var k in record) {
+        let value = record[k];
         if (Array.isArray(value)) {
             value.forEach(function (v) {
                 addParent(v, childParent);

@@ -32,10 +32,27 @@ const defaultValues = {
     "benefits[1]": "Multicultural environment",
 };
 
+interface FormValues {
+    title?: string;
+    salary?: number | string | null;
+    category?: string | null;
+    skills?: string[];
+    description?: string;
+    remote?: boolean;
+    freelancing?: boolean;
+    "is%Private^"?: boolean;
+    "benefits[0]"?: string;
+    "benefits[1]"?: string;
+}
+
 function renderForm({
     selectSingle = renderSelectSingle,
     selectMultiple = renderSelectMultiple,
     values: valueOverrides = {},
+}: {
+    selectSingle?: SingleValueRenderer;
+    selectMultiple?: MultipleValuesRenderer;
+    values?: FormValues;
 } = {}) {
     const values = {
         ...defaultValues,
@@ -107,9 +124,9 @@ function renderForm({
     // happy-dom does not reliably apply the `selected` attribute of parsed
     // markup to the option's selectedness (it can land on the wrong option),
     // so sync it manually.
-    for (const select of container.querySelectorAll("select")) {
+    for (const select of Array.from(container.querySelectorAll("select"))) {
         if (select.querySelector("option[selected]")) {
-            for (const option of select.options) {
+            for (const option of Array.from(select.options)) {
                 option.selected = option.hasAttribute("selected");
             }
         }
@@ -256,7 +273,7 @@ describe(".toHaveFormValues", () => {
             const select = container.querySelector("select");
             expect(form).toHaveFormValues({ category: oldValue });
 
-            select.value = newValue;
+            select!.value = newValue;
             expect(form).toHaveFormValues({ category: newValue });
         });
     });
@@ -275,11 +292,20 @@ describe(".toHaveFormValues", () => {
 
 // Form control renderers
 
-function isSelected(value, option) {
+interface Option {
+    value: string;
+    label: string;
+}
+
+type SingleValueRenderer = (name: string, label: string, options: Option[], value?: string | null) => string;
+
+type MultipleValuesRenderer = (name: string, label: string, options: Option[], value?: string[]) => string;
+
+function isSelected(value: string[], option: Option) {
     return Array.isArray(value) && value.indexOf(option.value) >= 0;
 }
 
-function renderCheckboxes(name, label, options, value = []) {
+function renderCheckboxes(name: string, label: string, options: Option[], value: string[] = []) {
     return `
     <fieldset>
       <legend>${label}</legend>
@@ -302,7 +328,7 @@ function renderCheckboxes(name, label, options, value = []) {
   `;
 }
 
-function renderRadioButtons(name, label, options, value = undefined) {
+function renderRadioButtons(name: string, label: string, options: Option[], value?: string | null) {
     return `
     <fieldset>
       <legend>${label}</legend>
@@ -325,7 +351,7 @@ function renderRadioButtons(name, label, options, value = undefined) {
   `;
 }
 
-function renderSelect(name, label, options, value, multiple) {
+function renderSelect(name: string, label: string, options: Option[], value: string[], multiple: boolean) {
     return `
     <label for="${name}">${label}</label>
     <select id="${name}" name="${name}" ${multiple ? "multiple" : ""}>
@@ -344,14 +370,14 @@ function renderSelect(name, label, options, value, multiple) {
   `;
 }
 
-function renderSelectSingle(name, label, options, value = undefined) {
+function renderSelectSingle(name: string, label: string, options: Option[], value?: string | null) {
     return renderSelect(name, label, options, value === undefined || value === null ? [] : [value], false);
 }
 
-function renderSelectMultiple(name, label, options, value = []) {
+function renderSelectMultiple(name: string, label: string, options: Option[], value: string[] = []) {
     return renderSelect(name, label, options, value, true);
 }
 
-function renderList(items, mapper) {
+function renderList<T>(items: T[], mapper: (item: T) => string) {
     return items.map(mapper).join("");
 }

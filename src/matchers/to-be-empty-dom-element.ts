@@ -1,7 +1,7 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
-export function toBeEmptyDOMElement(element: Element): MatcherResult {
+export function toBeEmptyDOMElement(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeEmptyDOMElement, this);
 
     return {
@@ -28,7 +28,7 @@ export function toBeEmptyDOMElement(element: Element): MatcherResult {
  * @param {*} element an HtmlElement or SVGElement
  * @return {*} true if the element only contains comments or none
  */
-function isEmptyElement(element) {
-    const nonCommentChildNodes = [...element.childNodes].filter((node) => node.nodeType !== 8);
+function isEmptyElement(element: Element) {
+    const nonCommentChildNodes = Array.from(element.childNodes).filter((node) => node.nodeType !== 8);
     return nonCommentChildNodes.length === 0;
 }

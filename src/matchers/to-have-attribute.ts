@@ -1,17 +1,22 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
-function printAttribute(stringify, name, value) {
+function printAttribute(stringify: (value: unknown) => string, name: string, value: unknown) {
     return value === undefined ? name : `${name}=${stringify(value)}`;
 }
 
-function getAttributeComment(stringify, name, value) {
+function getAttributeComment(stringify: (value: unknown) => string, name: string, value: unknown) {
     return value === undefined
         ? `element.hasAttribute(${stringify(name)})`
         : `element.getAttribute(${stringify(name)}) === ${stringify(value)}`;
 }
 
-export function toHaveAttribute(htmlElement: Element, name: string, expectedValue?: unknown): MatcherResult {
+export function toHaveAttribute(
+    this: MatcherState,
+    htmlElement: Element,
+    name: string,
+    expectedValue?: unknown,
+): MatcherResult {
     checkHtmlElement(htmlElement, toHaveAttribute, this);
     const isExpectedValuePresent = expectedValue !== undefined;
     const hasAttribute = htmlElement.hasAttribute(name);
