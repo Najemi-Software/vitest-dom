@@ -1,6 +1,6 @@
 name: "Detect Bump"
 description: >
-    Detects the semver bump (major/minor/patch/none) from a PR's commits,
+    Detects the semver bump (major/minor/patch) from a PR's commits,
     fully via the GitHub API — no checkout required and no job state touched.
     Starts at the PR head commit and walks first-parent history (GET commit,
     parent navigation) until the first commit with two parents: the latest
@@ -22,7 +22,7 @@ inputs:
 
 outputs:
     bump:
-        description: "Detected bump: major, minor, patch or none"
+        description: "Detected bump: major, minor or patch"
         value: ${{ steps.detect.outputs.bump }}
     base-sha:
         description: "The merge commit identified as the latest master base"
@@ -57,7 +57,7 @@ runs:
 
               # Walk first-parent history from the PR head; the first commit with
               # two parents is the latest master merge the branch is based on.
-              # Highest bump across PR commits wins: 3 major, 2 minor, 1 patch, 0 none.
+              # Highest bump across PR commits wins: 3 major, 2 minor, 1 patch.
               sha="$head_sha"
               base=""
               rank=0
@@ -78,14 +78,19 @@ runs:
                   break
                 fi
 
-                if grep -qE '^[a-z]+(\([^)]*\))?!:' <<< "$subject"; then
+                # Conventional Commits types only; anything else is an error.
+                types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+                if grep -qE "^(${types})(\([^)]*\))?!:" <<< "$subject"; then
                   level=3
                 elif grep -qE '^(chore|feat)(\([^)]*\))?:' <<< "$subject"; then
                   level=2
                 elif grep -qE '^fix(\([^)]*\))?:' <<< "$subject"; then
                   level=1
+                elif grep -qE "^(${types})(\([^)]*\))?:" <<< "$subject"; then
+                  level=2
                 else
-                  level=0
+                  echo "::error::Commit ${sha} has a non-conventional subject: ${subject}"
+                  exit 1
                 fi
                 if [ "$level" -gt "$rank" ]; then
                   rank=$level
@@ -104,7 +109,10 @@ runs:
                 3) bump="major" ;;
                 2) bump="minor" ;;
                 1) bump="patch" ;;
-                *) bump="none" ;;
+                *)
+                  echo "::error::No bump-determining commits found between the PR head and the master base."
+                  exit 1
+                  ;;
               esac
 
               echo "bump=${bump}" >> "$GITHUB_OUTPUT"

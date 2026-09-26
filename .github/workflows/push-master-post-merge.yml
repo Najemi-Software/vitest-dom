@@ -11,12 +11,14 @@ concurrency:
 
 jobs:
     get-pull-request-info:
+        name: Get PR info
         runs-on: ubuntu-latest
         permissions:
             contents: read
             pull-requests: read
         outputs:
             pr-number: ${{ steps.pr.outputs.pr-number }}
+            has-skip-publish-label: ${{ steps.check-pr-label.outputs.has-skip-publish-label }}
         steps:
             - name: Get pull request for pushed commit
               id: pr
@@ -33,13 +35,27 @@ jobs:
                   echo "pr-number=${pr_number}" >> "$GITHUB_OUTPUT"
                   echo "PR for ${SHA}: ${pr_number:-<none>}"
 
+            - name: Check for 'skip publish' label
+              id: check-pr-label
+              if: ${{ steps.pr.outputs.pr-number != '' }}
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  REPO: ${{ github.repository }}
+                  PR_NUMBER: ${{ steps.pr.outputs.pr-number }}
+              run: |
+                  set -euo pipefail
+                  has_label=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq 'map(.name) | any(. == "skip publish")')
+                  echo "has-skip-publish-label=${has_label}" >> "$GITHUB_OUTPUT"
+                  echo "PR has 'skip publish' label: ${has_label}"
+
     publish:
+        name: Publish
         needs:
             - get-pull-request-info
-        if: ${{ needs.get-pull-request-info.outputs.pr-number != '' }}
+        if: ${{ needs.get-pull-request-info.outputs.pr-number != '' && needs.get-pull-request-info.outputs.has-skip-publish-label == 'false' }}
         runs-on: ubuntu-latest
         permissions:
-            contents: write # npm-publish creates the release tag + GitHub release
+            contents: write
             pull-requests: read
         steps:
             - name: Checkout merge commit
@@ -51,7 +67,7 @@ jobs:
               uses: pnpm/action-setup@v4
 
             - name: Setup Node.js
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v7
               with:
                   node-version: 22
                   cache: "pnpm"
@@ -78,29 +94,21 @@ jobs:
 
             - name: Calculate next version
               id: next-version
-              if: ${{ steps.detect-bump.outputs.bump != 'none' }}
               uses: ./.github/actions/versioning/calculate-next-version
               with:
                   latest-version: ${{ steps.latest-release.outputs.version }}
                   bump: ${{ steps.detect-bump.outputs.bump }}
 
             - name: Set version
-              if: ${{ steps.detect-bump.outputs.bump != 'none' }}
               uses: ./.github/actions/versioning/set-version
               with:
                   version: ${{ steps.next-version.outputs.version }}
 
             - name: Build
-              if: ${{ steps.detect-bump.outputs.bump != 'none' }}
               run: pnpm run build
 
             - name: Publish to npm
               id: npm-publish
-              if: ${{ steps.detect-bump.outputs.bump != 'none' }}
               uses: ./.github/actions/publishing/npm-publish
               with:
                   npm-token: ${{ secrets.NPM_TOKEN }}
-
-            - name: No release for this merge
-              if: ${{ steps.detect-bump.outputs.bump == 'none' }}
-              run: echo "Bump is 'none' — nothing to release for this merge."
