@@ -2,7 +2,8 @@ name: "Pull Request ~ Status Check"
 
 on:
     pull_request:
-        branches: [master]
+        branches: ["master"]
+        types: [opened, synchronize, reopened, labeled, unlabeled]
 
 concurrency:
     group: ${{ github.event.pull_request.number }}
@@ -10,10 +11,10 @@ concurrency:
 
 jobs:
     dismiss-approvals:
+        name: Dismiss approvals
         runs-on: ubuntu-latest
         permissions:
             pull-requests: write
-            contents: read
         steps:
             - name: Dismiss Approvals
               uses: actions/github-script@v9.0.0
@@ -45,10 +46,9 @@ jobs:
                   github-token: ${{secrets.GITHUB_TOKEN}}
 
     check-merge-commit:
-        name: check-merge-commit
+        name: Check PR for merge commits
         runs-on: ubuntu-latest
         permissions:
-            contents: read
             pull-requests: write
         steps:
             - name: Check for merge commits on PR
@@ -80,13 +80,11 @@ jobs:
                   echo "No merge commits found on branch."
 
     lint-commit-messages:
-        name: lint-commit-messages
+        name: Lint Commit Messages
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
         steps:
             - name: Checkout PR tip
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   ref: ${{ github.event.pull_request.head.sha }}
                   fetch-depth: 0
@@ -146,7 +144,277 @@ jobs:
 
                   echo "All commit messages follow the guidelines."
 
+    check-pr-labels:
+        name: Check PR labels
+        runs-on: ubuntu-latest
+        outputs:
+            has-skip-publish-label: ${{ steps.check-pr-label.outputs.has-skip-publish-label }}
+        permissions:
+            pull-requests: read
+        steps:
+            - name: Check for 'skip publish' label
+              id: check-pr-label
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  REPO: ${{ github.repository }}
+                  PR_NUMBER: ${{ github.event.pull_request.number }}
+              run: |
+                  set -euo pipefail
+                  has_label=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq 'map(.name) | any(. == "skip publish")')
+                  echo "has-skip-publish-label=${has_label}" >> "$GITHUB_OUTPUT"
+                  echo "PR has 'skip publish' label: ${has_label}"
+
+    get-release-tags:
+        name: "Get latest GH release's tag"
+        runs-on: ubuntu-latest
+        outputs:
+            latest: ${{ steps.latest-release.outputs.version }}
+            master: ${{ steps.master-release.outputs.version }}
+        steps:
+            - name: Get latest release version
+              id: latest-release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  set -euo pipefail
+                  tag="$(gh api "repos/${REPO}/releases/latest" --jq '.tag_name')"
+                  echo "version=${tag}" >> "$GITHUB_OUTPUT"
+                  echo "Latest release: ${tag}"
+
+            - name: Checkout master
+              uses: actions/checkout@v7
+              with:
+                  ref: master
+                  fetch-depth: 0
+                  # Full history but no file contents; the tag walk below only
+                  # needs commits and tags, so this stays fast as the repo grows.
+                  filter: blob:none
+
+            - name: Get latest release in master's history
+              id: master-release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  set -euo pipefail
+                  # The latest tag on master's first-parent line. Tags orphaned
+                  # by a git scrub / force-push are unreachable from master and
+                  # therefore never match.
+                  if ! tag="$(git describe --tags --first-parent --abbrev=0 HEAD 2>/dev/null)"; then
+                    echo "::error::No release tag found in master's git history"
+                    exit 1
+                  fi
+
+                  # A stray tag without a GitHub release must not satisfy this
+                  # check.
+                  if ! gh api "repos/${REPO}/releases/tags/${tag}" --jq '.tag_name' > /dev/null 2>&1; then
+                    echo "::error::Tag ${tag} is the latest in master's git history but has no GitHub release"
+                    exit 1
+                  fi
+
+                  # Same walk without local git (pure gh api), kept for reference
+                  # in case the master checkout is ever removed:
+                  #
+                  # tag_map="$(gh api "repos/${REPO}/tags" --paginate --jq '.[] | "\(.commit.sha) \(.name)"')"
+                  # current="$(gh api "repos/${REPO}/commits/master" --jq '.sha')"
+                  # tag=""
+                  # for _ in $(seq 1 100); do # depth cap: fail instead of walking a tagless history to the root
+                  #   tag="$(printf '%s\n' "$tag_map" | awk -v sha="$current" '$1 == sha { print $2; exit }')"
+                  #   [ -n "$tag" ] && break
+                  #   current="$(gh api "repos/${REPO}/commits/${current}" --jq '.parents[0].sha')"
+                  # done
+
+                  echo "version=${tag}" >> "$GITHUB_OUTPUT"
+                  echo "Latest release in master's history: ${tag}"
+
+    calculate-next-release-version:
+        name: Calculate next release version
+        needs: [check-pr-labels, get-release-tags]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: read
+        outputs:
+            bump: ${{ steps.detect-bump.outputs.bump }}
+            base-sha: ${{ steps.detect-bump.outputs.base-sha }}
+            head-sha: ${{ steps.detect-bump.outputs.head-sha }}
+            publish: ${{ steps.gate.outputs.publish }}
+            reason: ${{ steps.gate.outputs.reason }}
+            version: ${{ steps.next-version.outputs.version }}
+        steps:
+            - name: Checkout PR tip
+              uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+
+            - name: Detect bump
+              id: detect-bump
+              uses: ./.github/actions/versioning/detect-bump
+              with:
+                  pr-number: ${{ github.event.pull_request.number }}
+
+            - name: Decide whether to publish
+              id: gate
+              env:
+                  HAS_SKIP_LABEL: ${{ needs.check-pr-labels.outputs.has-skip-publish-label }}
+                  SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+              run: |
+                  set -euo pipefail
+                  if [ "$HAS_SKIP_LABEL" = "true" ]; then
+                    publish=false; reason="PR has the 'skip publish' label"
+                  elif [ "$SAME_REPO" != "true" ]; then
+                    publish=false; reason="fork PR, no access to publish secrets"
+                  else
+                    publish=true; reason="all conditions met"
+                  fi
+                  echo "publish=${publish}" >> "$GITHUB_OUTPUT"
+                  echo "reason=${reason}" >> "$GITHUB_OUTPUT"
+                  echo "Publish alpha: ${publish} (${reason})"
+
+            - name: Calculate next release version
+              id: next-version
+              uses: ./.github/actions/versioning/calculate-next-version
+              with:
+                  latest-version: ${{ needs.get-release-tags.outputs.latest }}
+                  bump: ${{ steps.detect-bump.outputs.bump }}
+
+    check-changelog:
+        name: Check CHANGELOG.md
+        needs: [check-pr-labels, get-release-tags, calculate-next-release-version]
+        if: ${{ needs.check-pr-labels.outputs.has-skip-publish-label == 'false' }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+
+            - name: Check if CHANGELOG.md has been modified
+              id: paths-filter
+              uses: dorny/paths-filter@v4.0.2
+              with:
+                  filters: |
+                      changelog_changed:
+                          - 'CHANGELOG.md'
+
+            - name: Fail if CHANGELOG.md has not been modified
+              env:
+                  CHANGELOG_CHANGED: ${{ steps.paths-filter.outputs.changelog_changed }}
+              run: |
+                  set -euo pipefail
+                  if [ "$CHANGELOG_CHANGED" = "false" ]; then
+                    echo "::error::Changelog has not been updated. Add an entry to CHANGELOG.md or apply the 'skip publish' label if your PR doesn't require a new release (and version bump) to be made."
+                    exit 1
+                  fi
+                  echo "CHANGELOG.md has been modified."
+
+            - name: Verify bracketed references have link definitions
+              run: |
+                  FILE="CHANGELOG.md"
+                  echo "Checking that every [reference] in $FILE has a matching [reference]: link definition..."
+
+                  # Collect defined link labels: lines like "[label]: https://..."
+                  grep -oE '^\[[^]]+\]:' "$FILE" | sed 's/:$//' | sort -u > /tmp/changelog-defs.txt
+
+                  # Collect used link references:
+                  #   - strip inline code spans `…` so bracketed expressions inside
+                  #     code (e.g. Go map indices like `m["key"]`) don't count
+                  #   - strip inline links of the form [text](url) so they don't count
+                  #   - drop the definition lines themselves
+                  #   - extract remaining [name] occurrences
+                  sed -E 's/`[^`]*`//g' "$FILE" \
+                    | sed -E 's/\[([^]]+)\]\([^)]*\)//g' \
+                    | grep -vE '^\[[^]]+\]:' \
+                    | grep -oE '\[[^]]+\]' \
+                    | sort -u > /tmp/changelog-refs.txt
+
+                  missing=$(comm -23 /tmp/changelog-refs.txt /tmp/changelog-defs.txt)
+
+                  if [ -n "$missing" ]; then
+                    echo "❌ The following bracketed references have no matching link definition at the bottom of the file:"
+                    echo "$missing" | sed 's/^/  - /'
+                    echo ""
+                    echo "Add a definition for each, e.g.:"
+                    echo "  [0.16.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.15.0...v0.16.0"
+                    exit 1
+                  fi
+
+                  echo "✅ All bracketed references have link definitions"
+
+            - name: Check format of all 'Heading 2's
+              run: |
+                  set -euo pipefail
+                  FILE="CHANGELOG.md"
+                  echo "Checking that every 'Heading 2' in $FILE matches '## [VERSION] - YYYY-MM-DD'..."
+
+                  invalid="$(grep -nE '^## ' "$FILE" \
+                    | grep -vE '^[0-9]+:## \[[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?\] - [0-9]{4}-[0-9]{2}-[0-9]{2}$' \
+                    || true)"
+
+                  if [ -n "$invalid" ]; then
+                    echo "❌ The following 'Heading 2' lines do not match '## [VERSION] - YYYY-MM-DD':"
+                    echo "$invalid" | sed 's/^/  - line /'
+                    exit 1
+                  fi
+
+                  echo "✅ All 'Heading 2's match '## [VERSION] - YYYY-MM-DD'"
+
+            - name: Check new 'Heading 2' matches the next release version
+              env:
+                  NEXT_VERSION: ${{ needs.calculate-next-release-version.outputs.version }}
+              run: |
+                  set -euo pipefail
+                  echo "Checking that the newest 'Heading 2' in CHANGELOG.md is for version ${NEXT_VERSION}..."
+
+                  # Get version from the first 'Heading 2' in CHANGELOG.md
+                  PR_VERSION=$(grep -m1 -oE '^## \[[^]]+\]' CHANGELOG.md | sed -E 's/^## \[([^]]+)\]/\1/')
+                  echo "Version in PR: $PR_VERSION"
+
+                  if [ "$PR_VERSION" != "$NEXT_VERSION" ]; then
+                    echo "❌ The newest CHANGELOG.md entry is for version ${PR_VERSION}, but merging this PR will release ${NEXT_VERSION} (based on the detected bump)."
+                    echo "Please retitle the newest CHANGELOG.md entry to [${NEXT_VERSION}] (and update its link definition)."
+                    exit 1
+                  fi
+
+                  echo "✅ Newest CHANGELOG.md entry matches the next release version (${NEXT_VERSION})"
+
+            - name: Check version bump
+              env:
+                  MASTER_RELEASE_TAG: ${{ needs.get-release-tags.outputs.master }}
+              run: |
+                  set -euo pipefail
+                  echo "Checking if the CHANGELOG.md version has been bumped..."
+
+                  # Get version from master's latest release (strip the leading 'v')
+                  MASTER_VERSION="${MASTER_RELEASE_TAG#v}"
+                  echo "Version on master: $MASTER_VERSION"
+
+                  # Get version from the first 'Heading 2' in CHANGELOG.md
+                  PR_VERSION=$(grep -m1 -oE '^## \[[^]]+\]' CHANGELOG.md | sed -E 's/^## \[([^]]+)\]/\1/')
+                  echo "Version in PR: $PR_VERSION"
+
+                  # Compare versions: PR_VERSION must be strictly greater than MASTER_VERSION
+                  if [ "$MASTER_VERSION" = "$PR_VERSION" ]; then
+                    echo "❌ Version has not been bumped!"
+                    echo "Current version on master: $MASTER_VERSION"
+                    echo "Please add a CHANGELOG.md entry with a new version number"
+                    exit 1
+                  fi
+
+                  HIGHEST=$(printf '%s\n%s\n' "$MASTER_VERSION" "$PR_VERSION" | sort -V | tail -n1)
+                  if [ "$HIGHEST" != "$PR_VERSION" ]; then
+                    echo "❌ PR version ($PR_VERSION) is lower than master version ($MASTER_VERSION)"
+                    echo "Please add a CHANGELOG.md entry with a version greater than $MASTER_VERSION"
+                    exit 1
+                  fi
+
+                  echo "✅ Version has been bumped from $MASTER_VERSION to $PR_VERSION"
+
     build-validate-test:
+        name: Build, Validate & Test
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -156,7 +424,7 @@ jobs:
               uses: pnpm/action-setup@v4
 
             - name: Setup Node.js
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v7
               with:
                   node-version: 22
                   cache: "pnpm"
@@ -174,130 +442,98 @@ jobs:
               run: pnpm run test-once
 
     publish-alpha:
-        needs:
-            - build-validate-test
+        name: Publish alpha version
+        needs: [get-release-tags, calculate-next-release-version, check-changelog, build-validate-test]
         runs-on: ubuntu-latest
         permissions:
             contents: read
             pull-requests: write
         steps:
             - name: Checkout PR tip
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   ref: ${{ github.event.pull_request.head.sha }}
-
-            - name: Detect bump
-              id: detect-bump
-              uses: ./.github/actions/versioning/detect-bump
-              with:
-                  pr-number: ${{ github.event.pull_request.number }}
-
-            - name: Decide whether to publish
-              id: gate
-              env:
-                  BUMP: ${{ steps.detect-bump.outputs.bump }}
-                  HAS_SKIP_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'skip publish') }}
-                  SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-              run: |
-                  set -euo pipefail
-                  if [ "$BUMP" = "none" ]; then
-                    publish=false; reason="bump is none"
-                  elif [ "$HAS_SKIP_LABEL" = "true" ]; then
-                    publish=false; reason="PR has the 'skip publish' label"
-                  elif [ "$SAME_REPO" != "true" ]; then
-                    publish=false; reason="fork PR, no access to publish secrets"
-                  else
-                    publish=true; reason="all conditions met"
-                  fi
-                  echo "publish=${publish}" >> "$GITHUB_OUTPUT"
-                  echo "Publish alpha: ${publish} (${reason})"
 
             - name: Comment bump on PR
               env:
                   GH_TOKEN: ${{ github.token }}
                   PR_NUMBER: ${{ github.event.pull_request.number }}
-                  BUMP: ${{ steps.detect-bump.outputs.bump }}
-                  HEAD_SHA: ${{ steps.detect-bump.outputs.head-sha }}
+                  BUMP: ${{ needs.calculate-next-release-version.outputs.bump }}
+                  HEAD_SHA: ${{ needs.calculate-next-release-version.outputs.head-sha }}
+                  PUBLISH: ${{ needs.calculate-next-release-version.outputs.publish }}
+                  REASON: ${{ needs.calculate-next-release-version.outputs.reason }}
               run: |
                   set -euo pipefail
-                  if [ "$BUMP" = "none" ]; then
-                    body="🔖 No version bump detected for \`${HEAD_SHA}\` — merging this PR will not trigger a release."
+                  if [ "$PUBLISH" = "true" ]; then
+                    body="🔖 Version bump detected for \`${HEAD_SHA}\`: **${BUMP}** — merging this PR will release a ${BUMP} version. An alpha will be published for this PR."
                   else
-                    body="🔖 Version bump detected for \`${HEAD_SHA}\`: **${BUMP}** — merging this PR will release a ${BUMP} version."
+                    body="🔖 Version bump detected for \`${HEAD_SHA}\`: **${BUMP}**, but no alpha will be published for this PR (${REASON})."
                   fi
                   gh pr comment "$PR_NUMBER" --body "$body"
 
-            - name: Get latest release version
-              id: latest-release
+            - name: Ensure master's latest release in git history
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               env:
                   GH_TOKEN: ${{ github.token }}
                   REPO: ${{ github.repository }}
-              run: |
-                  set -euo pipefail
-                  tag="$(gh api "repos/${REPO}/releases/latest" --jq '.tag_name')"
-                  echo "version=${tag}" >> "$GITHUB_OUTPUT"
-                  echo "Latest release: ${tag}"
-
-            - name: Ensure latest release in git history
-              env:
-                  GH_TOKEN: ${{ github.token }}
-                  REPO: ${{ github.repository }}
-                  RELEASE_TAG: ${{ steps.latest-release.outputs.version }}
-                  BASE_SHA: ${{ steps.detect-bump.outputs.base-sha }}
+                  RELEASE_TAG: ${{ needs.get-release-tags.outputs.master }}
+                  BASE_SHA: ${{ needs.calculate-next-release-version.outputs.base-sha }}
               run: |
                   set -euo pipefail
                   status="$(gh api "repos/${REPO}/compare/${RELEASE_TAG}...${BASE_SHA}" --jq '.status')"
                   case "$status" in
                     identical|ahead)
-                      echo "Base ${BASE_SHA} is at or after latest release ${RELEASE_TAG} (status: ${status})."
+                      echo "Base ${BASE_SHA} is at or after master's latest release ${RELEASE_TAG} (status: ${status})."
                       ;;
                     *)
-                      echo "::error::PR base ${BASE_SHA} predates or diverged from latest release ${RELEASE_TAG} (status: ${status}). Rebase onto master."
+                      echo "::error::PR base ${BASE_SHA} predates or diverged from master's latest release ${RELEASE_TAG} (status: ${status}). Rebase onto master."
                       exit 1
                       ;;
                   esac
 
             - name: Setup pnpm
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               uses: pnpm/action-setup@v4
 
             - name: Setup Node.js
-              uses: actions/setup-node@v6
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
+              uses: actions/setup-node@v7
               with:
                   node-version: 22
                   cache: "pnpm"
 
-            - name: Calculate next version
+            - name: Calculate next alpha version
               id: next-version
-              if: ${{ steps.gate.outputs.publish == 'true' }}
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               uses: ./.github/actions/versioning/calculate-next-version
               with:
-                  latest-version: ${{ steps.latest-release.outputs.version }}
-                  bump: ${{ steps.detect-bump.outputs.bump }}
+                  latest-version: ${{ needs.get-release-tags.outputs.latest }}
+                  bump: ${{ needs.calculate-next-release-version.outputs.bump }}
                   pr-number: ${{ github.event.pull_request.number }}
 
             - name: Install dependencies
-              if: ${{ steps.gate.outputs.publish == 'true' }}
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               run: pnpm install --frozen-lockfile
 
             - name: Set version
-              if: ${{ steps.gate.outputs.publish == 'true' }}
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               uses: ./.github/actions/versioning/set-version
               with:
                   version: ${{ steps.next-version.outputs.version }}
 
             - name: Build
-              if: ${{ steps.gate.outputs.publish == 'true' }}
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               run: pnpm run build
 
             - name: Publish to npm
               id: npm-publish
-              if: ${{ steps.gate.outputs.publish == 'true' }}
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               uses: ./.github/actions/publishing/npm-publish
               with:
                   npm-token: ${{ secrets.NPM_TOKEN }}
 
             - name: Comment install instructions on PR
-              if: ${{ steps.gate.outputs.publish == 'true' }}
+              if: ${{ needs.calculate-next-release-version.outputs.publish == 'true' }}
               env:
                   GH_TOKEN: ${{ github.token }}
                   PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -316,11 +552,17 @@ jobs:
                   \`\`\`"
 
     status-check:
-        name: status-check
+        name: Status Check
         if: ${{ !cancelled() }}
         needs:
-            - build-validate-test
+            - dismiss-approvals
             - check-merge-commit
+            - lint-commit-messages
+            - check-pr-labels
+            - get-release-tags
+            - check-changelog
+            - build-validate-test
+            - calculate-next-release-version
             - publish-alpha
         runs-on: ubuntu-latest
         steps:
