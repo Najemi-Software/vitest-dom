@@ -1,4 +1,4 @@
-name: "Pull Request ~ Status Check"
+name: "Pull Request ~ Approval Check"
 
 on:
     pull_request_review:
