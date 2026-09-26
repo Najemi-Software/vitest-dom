@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 
-import { beforeAll, afterAll, describe, expect, test, vi } from "vitest";
+import { beforeAll, afterAll, describe, expect, test, vi, type SpyInstance } from "vitest";
 
 import { render } from "./helpers/test-utils.js";
 
 describe(".toHaveDescription", () => {
-    let spy;
+    let spy: SpyInstance;
     beforeAll(() => {
         // @deprecated intentionally hiding warnings for test clarity
         spy = vi.spyOn(console, "warn").mockImplementation(() => {});

@@ -2,13 +2,13 @@ import isEqual from "lodash-es/isEqual.js";
 import isFunction from "lodash-es/isFunction.js";
 import redent from "redent";
 
-import cssParse from "./css-parse.js";
+import cssParse, { type Declaration, type Rule } from "./css-parse.js";
 import type { MatcherFn, MatcherState } from "./types.js";
 
 type ErrorUtils = MatcherState["utils"];
 
 class GenericTypeError<State extends MatcherState> extends Error {
-    constructor(expectedString: string, received: HTMLElement, matcherFn: MatcherFn<State>, context: State) {
+    constructor(expectedString: string, received: unknown, matcherFn: MatcherFn<State>, context: State) {
         super();
 
         const printWithType =
@@ -36,35 +36,37 @@ class GenericTypeError<State extends MatcherState> extends Error {
 }
 
 class HtmlElementTypeError<State extends MatcherState = any> extends GenericTypeError<State> {
-    constructor(element: HTMLElement, matcherFn: MatcherFn<State>, context: State) {
+    constructor(element: unknown, matcherFn: MatcherFn<State>, context: State) {
         super("be an HTMLElement or an SVGElement", element, matcherFn, context);
     }
 }
 
 class NodeTypeError<State extends MatcherState = any> extends GenericTypeError<State> {
-    constructor(element: HTMLElement, matcherFn: MatcherFn<State>, context: State) {
+    constructor(element: unknown, matcherFn: MatcherFn<State>, context: State) {
         super("be a Node", element, matcherFn, context);
     }
 }
 
+type ElementWithWindow = HTMLElement & {
+    ownerDocument: Document & { defaultView: Window };
+};
+
 function checkHasWindow<State extends MatcherState>(
-    htmlElement: HTMLElement,
+    htmlElement: unknown,
     ErrorClass: typeof HtmlElementTypeError<State> | typeof NodeTypeError<State>,
     matcherFn: MatcherFn<State>,
     context: State,
-): asserts htmlElement is HTMLElement & {
-    ownerDocument: Document & { defaultView: Window };
-} {
-    if (!htmlElement || !htmlElement.ownerDocument || !htmlElement.ownerDocument.defaultView) {
+): asserts htmlElement is ElementWithWindow {
+    if (!(htmlElement as Element | null | undefined)?.ownerDocument?.defaultView) {
         throw new ErrorClass(htmlElement, matcherFn, context);
     }
 }
 
 function checkNode<State extends MatcherState = any>(
-    node: HTMLElement,
-    matcherFn: MatcherFn,
+    node: unknown,
+    matcherFn: MatcherFn<State>,
     context: State,
-) {
+): asserts node is ElementWithWindow {
     checkHasWindow(node, NodeTypeError, matcherFn, context);
     const window = node.ownerDocument.defaultView;
     if (!(node instanceof window!.Node)) {
@@ -73,10 +75,10 @@ function checkNode<State extends MatcherState = any>(
 }
 
 function checkHtmlElement<State extends MatcherState>(
-    htmlElement: HTMLElement,
+    htmlElement: unknown,
     matcher: MatcherFn<State>,
     context: State,
-) {
+): asserts htmlElement is ElementWithWindow {
     checkHasWindow(htmlElement, HtmlElementTypeError, matcher, context);
     const window = htmlElement.ownerDocument.defaultView;
 
@@ -128,11 +130,12 @@ function parseCSS<State extends MatcherState>(css: string, matcherFn: MatcherFn,
         );
     }
 
-    const parsedRules = (ast.rules[0].declarations as any[])
-        .filter((d: any) => d.type === "declaration")
-        .reduce(
-            (obj: any, { property, value }) => Object.assign(obj, { [property]: value }),
-            {} as Record<"property" | "value", string>,
+    // The parsed css is always a single `selector { ... }` rule.
+    const parsedRules = ((ast.rules[0] as Rule).declarations ?? [])
+        .filter((d): d is Declaration => d.type === "declaration")
+        .reduce<Record<string, string>>(
+            (obj, { property, value }) => Object.assign(obj, { [property]: value }),
+            {},
         );
     return parsedRules;
 }
@@ -156,7 +159,7 @@ function getMessage(
     ].join("\n");
 }
 
-function matches(textToMatch: string, matcher: MatcherFn) {
+function matches(textToMatch: string, matcher: string | RegExp) {
     if (matcher instanceof RegExp) {
         return matcher.test(textToMatch);
     } else {
@@ -164,7 +167,7 @@ function matches(textToMatch: string, matcher: MatcherFn) {
     }
 }
 
-function deprecate(name: string, replacementText: string) {
+function deprecate(name: string, replacementText?: string) {
     // Notify user that they are using deprecated functionality.
     // eslint-disable-next-line no-console
     console.warn(
@@ -182,7 +185,7 @@ function getTag(element: Element) {
 }
 
 function getSelectValue({ multiple, options }: HTMLSelectElement) {
-    const selectedOptions = [...options].filter((option) => option.selected);
+    const selectedOptions = Array.from(options).filter((option) => option.selected);
 
     if (multiple) {
         return [...selectedOptions].map((opt) => opt.value);

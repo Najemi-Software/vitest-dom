@@ -24,7 +24,7 @@ describe(".toHaveValue", () => {
         expect(queryByTestId("without")).toHaveValue("");
         expect(queryByTestId("without")).not.toHaveValue();
         expect(queryByTestId("without")).not.toHaveValue("foo");
-        queryByTestId("without").value = "bar";
+        queryByTestId<HTMLInputElement>("without")!.value = "bar";
         expect(queryByTestId("without")).toHaveValue("bar");
     });
 
@@ -47,7 +47,7 @@ describe(".toHaveValue", () => {
         expect(queryByTestId("without")).toHaveValue(null);
         expect(queryByTestId("without")).not.toHaveValue();
         expect(queryByTestId("without")).not.toHaveValue("10");
-        queryByTestId("without").value = 10;
+        queryByTestId<HTMLInputElement>("without")!.value = "10";
         expect(queryByTestId("without")).toHaveValue(10);
     });
 
@@ -82,7 +82,7 @@ describe(".toHaveValue", () => {
         expect(queryByTestId("not-selected")).not.toHaveValue();
         expect(queryByTestId("not-selected")).toHaveValue("");
 
-        queryByTestId("single").children[0].setAttribute("selected", true);
+        queryByTestId("single")!.children[0].setAttribute("selected", "true");
         expect(queryByTestId("single")).toHaveValue("first");
     });
 
@@ -115,7 +115,7 @@ describe(".toHaveValue", () => {
         try {
             expect(input).toHaveValue("something else");
         } catch (error) {
-            errorMessage = error.message;
+            errorMessage = (error as Error).message;
         }
 
         expect(errorMessage).toMatchInlineSnapshot(`
@@ -135,7 +135,7 @@ describe(".toHaveValue", () => {
         try {
             expect(input).toHaveValue(8);
         } catch (error) {
-            errorMessage = error.message;
+            errorMessage = (error as Error).message;
         }
 
         expect(errorMessage).toMatchInlineSnapshot(`
@@ -156,7 +156,7 @@ describe(".toHaveValue", () => {
         try {
             expect(input).not.toHaveValue("foo");
         } catch (error) {
-            errorMessage = error.message;
+            errorMessage = (error as Error).message;
         }
         expect(errorMessage).toMatchInlineSnapshot(`
       "<dim>expect(</><red>element</><dim>).not.toHaveValue(</><green>foo</><dim>)</>
@@ -176,7 +176,7 @@ describe(".toHaveValue", () => {
         try {
             expect(input).toHaveValue();
         } catch (error) {
-            errorMessage = error.message;
+            errorMessage = (error as Error).message;
         }
         expect(errorMessage).toMatchInlineSnapshot(`
       "<dim>expect(</><red>element</><dim>).toHaveValue(</><green>expected</><dim>)</>
@@ -196,7 +196,7 @@ describe(".toHaveValue", () => {
         try {
             expect(input).not.toHaveValue();
         } catch (error) {
-            errorMessage = error.message;
+            errorMessage = (error as Error).message;
         }
         expect(errorMessage).toMatchInlineSnapshot(`
       "<dim>expect(</><red>element</><dim>).not.toHaveValue(</><green>expected</><dim>)</>

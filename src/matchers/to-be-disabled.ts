@@ -1,4 +1,4 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getTag } from "./utils.js";
 
 // form elements that support 'disabled'
@@ -13,19 +13,19 @@ const FORM_TAGS = ["fieldset", "input", "select", "optgroup", "option", "button"
  *
  * This method tests whether element is first legend child of fieldset parent
  */
-function isFirstLegendChildOfFieldset(element, parent) {
+function isFirstLegendChildOfFieldset(element: Element, parent: Element) {
     return (
         getTag(element) === "legend" &&
         getTag(parent) === "fieldset" &&
-        element.isSameNode(Array.from(parent.children).find((child) => getTag(child) === "legend"))
+        element.isSameNode(Array.from(parent.children).find((child) => getTag(child) === "legend") ?? null)
     );
 }
 
-function isElementDisabledByParent(element, parent) {
+function isElementDisabledByParent(element: Element, parent: Element) {
     return isElementDisabled(parent) && !isFirstLegendChildOfFieldset(element, parent);
 }
 
-function isCustomElement(tag) {
+function isCustomElement(tag: string) {
     return tag.includes("-");
 }
 
@@ -33,25 +33,25 @@ function isCustomElement(tag) {
  * Only certain form elements and custom elements can actually be disabled:
  * https://html.spec.whatwg.org/multipage/semantics-other.html#disabled-elements
  */
-function canElementBeDisabled(element) {
+function canElementBeDisabled(element: Element) {
     const tag = getTag(element);
     return FORM_TAGS.includes(tag) || isCustomElement(tag);
 }
 
-function isElementDisabled(element) {
+function isElementDisabled(element: Element) {
     return canElementBeDisabled(element) && element.hasAttribute("disabled");
 }
 
-function isAncestorDisabled(element) {
+function isAncestorDisabled(element: Element): boolean {
     const parent = element.parentElement;
-    return Boolean(parent) && (isElementDisabledByParent(element, parent) || isAncestorDisabled(parent));
+    return parent !== null && (isElementDisabledByParent(element, parent) || isAncestorDisabled(parent));
 }
 
-function isElementOrAncestorDisabled(element) {
+function isElementOrAncestorDisabled(element: Element) {
     return canElementBeDisabled(element) && (isElementDisabled(element) || isAncestorDisabled(element));
 }
 
-export function toBeDisabled(element: Element): MatcherResult {
+export function toBeDisabled(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeDisabled, this);
 
     const isDisabled = isElementOrAncestorDisabled(element);
@@ -70,7 +70,7 @@ export function toBeDisabled(element: Element): MatcherResult {
     };
 }
 
-export function toBeEnabled(element: Element): MatcherResult {
+export function toBeEnabled(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeEnabled, this);
 
     const isEnabled = !isElementOrAncestorDisabled(element);

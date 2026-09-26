@@ -1,7 +1,8 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 export function toContainElement(
+    this: MatcherState,
     container: Element,
     element: HTMLElement | SVGElement | null,
 ): MatcherResult {

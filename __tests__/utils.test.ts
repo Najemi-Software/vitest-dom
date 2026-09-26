@@ -2,6 +2,7 @@
 
 import { beforeAll, describe, expect, it, test, vi } from "vitest";
 
+import type { MatcherFn, MatcherState } from "../src/matchers/types.js";
 import {
     deprecate,
     checkHtmlElement,
@@ -9,7 +10,9 @@ import {
     HtmlElementTypeError,
     NodeTypeError,
     toSentence,
-} from "../src/matchers/utils";
+} from "../src/matchers/utils.js";
+
+const noopMatcher: MatcherFn = () => ({ pass: true, message: () => "" });
 
 test("deprecate", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -27,13 +30,13 @@ test("deprecate", () => {
 });
 
 describe("checkHtmlElement", () => {
-    let assertionContext;
+    let assertionContext: MatcherState;
     beforeAll(() => {
         expect.extend({
             fakeMatcher() {
                 assertionContext = this;
 
-                return { pass: true };
+                return { pass: true, message: () => "" };
             },
         });
 
@@ -42,42 +45,38 @@ describe("checkHtmlElement", () => {
     it("does not throw an error for correct html element", () => {
         expect(() => {
             const element = document.createElement("p");
-            checkHtmlElement(element, () => {}, assertionContext);
+            checkHtmlElement(element, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("does not throw an error for correct svg element", () => {
         expect(() => {
             const element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            checkHtmlElement(element, () => {}, assertionContext);
+            checkHtmlElement(element, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("does not throw for body", () => {
         expect(() => {
-            checkHtmlElement(document.body, () => {}, assertionContext);
+            checkHtmlElement(document.body, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("throws for undefined", () => {
         expect(() => {
-            checkHtmlElement(undefined, () => {}, assertionContext);
+            checkHtmlElement(undefined, noopMatcher, assertionContext);
         }).toThrow(HtmlElementTypeError);
     });
 
     it("throws for document", () => {
         expect(() => {
-            checkHtmlElement(document, () => {}, assertionContext);
+            checkHtmlElement(document, noopMatcher, assertionContext);
         }).toThrow(HtmlElementTypeError);
     });
 
     it("throws for function", () => {
         expect(() => {
-            checkHtmlElement(
-                () => {},
-                () => {},
-                assertionContext,
-            );
+            checkHtmlElement(() => {}, noopMatcher, assertionContext);
         }).toThrow(HtmlElementTypeError);
     });
 
@@ -90,7 +89,7 @@ describe("checkHtmlElement", () => {
                         defaultView: { HTMLElement: FakeObject, SVGElement: FakeObject },
                     },
                 },
-                () => {},
+                noopMatcher,
                 assertionContext,
             );
         }).toThrow(HtmlElementTypeError);
@@ -98,13 +97,13 @@ describe("checkHtmlElement", () => {
 });
 
 describe("checkNode", () => {
-    let assertionContext;
+    let assertionContext: MatcherState;
     beforeAll(() => {
         expect.extend({
             fakeMatcher() {
                 assertionContext = this;
 
-                return { pass: true };
+                return { pass: true, message: () => "" };
             },
         });
 
@@ -113,56 +112,52 @@ describe("checkNode", () => {
     it("does not throw an error for correct html element", () => {
         expect(() => {
             const element = document.createElement("p");
-            checkNode(element, () => {}, assertionContext);
+            checkNode(element, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("does not throw an error for correct svg element", () => {
         expect(() => {
             const element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            checkNode(element, () => {}, assertionContext);
+            checkNode(element, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("does not throw an error for Document fragments", () => {
         expect(() => {
             const fragment = document.createDocumentFragment();
-            checkNode(fragment, () => {}, assertionContext);
+            checkNode(fragment, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("does not throw an error for text nodes", () => {
         expect(() => {
             const text = document.createTextNode("foo");
-            checkNode(text, () => {}, assertionContext);
+            checkNode(text, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("does not throw for body", () => {
         expect(() => {
-            checkNode(document.body, () => {}, assertionContext);
+            checkNode(document.body, noopMatcher, assertionContext);
         }).not.toThrow();
     });
 
     it("throws for undefined", () => {
         expect(() => {
-            checkNode(undefined, () => {}, assertionContext);
+            checkNode(undefined, noopMatcher, assertionContext);
         }).toThrow(NodeTypeError);
     });
 
     it("throws for document", () => {
         expect(() => {
-            checkNode(document, () => {}, assertionContext);
+            checkNode(document, noopMatcher, assertionContext);
         }).toThrow(NodeTypeError);
     });
 
     it("throws for function", () => {
         expect(() => {
-            checkNode(
-                () => {},
-                () => {},
-                assertionContext,
-            );
+            checkNode(() => {}, noopMatcher, assertionContext);
         }).toThrow(NodeTypeError);
     });
 
@@ -175,7 +170,7 @@ describe("checkNode", () => {
                         defaultView: { Node: FakeObject, SVGElement: FakeObject },
                     },
                 },
-                () => {},
+                noopMatcher,
                 assertionContext,
             );
         }).toThrow(NodeTypeError);

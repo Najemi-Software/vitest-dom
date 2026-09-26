@@ -1,6 +1,6 @@
 import { isEqualWith, uniq } from "lodash-es";
 
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, compareArraysAsSet, getSingleElementValue } from "./utils.js";
 
 // Returns the combined value of several elements that have the same name
@@ -37,7 +37,7 @@ type FormElement =
 
 function getFormValue(container: HTMLFormElement | HTMLFieldSetElement, name: string) {
     container.elements;
-    const elements = [...container.querySelectorAll("[name]")].filter(
+    const elements = Array.from(container.querySelectorAll("[name]")).filter(
         (element) => element.getAttribute("name") === name,
     ) as FormElement[];
     if (elements.length === 0) {
@@ -68,7 +68,7 @@ function getAllFormValues(container: HTMLFormElement | HTMLFieldSetElement) {
 }
 
 export function toHaveFormValues(
-    this: any,
+    this: MatcherState,
     formElement: Element,
     expectedValues: Record<string, unknown>,
 ): MatcherResult {

@@ -12,7 +12,7 @@ test(".toHaveFocus", () => {
         <button type="submit" id="not-focused">Not Focused</button>
       </div>`);
 
-    const focused = container.querySelector("#focused");
+    const focused = container.querySelector<HTMLInputElement>("#focused")!;
     const notFocused = container.querySelector("#not-focused");
 
     document.body.appendChild(container);

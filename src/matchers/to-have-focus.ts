@@ -1,7 +1,7 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
-export function toHaveFocus(element: Element): MatcherResult {
+export function toHaveFocus(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toHaveFocus, this);
 
     return {

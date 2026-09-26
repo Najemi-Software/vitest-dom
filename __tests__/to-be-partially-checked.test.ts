@@ -24,7 +24,7 @@ describe(".toBePartiallyChecked", () => {
       <input type="checkbox" data-testid="checkbox-unchecked" />
     `);
 
-        queryByTestId("checkbox-mixed").indeterminate = true;
+        queryByTestId<HTMLInputElement>("checkbox-mixed")!.indeterminate = true;
 
         expect(queryByTestId("checkbox-mixed")).toBePartiallyChecked();
         expect(queryByTestId("checkbox-checked")).not.toBePartiallyChecked();
@@ -54,7 +54,7 @@ describe(".toBePartiallyChecked", () => {
     test("throws when input checkbox is indeterminate but expected not to be", () => {
         const { queryByTestId } = render(`<input type="checkbox" data-testid="checkbox-mixed" />`);
 
-        queryByTestId("checkbox-mixed").indeterminate = true;
+        queryByTestId<HTMLInputElement>("checkbox-mixed")!.indeterminate = true;
 
         expect(() => expect(queryByTestId("input-mixed")).not.toBePartiallyChecked()).toThrowError();
     });

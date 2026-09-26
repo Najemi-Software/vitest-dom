@@ -1,11 +1,12 @@
 import type { expect } from "vitest";
 
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage, normalize, deprecate } from "./utils.js";
 
 // See algoritm: https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_description
 /** @deprecated */
 export function toHaveDescription(
+    this: MatcherState,
     htmlElement: Element,
     checkWith?: string | RegExp | typeof expect.stringContaining,
 ): MatcherResult {
@@ -22,7 +23,7 @@ export function toHaveDescription(
         const document = htmlElement.ownerDocument;
         const descriptionEls = descriptionIDs
             .map((descriptionID) => document.getElementById(descriptionID))
-            .filter(Boolean);
+            .filter((el): el is HTMLElement => el !== null);
         description = normalize(descriptionEls.map((el) => el.textContent).join(" "));
     }
 

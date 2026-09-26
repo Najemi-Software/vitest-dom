@@ -1,13 +1,13 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
-function getNormalizedHtml(container, htmlText) {
+function getNormalizedHtml(container: Element, htmlText: string) {
     const div = container.ownerDocument.createElement("div");
     div.innerHTML = htmlText;
     return div.innerHTML;
 }
 
-export function toContainHTML(container: Element, htmlText: string): MatcherResult {
+export function toContainHTML(this: MatcherState, container: Element, htmlText: string): MatcherResult {
     checkHtmlElement(container, toContainHTML, this);
 
     if (typeof htmlText !== "string") {

@@ -1,7 +1,8 @@
-import type { MatcherResult } from "./types.js";
+import type { MatcherResult, MatcherState } from "./types.js";
 import { getMessage, checkNode, matches, normalize } from "./utils.js";
 
 export function toHaveTextContent(
+    this: MatcherState,
     node: Element,
     checkWith: string | RegExp,
     options: { normalizeWhitespace: boolean } = { normalizeWhitespace: true },
