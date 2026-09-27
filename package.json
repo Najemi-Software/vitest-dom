@@ -94,5 +94,5 @@
             "sh -c 'oxfmt \"$@\" || true' --"
         ]
     },
-    "packageManager": "pnpm@11.12.0"
+    "packageManager": "pnpm@12.6.0"
 }
