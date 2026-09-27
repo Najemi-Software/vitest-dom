@@ -12,7 +12,7 @@ import {
     toSentence,
 } from "./utils.js";
 
-const noopMatcher: IMatcherFn = () => ({ pass: true, message: () => "" });
+const noopMatcher: IMatcherFn<MatcherState> = () => ({ pass: true, message: () => "" });
 
 it("deprecate", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
