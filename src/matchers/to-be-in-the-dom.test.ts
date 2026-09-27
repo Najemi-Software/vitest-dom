@@ -29,31 +29,41 @@ it(".toBeInTheDOM", () => {
     expect(nonExistantElement).not.toBeInTheDOM();
 
     // negative test cases wrapped in throwError assertions for coverage.
-    expect(() => expect(valueElement).not.toBeInTheDOM()).toThrowError();
+    expect(() => expect(valueElement).not.toBeInTheDOM()).toThrow("expect(element).not.toBeInTheDOM()");
 
-    expect(() => expect(svgElement).not.toBeInTheDOM()).toThrowError();
+    expect(() => expect(svgElement).not.toBeInTheDOM()).toThrow("expect(element).not.toBeInTheDOM()");
 
-    expect(() => expect(nonExistantElement).toBeInTheDOM()).toThrowError();
+    expect(() => expect(nonExistantElement).toBeInTheDOM()).toThrow("expect(element).toBeInTheDOM()");
 
-    expect(() => expect(fakeElement).toBeInTheDOM()).toThrowError();
+    expect(() => expect(fakeElement).toBeInTheDOM()).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
 
     // Testing toBeInTheDOM with container
     expect(valueElement).toBeInTheDOM(containerElement);
     expect(svgElement).toBeInTheDOM(containerElement);
     expect(containerElement).not.toBeInTheDOM(valueElement);
 
-    expect(() => expect(valueElement).not.toBeInTheDOM(containerElement)).toThrowError();
+    expect(() => expect(valueElement).not.toBeInTheDOM(containerElement)).toThrow(
+        "expect(element).not.toBeInTheDOM()",
+    );
 
-    expect(() => expect(svgElement).not.toBeInTheDOM(containerElement)).toThrowError();
+    expect(() => expect(svgElement).not.toBeInTheDOM(containerElement)).toThrow(
+        "expect(element).not.toBeInTheDOM()",
+    );
 
-    expect(() => expect(nonExistantElement).toBeInTheDOM(containerElement)).toThrowError();
+    expect(() => expect(nonExistantElement).toBeInTheDOM(containerElement)).toThrow(
+        "expect(element).toBeInTheDOM()",
+    );
 
-    expect(() => expect(fakeElement).toBeInTheDOM(containerElement)).toThrowError();
+    expect(() => expect(fakeElement).toBeInTheDOM(containerElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
 
     expect(() => {
         // @ts-expect-error: testing a non-element argument
         expect(valueElement).toBeInTheDOM(fakeElement);
-    }).toThrowError();
+    }).toThrow("received value must be an HTMLElement or an SVGElement");
 
     spy.mockRestore();
 });

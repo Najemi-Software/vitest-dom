@@ -45,28 +45,50 @@ it(".toHaveClass", () => {
     expect(queryByTestId("no-classes")).not.toHaveClass();
     expect(queryByTestId("no-classes")).not.toHaveClass(" ");
 
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn-danger")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("extra")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).toHaveClass("xtra")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).toHaveClass("btn", "extra xtra")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn btn-danger")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn", "btn-danger")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).toHaveClass("btn-link")).toThrowError();
-    expect(() => expect(queryByTestId("cancel-button")).toHaveClass("btn-danger")).toThrowError();
-    expect(() => expect(queryByTestId("svg-spinner")).not.toHaveClass("spinner")).toThrowError();
-    expect(() => expect(queryByTestId("svg-spinner")).toHaveClass("wise")).toThrowError();
-    expect(() => expect(queryByTestId("delete-button")).toHaveClass()).toThrowError(
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn")).toThrow(
+        "Expected the element not to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn-danger")).toThrow(
+        "Expected the element not to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("extra")).toThrow(
+        "Expected the element not to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).toHaveClass("xtra")).toThrow(
+        "Expected the element to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).toHaveClass("btn", "extra xtra")).toThrow(
+        "Expected the element to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn btn-danger")).toThrow(
+        "Expected the element not to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("btn", "btn-danger")).toThrow(
+        "Expected the element not to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).toHaveClass("btn-link")).toThrow(
+        "Expected the element to have class",
+    );
+    expect(() => expect(queryByTestId("cancel-button")).toHaveClass("btn-danger")).toThrow(
+        "Expected the element to have class",
+    );
+    expect(() => expect(queryByTestId("svg-spinner")).not.toHaveClass("spinner")).toThrow(
+        "Expected the element not to have class",
+    );
+    expect(() => expect(queryByTestId("svg-spinner")).toHaveClass("wise")).toThrow(
+        "Expected the element to have class",
+    );
+    expect(() => expect(queryByTestId("delete-button")).toHaveClass()).toThrow(
         /At least one expected class must be provided/,
     );
-    expect(() => expect(queryByTestId("delete-button")).toHaveClass("")).toThrowError(
+    expect(() => expect(queryByTestId("delete-button")).toHaveClass("")).toThrow(
         /At least one expected class must be provided/,
     );
-    expect(() => expect(queryByTestId("no-classes")).toHaveClass()).toThrowError(
+    expect(() => expect(queryByTestId("no-classes")).toHaveClass()).toThrow(
         /At least one expected class must be provided/,
     );
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass()).toThrowError(/(none)/);
-    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("  ")).toThrowError(/(none)/);
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass()).toThrow(/(none)/);
+    expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("  ")).toThrow(/(none)/);
 });
 
 it(".toHaveClass with exact mode option", () => {
@@ -134,12 +156,12 @@ it(".toHaveClass with exact mode option", () => {
         expect(queryByTestId("only-one-class")).not.toHaveClass("alone", {
             exact: true,
         }),
-    ).toThrowError(/Expected the element not to have EXACTLY defined classes/);
+    ).toThrow(/Expected the element not to have EXACTLY defined classes/);
 
     expect(() =>
         // @ts-expect-error: options after multiple class names are supported at runtime but not by the types
         expect(queryByTestId("only-one-class")).toHaveClass("alone", "foo", {
             exact: true,
         }),
-    ).toThrowError(/Expected the element to have EXACTLY defined classes/);
+    ).toThrow(/Expected the element to have EXACTLY defined classes/);
 });

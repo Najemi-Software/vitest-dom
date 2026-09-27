@@ -71,11 +71,17 @@ describe(".toHaveDescription", () => {
     <div data-testid="target" aria-describedby="description"></div>
     `);
 
-        expect(() => expect(queryByTestId("other")).toHaveDescription("The description")).toThrowError();
+        expect(() => expect(queryByTestId("other")).toHaveDescription("The description")).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
 
-        expect(() => expect(queryByTestId("target")).toHaveDescription("Something else")).toThrowError();
+        expect(() => expect(queryByTestId("target")).toHaveDescription("Something else")).toThrow(
+            "Expected the element to have description",
+        );
 
-        expect(() => expect(queryByTestId("target")).not.toHaveDescription("The description")).toThrowError();
+        expect(() => expect(queryByTestId("target")).not.toHaveDescription("The description")).toThrow(
+            "Expected the element not to have description",
+        );
     });
 
     it("normalizes whitespace", () => {

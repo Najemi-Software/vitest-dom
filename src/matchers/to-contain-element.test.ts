@@ -37,22 +37,50 @@ it(".toContainElement positive test cases", () => {
 });
 
 it(".toContainElement negative test cases", () => {
-    expect(() => expect(nonExistantElement).not.toContainElement(child)).toThrowError();
-    expect(() => expect(parent).toContainElement(grandparent)).toThrowError();
-    expect(() => expect(nonExistantElement).toContainElement(grandparent)).toThrowError();
-    expect(() => expect(grandparent).toContainElement(nonExistantElement)).toThrowError();
-    expect(() => expect(nonExistantElement).toContainElement(nonExistantElement)).toThrowError();
+    expect(() => expect(nonExistantElement).not.toContainElement(child)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
+    expect(() => expect(parent).toContainElement(grandparent)).toThrow(
+        "expect(element).toContainElement(element)",
+    );
+    expect(() => expect(nonExistantElement).toContainElement(grandparent)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
+    expect(() => expect(grandparent).toContainElement(nonExistantElement)).toThrow(
+        "expect(element).toContainElement(element)",
+    );
+    expect(() => expect(nonExistantElement).toContainElement(nonExistantElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
     // @ts-expect-error: testing a non-element argument
-    expect(() => expect(nonExistantElement).toContainElement(fakeElement)).toThrowError();
-    expect(() => expect(fakeElement).toContainElement(nonExistantElement)).toThrowError();
-    expect(() => expect(fakeElement).not.toContainElement(nonExistantElement)).toThrowError();
-    expect(() => expect(fakeElement).toContainElement(grandparent)).toThrowError();
+    expect(() => expect(nonExistantElement).toContainElement(fakeElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
+    expect(() => expect(fakeElement).toContainElement(nonExistantElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
+    expect(() => expect(fakeElement).not.toContainElement(nonExistantElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
+    expect(() => expect(fakeElement).toContainElement(grandparent)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
     // @ts-expect-error: testing a non-element argument
-    expect(() => expect(grandparent).toContainElement(fakeElement)).toThrowError();
+    expect(() => expect(grandparent).toContainElement(fakeElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
     // @ts-expect-error: testing a non-element argument
-    expect(() => expect(fakeElement).toContainElement(fakeElement)).toThrowError();
-    expect(() => expect(grandparent).not.toContainElement(child)).toThrowError();
-    expect(() => expect(grandparent).not.toContainElement(svgElement)).toThrowError();
+    expect(() => expect(fakeElement).toContainElement(fakeElement)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
+    expect(() => expect(grandparent).not.toContainElement(child)).toThrow(
+        "expect(element).not.toContainElement(element)",
+    );
+    expect(() => expect(grandparent).not.toContainElement(svgElement)).toThrow(
+        "expect(element).not.toContainElement(element)",
+    );
     // @ts-expect-error: testing a non-element argument
-    expect(() => expect(grandparent).not.toContainElement(undefined)).toThrowError();
+    expect(() => expect(grandparent).not.toContainElement(undefined)).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
 });

@@ -33,10 +33,16 @@ describe(".toHaveTextContent", () => {
     it("handles negative test cases", () => {
         const { queryByTestId } = render(`<span data-testid="count-value">2</span>`);
 
-        expect(() => expect(queryByTestId("count-value2")).toHaveTextContent("2")).toThrowError();
+        expect(() => expect(queryByTestId("count-value2")).toHaveTextContent("2")).toThrow(
+            "received value must be a Node",
+        );
 
-        expect(() => expect(queryByTestId("count-value")).toHaveTextContent("3")).toThrowError();
-        expect(() => expect(queryByTestId("count-value")).not.toHaveTextContent("2")).toThrowError();
+        expect(() => expect(queryByTestId("count-value")).toHaveTextContent("3")).toThrow(
+            "Expected element to have text content",
+        );
+        expect(() => expect(queryByTestId("count-value")).not.toHaveTextContent("2")).toThrow(
+            "Expected element not to have text content",
+        );
     });
 
     it("normalizes whitespace by default", () => {
@@ -99,7 +105,7 @@ describe(".toHaveTextContent", () => {
         // https://github.com/testing-library/jest-dom/issues/104
         const { container } = render("<span>not empty</span>");
 
-        expect(() => expect(container.querySelector("span")).toHaveTextContent("")).toThrowError(
+        expect(() => expect(container.querySelector("span")).toHaveTextContent("")).toThrow(
             /toBeEmptyDOMElement\(\)/,
         );
     });

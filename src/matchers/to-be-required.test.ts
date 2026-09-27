@@ -35,14 +35,32 @@ it(".toBeRequired", () => {
     expect(queryByTestId("supported-role-aria")).toBeRequired();
 
     // negative test cases wrapped in throwError assertions for coverage.
-    expect(() => expect(queryByTestId("required-input")).not.toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("aria-required-input")).not.toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("conflicted-input")).not.toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("not-required-input")).toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("basic-input")).toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("unsupported-type")).toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("select")).not.toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("textarea")).not.toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("supported-role")).toBeRequired()).toThrowError();
-    expect(() => expect(queryByTestId("supported-role-aria")).not.toBeRequired()).toThrowError();
+    expect(() => expect(queryByTestId("required-input")).not.toBeRequired()).toThrow(
+        /Received element is required/,
+    );
+    expect(() => expect(queryByTestId("aria-required-input")).not.toBeRequired()).toThrow(
+        /Received element is required/,
+    );
+    expect(() => expect(queryByTestId("conflicted-input")).not.toBeRequired()).toThrow(
+        /Received element is required/,
+    );
+    expect(() => expect(queryByTestId("not-required-input")).toBeRequired()).toThrow(
+        /Received element is not required/,
+    );
+    expect(() => expect(queryByTestId("basic-input")).toBeRequired()).toThrow(
+        /Received element is not required/,
+    );
+    expect(() => expect(queryByTestId("unsupported-type")).toBeRequired()).toThrow(
+        /Received element is not required/,
+    );
+    expect(() => expect(queryByTestId("select")).not.toBeRequired()).toThrow(/Received element is required/);
+    expect(() => expect(queryByTestId("textarea")).not.toBeRequired()).toThrow(
+        /Received element is required/,
+    );
+    expect(() => expect(queryByTestId("supported-role")).toBeRequired()).toThrow(
+        /Received element is not required/,
+    );
+    expect(() => expect(queryByTestId("supported-role-aria")).not.toBeRequired()).toThrow(
+        /Received element is required/,
+    );
 });

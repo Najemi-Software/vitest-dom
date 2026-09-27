@@ -42,30 +42,68 @@ describe(".toContainHTML", () => {
         expect(child).toContainHTML(incorrectStringHtml);
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(nonExistantElement).not.toContainHTML(stringChildElement)).toThrowError();
+        expect(() => expect(nonExistantElement).not.toContainHTML(stringChildElement)).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
         // @ts-expect-error: testing a non-string argument
-        expect(() => expect(nonExistantElement).not.toContainHTML(nonExistantElement)).toThrowError();
+        expect(() => expect(nonExistantElement).not.toContainHTML(nonExistantElement)).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
         // @ts-expect-error: testing a non-string argument
-        expect(() => expect(stringChildElement).not.toContainHTML(fakeElement)).toThrowError();
-        expect(() => expect(svgElement).toContainHTML(stringChildElement)).toThrowError();
-        expect(() => expect(grandparent).not.toContainHTML(stringChildElement)).toThrowError();
-        expect(() => expect(parent).not.toContainHTML(stringChildElement)).toThrowError();
-        expect(() => expect(child).not.toContainHTML(stringChildElement)).toThrowError();
-        expect(() => expect(child).not.toContainHTML(stringChildElement)).toThrowError();
-        expect(() => expect(child).not.toContainHTML(stringChildElementSelfClosing)).toThrowError();
-        expect(() => expect(child).toContainHTML(nonExistantString)).toThrowError();
-        expect(() => expect(parent).toContainHTML(nonExistantString)).toThrowError();
-        expect(() => expect(grandparent).toContainHTML(nonExistantString)).toThrowError();
+        expect(() => expect(stringChildElement).not.toContainHTML(fakeElement)).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
+        expect(() => expect(svgElement).toContainHTML(stringChildElement)).toThrow(
+            "expect(element).toContainHTML()",
+        );
+        expect(() => expect(grandparent).not.toContainHTML(stringChildElement)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(parent).not.toContainHTML(stringChildElement)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(child).not.toContainHTML(stringChildElement)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(child).not.toContainHTML(stringChildElement)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(child).not.toContainHTML(stringChildElementSelfClosing)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(child).toContainHTML(nonExistantString)).toThrow(
+            "expect(element).toContainHTML()",
+        );
+        expect(() => expect(parent).toContainHTML(nonExistantString)).toThrow(
+            "expect(element).toContainHTML()",
+        );
+        expect(() => expect(grandparent).toContainHTML(nonExistantString)).toThrow(
+            "expect(element).toContainHTML()",
+        );
         // @ts-expect-error: testing a non-string argument
-        expect(() => expect(child).toContainHTML(nonExistantElement)).toThrowError();
+        expect(() => expect(child).toContainHTML(nonExistantElement)).toThrow(
+            ".toContainHTML() expects a string value, got null",
+        );
         // @ts-expect-error: testing a non-string argument
-        expect(() => expect(parent).toContainHTML(nonExistantElement)).toThrowError();
+        expect(() => expect(parent).toContainHTML(nonExistantElement)).toThrow(
+            ".toContainHTML() expects a string value, got null",
+        );
         // @ts-expect-error: testing a non-string argument
-        expect(() => expect(grandparent).toContainHTML(nonExistantElement)).toThrowError();
-        expect(() => expect(nonExistantElement).not.toContainHTML(incorrectStringHtml)).toThrowError();
-        expect(() => expect(grandparent).not.toContainHTML(incorrectStringHtml)).toThrowError();
-        expect(() => expect(child).not.toContainHTML(incorrectStringHtml)).toThrowError();
-        expect(() => expect(parent).not.toContainHTML(incorrectStringHtml)).toThrowError();
+        expect(() => expect(grandparent).toContainHTML(nonExistantElement)).toThrow(
+            ".toContainHTML() expects a string value, got null",
+        );
+        expect(() => expect(nonExistantElement).not.toContainHTML(incorrectStringHtml)).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
+        expect(() => expect(grandparent).not.toContainHTML(incorrectStringHtml)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(child).not.toContainHTML(incorrectStringHtml)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
+        expect(() => expect(parent).not.toContainHTML(incorrectStringHtml)).toThrow(
+            "expect(element).not.toContainHTML()",
+        );
     });
 
     it("throws with an expected text", () => {

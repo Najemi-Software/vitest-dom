@@ -20,8 +20,12 @@ it("should work as expected", () => {
     expect(queryByTestId("select")).toHaveDisplayValue("Select a fruit...");
     expect(queryByTestId("select")).not.toHaveDisplayValue("Select");
     expect(queryByTestId("select")).not.toHaveDisplayValue("Banana");
-    expect(() => expect(queryByTestId("select")).not.toHaveDisplayValue("Select a fruit...")).toThrow();
-    expect(() => expect(queryByTestId("select")).toHaveDisplayValue("Ananas")).toThrow();
+    expect(() => expect(queryByTestId("select")).not.toHaveDisplayValue("Select a fruit...")).toThrow(
+        "Expected element not to have display value",
+    );
+    expect(() => expect(queryByTestId("select")).toHaveDisplayValue("Ananas")).toThrow(
+        "Expected element to have display value",
+    );
 
     queryByTestId<HTMLSelectElement>("select")!.value = "banana";
     expect(queryByTestId("select")).toHaveDisplayValue("Banana");
@@ -45,10 +49,12 @@ describe("with multiple select", () => {
         expect(subject.queryByTestId("select")).toHaveDisplayValue(["Ananas", "Avocado"]);
         expect(() =>
             expect(subject.queryByTestId("select")).not.toHaveDisplayValue(["Ananas", "Avocado"]),
-        ).toThrow();
+        ).toThrow("Expected element not to have display value");
         expect(subject.queryByTestId("select")).not.toHaveDisplayValue(["Ananas", "Avocado", "Orange"]);
         expect(subject.queryByTestId("select")).not.toHaveDisplayValue("Ananas");
-        expect(() => expect(subject.queryByTestId("select")).toHaveDisplayValue("Ananas")).toThrow();
+        expect(() => expect(subject.queryByTestId("select")).toHaveDisplayValue("Ananas")).toThrow(
+            "Expected element to have display value",
+        );
 
         Array.from(subject.queryByTestId<HTMLSelectElement>("select")!.options).forEach((option) => {
             option.selected = ["ananas", "banana"].includes(option.value);

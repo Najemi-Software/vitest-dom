@@ -27,16 +27,18 @@ it(".toBeEmpty", () => {
     expect(notEmpty).not.toBeEmpty();
 
     // negative test cases wrapped in throwError assertions for coverage.
-    expect(() => expect(empty).not.toBeEmpty()).toThrowError();
+    expect(() => expect(empty).not.toBeEmpty()).toThrow("expect(element).not.toBeEmpty()");
 
-    expect(() => expect(svgEmpty).not.toBeEmpty()).toThrowError();
+    expect(() => expect(svgEmpty).not.toBeEmpty()).toThrow("expect(element).not.toBeEmpty()");
 
-    expect(() => expect(notEmpty).toBeEmpty()).toThrowError();
+    expect(() => expect(notEmpty).toBeEmpty()).toThrow("expect(element).toBeEmpty()");
 
-    expect(() => expect(fakeElement).toBeEmpty()).toThrowError();
+    expect(() => expect(fakeElement).toBeEmpty()).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
 
     expect(() => {
         expect(nonExistantElement).toBeEmpty();
-    }).toThrowError();
+    }).toThrow("received value must be an HTMLElement or an SVGElement");
     spy.mockRestore();
 });

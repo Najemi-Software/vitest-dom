@@ -34,14 +34,20 @@ describe(".toBeVisible", () => {
         expect(container.querySelector("button")).not.toBeVisible();
         expect(container.querySelector("strong")).not.toBeVisible();
 
-        expect(() => expect(container.querySelector("header")).not.toBeVisible()).toThrowError();
-        expect(() => expect(container.querySelector("p")).toBeVisible()).toThrowError();
+        expect(() => expect(container.querySelector("header")).not.toBeVisible()).toThrow(
+            /Received element is visible/,
+        );
+        expect(() => expect(container.querySelector("p")).toBeVisible()).toThrow(
+            /Received element is not visible/,
+        );
     });
 
     it("detached element is not visible", () => {
         const subject = document.createElement("div");
         expect(subject).not.toBeVisible();
-        expect(() => expect(subject).toBeVisible()).toThrowError();
+        expect(() => expect(subject).toBeVisible()).toThrow(
+            /Received element is not visible \(element is not in the document\)/,
+        );
     });
 
     describe("with a <details /> element", () => {

@@ -45,11 +45,11 @@ it(".toBeInTheDocument", () => {
     // negative test cases wrapped in throwError assertions for coverage.
     const expectToBe = /expect.*\.toBeInTheDocument/;
     const expectNotToBe = /expect.*not\.toBeInTheDocument/;
-    expect(() => expect(htmlElement).not.toBeInTheDocument()).toThrowError(expectNotToBe);
-    expect(() => expect(svgElement).not.toBeInTheDocument()).toThrowError(expectNotToBe);
-    expect(() => expect(detachedElement).toBeInTheDocument()).toThrowError(expectToBe);
-    expect(() => expect(fakeElement).toBeInTheDocument()).toThrowError(HtmlElementTypeError);
-    expect(() => expect(nullElement).toBeInTheDocument()).toThrowError(HtmlElementTypeError);
-    expect(() => expect(undefinedElement).toBeInTheDocument()).toThrowError(HtmlElementTypeError);
-    expect(() => expect(undefinedElement).not.toBeInTheDocument()).toThrowError(HtmlElementTypeError);
+    expect(() => expect(htmlElement).not.toBeInTheDocument()).toThrow(expectNotToBe);
+    expect(() => expect(svgElement).not.toBeInTheDocument()).toThrow(expectNotToBe);
+    expect(() => expect(detachedElement).toBeInTheDocument()).toThrow(expectToBe);
+    expect(() => expect(fakeElement).toBeInTheDocument()).toThrow(HtmlElementTypeError);
+    expect(() => expect(nullElement).toBeInTheDocument()).toThrow(HtmlElementTypeError);
+    expect(() => expect(undefinedElement).toBeInTheDocument()).toThrow(HtmlElementTypeError);
+    expect(() => expect(undefinedElement).not.toBeInTheDocument()).toThrow(HtmlElementTypeError);
 });
