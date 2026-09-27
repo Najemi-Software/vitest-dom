@@ -141,13 +141,13 @@ function display(context: MatcherState, value: unknown) {
     return typeof value === "string" ? value : context.utils.stringify(value);
 }
 
-function getMessage(
+function getMessage<ExpectedValueType, ReceivedValueType>(
     context: MatcherState,
     matcher: string,
     expectedLabel: string,
-    expectedValue: any,
+    expectedValue: ExpectedValueType,
     receivedLabel: string,
-    receivedValue: any,
+    receivedValue: ReceivedValueType,
 ) {
     return [
         `${matcher}\n`,
@@ -229,7 +229,7 @@ function getSingleElementValue(element: Element | undefined | null) {
         case "select":
             return getSelectValue(element as HTMLSelectElement);
         default:
-            return (element as any).value;
+            return "value" in element ? element.value : undefined;
     }
 }
 
