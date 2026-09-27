@@ -66,18 +66,21 @@ describe("checkHtmlElement", () => {
 
     it("throws for undefined", () => {
         expect(() => {
+            // @ts-expect-error: testing a non-element argument
             checkHtmlElement(undefined, noopMatcher, assertionContext);
         }).toThrow(HtmlElementTypeError);
     });
 
     it("throws for document", () => {
         expect(() => {
+            // @ts-expect-error: testing a non-element argument
             checkHtmlElement(document, noopMatcher, assertionContext);
         }).toThrow(HtmlElementTypeError);
     });
 
     it("throws for function", () => {
         expect(() => {
+            // @ts-expect-error: testing a non-element argument
             checkHtmlElement(() => {}, noopMatcher, assertionContext);
         }).toThrow(HtmlElementTypeError);
     });
@@ -88,6 +91,7 @@ describe("checkHtmlElement", () => {
             checkHtmlElement(
                 {
                     ownerDocument: {
+                        // @ts-expect-error: testing a non-element argument
                         defaultView: { HTMLElement: FakeObject, SVGElement: FakeObject },
                     },
                 },
@@ -149,18 +153,21 @@ describe("checkNode", () => {
 
     it("throws for undefined", () => {
         expect(() => {
+            // @ts-expect-error: testing a non-node argument
             checkNode(undefined, noopMatcher, assertionContext);
         }).toThrow(NodeTypeError);
     });
 
     it("throws for document", () => {
         expect(() => {
+            // @ts-expect-error: testing a non-element argument
             checkNode(document, noopMatcher, assertionContext);
         }).toThrow(NodeTypeError);
     });
 
     it("throws for function", () => {
         expect(() => {
+            // @ts-expect-error: testing a non-node argument
             checkNode(() => {}, noopMatcher, assertionContext);
         }).toThrow(NodeTypeError);
     });
@@ -171,6 +178,7 @@ describe("checkNode", () => {
             checkNode(
                 {
                     ownerDocument: {
+                        // @ts-expect-error: testing a non-node argument
                         defaultView: { Node: FakeObject, SVGElement: FakeObject },
                     },
                 },

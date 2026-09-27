@@ -6,7 +6,12 @@ import { type IDeclaration, type IRule, cssParse } from "./css-parse.js";
 import type { IMatcherFn, MatcherState } from "./types.js";
 
 class GenericTypeError<State extends MatcherState> extends Error {
-    constructor(expectedString: string, received: unknown, matcherFn: IMatcherFn<State>, context: State) {
+    constructor(
+        expectedString: string,
+        received: Element | DocumentFragment | Text,
+        matcherFn: IMatcherFn<State>,
+        context: State,
+    ) {
         super();
 
         const printWithType =
@@ -34,13 +39,13 @@ class GenericTypeError<State extends MatcherState> extends Error {
 }
 
 class HtmlElementTypeError<State extends MatcherState> extends GenericTypeError<State> {
-    constructor(element: unknown, matcherFn: IMatcherFn<State>, context: State) {
+    constructor(element: Element | DocumentFragment | Text, matcherFn: IMatcherFn<State>, context: State) {
         super("be an HTMLElement or an SVGElement", element, matcherFn, context);
     }
 }
 
 class NodeTypeError<State extends MatcherState> extends GenericTypeError<State> {
-    constructor(element: unknown, matcherFn: IMatcherFn<State>, context: State) {
+    constructor(element: Element | DocumentFragment | Text, matcherFn: IMatcherFn<State>, context: State) {
         super("be a Node", element, matcherFn, context);
     }
 }
@@ -50,7 +55,7 @@ type ElementWithWindow = HTMLElement & {
 };
 
 function checkHasWindow<State extends MatcherState>(
-    htmlElement: unknown,
+    htmlElement: Element | DocumentFragment | Text,
     ErrorClass: typeof HtmlElementTypeError<State> | typeof NodeTypeError<State>,
     matcherFn: IMatcherFn<State>,
     context: State,
@@ -61,7 +66,7 @@ function checkHasWindow<State extends MatcherState>(
 }
 
 function checkNode<State extends MatcherState>(
-    node: unknown,
+    node: Element | DocumentFragment | Text,
     matcherFn: IMatcherFn<State>,
     context: State,
 ): asserts node is ElementWithWindow {
@@ -73,7 +78,7 @@ function checkNode<State extends MatcherState>(
 }
 
 function checkHtmlElement<State extends MatcherState>(
-    htmlElement: unknown,
+    htmlElement: Element | DocumentFragment | Text,
     matcher: IMatcherFn<State>,
     context: State,
 ): asserts htmlElement is ElementWithWindow {
