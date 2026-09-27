@@ -72,6 +72,7 @@ export interface TestingLibraryMatchers<E, R> extends Record<string, any> {
     toHaveAttribute(attr: string, value?: unknown): R;
     toHaveClass(...classNames: string[]): R;
     toHaveClass(classNames: string, options?: { exact: boolean }): R;
+    toHaveClass(...args: [...classNames: string[], options: { exact: boolean }]): R;
     toHaveDisplayValue(value: string | RegExp | Array<string | RegExp>): R;
     toHaveFocus(): R;
     toHaveFormValues(expectedValues: Record<string, unknown>): R;
