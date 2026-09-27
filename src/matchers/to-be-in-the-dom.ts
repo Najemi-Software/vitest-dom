@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, deprecate } from "./utils.js";
 
 /**
@@ -17,7 +17,7 @@ export function toBeInTheDOM(
     this: MatcherState,
     element: Element,
     container?: HTMLElement | SVGElement,
-): MatcherResult {
+): IMatcherResult {
     deprecate(
         "toBeInTheDOM",
         "Please use toBeInTheDocument for searching the entire document and toContainElement for searching a specific container.",

@@ -1,7 +1,7 @@
 import { computeAccessibleName } from "dom-accessibility-api";
 import type { expect } from "vitest";
 
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 /**
@@ -38,7 +38,7 @@ export function toHaveAccessibleName(
     this: MatcherState,
     htmlElement: Element,
     expectedAccessibleName?: string | RegExp | typeof expect.stringContaining,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveAccessibleName, this);
     const actualAccessibleName = computeAccessibleName(htmlElement);
     const missingExpectedValue = arguments.length === 1;

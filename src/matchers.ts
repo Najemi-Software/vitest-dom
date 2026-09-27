@@ -1,3 +1,5 @@
+// oxlint-disable no-barrel-files/no-barrel-files
+
 import { toBeChecked } from "./matchers/to-be-checked.js";
 import { toBeDisabled, toBeEnabled } from "./matchers/to-be-disabled.js";
 import { toBeEmptyDOMElement } from "./matchers/to-be-empty-dom-element.js";
@@ -52,6 +54,8 @@ export {
     toHaveErrorMessage,
 };
 
+// TODO(major, breaking change): Remove the following eslint-disable line and rename interface to ITestingLibraryMatchers
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface TestingLibraryMatchers<E, R> extends Record<string, any> {
     toBeInTheDOM(container?: HTMLElement | SVGElement): R;
     toBeInTheDocument(): R;

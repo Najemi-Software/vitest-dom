@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { beforeEach, describe, it, test, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeVisible } from "./to-be-visible.js";
@@ -38,7 +38,7 @@ describe(".toBeVisible", () => {
         expect(() => expect(container.querySelector("p")).toBeVisible()).toThrowError();
     });
 
-    test("detached element is not visible", () => {
+    it("detached element is not visible", () => {
         const subject = document.createElement("div");
         expect(subject).not.toBeVisible();
         expect(() => expect(subject).toBeVisible()).toThrowError();

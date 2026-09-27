@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { test, expect } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeDisabled, toBeEnabled } from "./to-be-disabled.js";
@@ -9,7 +9,7 @@ expect.extend({ toBeDisabled, toBeEnabled });
 
 window.customElements.define("custom-element", class extends window.HTMLElement {});
 
-test(".toBeDisabled", () => {
+it(".toBeDisabled", () => {
     const { queryByTestId } = render(`
     <div>
       <button disabled={true} data-testid="button-element">x</button>
@@ -63,7 +63,7 @@ test(".toBeDisabled", () => {
     expect(() => expect(queryByTestId("deep-a-element")).toBeDisabled()).toThrowError();
 });
 
-test(".toBeDisabled fieldset>legend", () => {
+it(".toBeDisabled fieldset>legend", () => {
     const { queryByTestId } = render(`
     <div>
       <fieldset disabled={true}>
@@ -114,7 +114,7 @@ test(".toBeDisabled fieldset>legend", () => {
     expect(queryByTestId("outer-fieldset-element")).toBeDisabled();
 });
 
-test(".toBeDisabled custom element", () => {
+it(".toBeDisabled custom element", () => {
     const { queryByTestId } = render(`
     <custom-element data-testid="disabled-custom-element" disabled=""></custom-element>
     <custom-element data-testid="enabled-custom-element"></custom-element>
@@ -131,7 +131,7 @@ test(".toBeDisabled custom element", () => {
     }).toThrowError("element is not disabled");
 });
 
-test(".toBeEnabled", () => {
+it(".toBeEnabled", () => {
     const { queryByTestId } = render(`
     <div>
       <button disabled={true} data-testid="button-element">x</button>
@@ -203,7 +203,7 @@ test(".toBeEnabled", () => {
     expect(() => expect(queryByTestId("deep-a-element")).not.toBeEnabled()).toThrowError();
 });
 
-test(".toBeEnabled fieldset>legend", () => {
+it(".toBeEnabled fieldset>legend", () => {
     const { queryByTestId } = render(`
     <div>
       <fieldset disabled={true}>
@@ -260,7 +260,7 @@ test(".toBeEnabled fieldset>legend", () => {
     }).toThrowError();
 });
 
-test(".toBeEnabled custom element", () => {
+it(".toBeEnabled custom element", () => {
     const { queryByTestId } = render(`
     <custom-element data-testid="disabled-custom-element" disabled=""></custom-element>
     <custom-element data-testid="enabled-custom-element"></custom-element>

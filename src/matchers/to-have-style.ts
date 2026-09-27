@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, parseCSS } from "./utils.js";
 
 type Styles = Record<string, unknown>;
@@ -96,7 +96,7 @@ export function toHaveStyle(
     this: MatcherState,
     htmlElement: Element,
     css: string | Record<string, unknown>,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveStyle, this);
     const parsedCSS = typeof css === "object" ? css : parseCSS(css, toHaveStyle, this);
     const { getComputedStyle } = htmlElement.ownerDocument.defaultView;

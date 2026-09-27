@@ -1,6 +1,6 @@
 import { isEqualWith, uniq } from "lodash-es";
 
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, compareArraysAsSet, getSingleElementValue } from "./utils.js";
 
 // Returns the combined value of several elements that have the same name
@@ -14,6 +14,7 @@ function getMultiElementValue(elements: HTMLInputElement[]) {
     if (types.length !== 1) {
         throw new Error("Multiple form elements with the same name must be of the same type");
     }
+
     switch (types[0]) {
         case "radio": {
             const theChosenOne = elements.find((radio) => radio.checked);
@@ -42,21 +43,22 @@ function getFormValue(container: HTMLFormElement | HTMLFieldSetElement, name: st
     if (elements.length === 0) {
         return undefined; // shouldn't happen, but just in case
     }
-    switch (elements.length) {
-        case 1:
-            return getSingleElementValue(elements[0]);
-        default:
-            return getMultiElementValue(elements as HTMLInputElement[]);
+
+    if (elements.length === 1) {
+        return getSingleElementValue(elements[0]);
+    } else {
+        return getMultiElementValue(elements as HTMLInputElement[]);
     }
 }
 
 // Strips the `[]` suffix off a form value name
 function getPureName(name: string) {
-    return /\[\]$/.test(name) ? name.slice(0, -2) : name;
+    return name.endsWith("[]") ? name.slice(0, -2) : name;
 }
 
 function getAllFormValues(container: HTMLFormElement | HTMLFieldSetElement) {
     const names = Array.from(container.elements).map((element) => (element as HTMLInputElement).name);
+
     return names.reduce<Record<string, unknown>>(
         (obj, name) => ({
             ...obj,
@@ -90,13 +92,15 @@ export function toHaveFormValues(
     this: MatcherState,
     formElement: Element,
     expectedValues: Record<string, unknown>,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(formElement, toHaveFormValues, this);
     if (!(formElement as HTMLFormElement | HTMLFieldSetElement).elements) {
         // TODO: Change condition to use instanceof against the appropriate element classes instead
         throw new Error("toHaveFormValues must be called on a form or a fieldset");
     }
+
     const formValues = getAllFormValues(formElement as HTMLFormElement | HTMLFieldSetElement);
+
     return {
         pass: Object.entries(expectedValues).every(([name, expectedValue]) =>
             isEqualWith(formValues[name], expectedValue, compareArraysAsSet),

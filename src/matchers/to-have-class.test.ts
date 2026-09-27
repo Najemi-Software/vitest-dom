@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { expect, test } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveClass } from "./to-have-class.js";
@@ -24,7 +24,7 @@ const renderElementWithClasses = () =>
 </div>
 `);
 
-test(".toHaveClass", () => {
+it(".toHaveClass", () => {
     const { queryByTestId } = renderElementWithClasses();
 
     expect(queryByTestId("delete-button")).toHaveClass("btn");
@@ -69,7 +69,7 @@ test(".toHaveClass", () => {
     expect(() => expect(queryByTestId("delete-button")).not.toHaveClass("  ")).toThrowError(/(none)/);
 });
 
-test(".toHaveClass with exact mode option", () => {
+it(".toHaveClass with exact mode option", () => {
     const { queryByTestId } = renderElementWithClasses();
 
     expect(queryByTestId("delete-button")).toHaveClass("btn extra btn-danger", {

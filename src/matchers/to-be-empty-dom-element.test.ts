@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { test, expect } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeEmptyDOMElement } from "./to-be-empty-dom-element.js";
 
 expect.extend({ toBeEmptyDOMElement });
 
-test(".toBeEmptyDOMElement", () => {
+it(".toBeEmptyDOMElement", () => {
     const { queryByTestId } = render(`
     <span data-testid="not-empty">
         <span data-testid="empty"></span>

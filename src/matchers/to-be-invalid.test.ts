@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { describe, test, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeInvalid, toBeValid } from "./to-be-invalid.js";
@@ -20,7 +20,7 @@ document.body.innerHTML = invalidFormHtml;
 const invalidFormNode = document.querySelector("form");
 
 describe(".toBeInvalid", () => {
-    test("handles <input/>", () => {
+    it("handles <input/>", () => {
         const { queryByTestId } = render(`
       <div>
         <input data-testid="no-aria-invalid">
@@ -44,7 +44,7 @@ describe(".toBeInvalid", () => {
         expect(() => expect(invalidInputNode).not.toBeInvalid()).toThrowError();
     });
 
-    test("handles <form/>", () => {
+    it("handles <form/>", () => {
         const { queryByTestId } = render(`
       <form data-testid="valid">
         <input>
@@ -59,7 +59,7 @@ describe(".toBeInvalid", () => {
         expect(() => expect(invalidFormNode).not.toBeInvalid()).toThrowError();
     });
 
-    test("handles any element", () => {
+    it("handles any element", () => {
         const { queryByTestId } = render(`
       <ol data-testid="valid">
         <li data-testid="no-aria-invalid" > </li>
@@ -85,7 +85,7 @@ describe(".toBeInvalid", () => {
 });
 
 describe(".toBeValid", () => {
-    test("handles <input/>", () => {
+    it("handles <input/>", () => {
         const { queryByTestId } = render(`
       <div>
         <input data-testid="no-aria-invalid">
@@ -109,7 +109,7 @@ describe(".toBeValid", () => {
         expect(() => expect(invalidInputNode).toBeValid()).toThrowError();
     });
 
-    test("handles <form/>", () => {
+    it("handles <form/>", () => {
         const { queryByTestId } = render(`
       <form data-testid="valid">
         <input>
@@ -124,7 +124,7 @@ describe(".toBeValid", () => {
         expect(() => expect(invalidFormNode).toBeValid()).toThrowError();
     });
 
-    test("handles any element", () => {
+    it("handles any element", () => {
         const { queryByTestId } = render(`
       <ol data-testid="valid">
         <li data-testid="no-aria-invalid" > </li>

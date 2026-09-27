@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { test, expect, vi } from "vitest";
+import { expect, it, vi } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeInTheDOM } from "./to-be-in-the-dom.js";
 
 expect.extend({ toBeInTheDOM });
 
-test(".toBeInTheDOM", () => {
+it(".toBeInTheDOM", () => {
     // @deprecated intentionally hiding warnings for test clarity
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
 

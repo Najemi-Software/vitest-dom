@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, deprecate } from "./utils.js";
 
 /**
@@ -16,7 +16,7 @@ import { checkHtmlElement, deprecate } from "./utils.js";
  * @see
  * [testing-library/jest-dom#tobeempty](https://github.com/testing-library/jest-dom#tobeempty)
  */
-export function toBeEmpty(this: MatcherState, element: Element): MatcherResult {
+export function toBeEmpty(this: MatcherState, element: Element): IMatcherResult {
     deprecate("toBeEmpty", "Please use instead toBeEmptyDOMElement for finding empty nodes in the DOM.");
     checkHtmlElement(element, toBeEmpty, this);
 

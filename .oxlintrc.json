@@ -1,0 +1,23 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "extends": ["node_modules/@gooddata/oxlint-config/dist/esm-vitest.json"],
+    "options": {
+        "typeAware": true
+    },
+    "rules": {
+        "headers/header-format": "off",
+
+        "eslint/no-restricted-imports": "off",
+        "eslint/no-prototype-builtins": "off"
+    },
+    "overrides": [
+        {
+            "files": ["**/*.ts", "**/*.tsx"],
+            "rules": {
+                "eslint/no-restricted-imports": "off",
+
+                "@typescript-eslint/no-explicit-any": "off"
+            }
+        }
+    ]
+}

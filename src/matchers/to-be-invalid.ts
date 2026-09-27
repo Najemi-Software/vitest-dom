@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getTag } from "./utils.js";
 
 const FORM_TAGS = ["form", "input", "select", "textarea"];
@@ -40,7 +40,7 @@ function isElementInvalid(element: Element) {
  * @see
  * [testing-library/jest-dom#tobeinvalid](https://github.com/testing-library/jest-dom#tobeinvalid)
  */
-export function toBeInvalid(this: MatcherState, element: Element): MatcherResult {
+export function toBeInvalid(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeInvalid, this);
 
     const isInvalid = isElementInvalid(element);
@@ -77,7 +77,7 @@ export function toBeInvalid(this: MatcherState, element: Element): MatcherResult
  * @see
  * [testing-library/jest-dom#tobevalid](https://github.com/testing-library/jest-dom#tobevalid)
  */
-export function toBeValid(this: MatcherState, element: Element): MatcherResult {
+export function toBeValid(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeValid, this);
 
     const isValid = !isElementInvalid(element);

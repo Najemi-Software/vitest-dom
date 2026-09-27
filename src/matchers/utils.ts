@@ -2,13 +2,11 @@ import isEqual from "lodash-es/isEqual.js";
 import isFunction from "lodash-es/isFunction.js";
 import redent from "redent";
 
-import cssParse, { type Declaration, type Rule } from "./css-parse.js";
-import type { MatcherFn, MatcherState } from "./types.js";
-
-type ErrorUtils = MatcherState["utils"];
+import { type IDeclaration, type IRule, cssParse } from "./css-parse.js";
+import type { IMatcherFn, MatcherState } from "./types.js";
 
 class GenericTypeError<State extends MatcherState> extends Error {
-    constructor(expectedString: string, received: unknown, matcherFn: MatcherFn<State>, context: State) {
+    constructor(expectedString: string, received: unknown, matcherFn: IMatcherFn<State>, context: State) {
         super();
 
         const printWithType =
@@ -22,7 +20,7 @@ class GenericTypeError<State extends MatcherState> extends Error {
         let withType = "";
         try {
             withType = printWithType("Received", received, context.utils.printReceived);
-        } catch (e) {
+        } catch {
             // Can throw for Document:
             // https://github.com/jsdom/jsdom/issues/2304
         }
@@ -36,13 +34,13 @@ class GenericTypeError<State extends MatcherState> extends Error {
 }
 
 class HtmlElementTypeError<State extends MatcherState = any> extends GenericTypeError<State> {
-    constructor(element: unknown, matcherFn: MatcherFn<State>, context: State) {
+    constructor(element: unknown, matcherFn: IMatcherFn<State>, context: State) {
         super("be an HTMLElement or an SVGElement", element, matcherFn, context);
     }
 }
 
 class NodeTypeError<State extends MatcherState = any> extends GenericTypeError<State> {
-    constructor(element: unknown, matcherFn: MatcherFn<State>, context: State) {
+    constructor(element: unknown, matcherFn: IMatcherFn<State>, context: State) {
         super("be a Node", element, matcherFn, context);
     }
 }
@@ -54,7 +52,7 @@ type ElementWithWindow = HTMLElement & {
 function checkHasWindow<State extends MatcherState>(
     htmlElement: unknown,
     ErrorClass: typeof HtmlElementTypeError<State> | typeof NodeTypeError<State>,
-    matcherFn: MatcherFn<State>,
+    matcherFn: IMatcherFn<State>,
     context: State,
 ): asserts htmlElement is ElementWithWindow {
     if (!(htmlElement as Element | null | undefined)?.ownerDocument?.defaultView) {
@@ -64,7 +62,7 @@ function checkHasWindow<State extends MatcherState>(
 
 function checkNode<State extends MatcherState = any>(
     node: unknown,
-    matcherFn: MatcherFn<State>,
+    matcherFn: IMatcherFn<State>,
     context: State,
 ): asserts node is ElementWithWindow {
     checkHasWindow(node, NodeTypeError, matcherFn, context);
@@ -76,7 +74,7 @@ function checkNode<State extends MatcherState = any>(
 
 function checkHtmlElement<State extends MatcherState>(
     htmlElement: unknown,
-    matcher: MatcherFn<State>,
+    matcher: IMatcherFn<State>,
     context: State,
 ): asserts htmlElement is ElementWithWindow {
     checkHasWindow(htmlElement, HtmlElementTypeError, matcher, context);
@@ -84,7 +82,7 @@ function checkHtmlElement<State extends MatcherState>(
 
     if (
         !(htmlElement instanceof window.HTMLElement) &&
-        // @ts-expect-error
+        // @ts-expect-error htmlElement is narrowed to `never` here, but it may be an SVGElement at runtime
         !(htmlElement instanceof window.SVGElement)
     ) {
         throw new HtmlElementTypeError(htmlElement, matcher, context);
@@ -97,7 +95,7 @@ class InvalidCSSError<State extends MatcherState> extends Error {
             message: string;
             css: string;
         },
-        matcherFn: MatcherFn,
+        matcherFn: IMatcherFn,
         context: State,
     ) {
         super();
@@ -114,7 +112,7 @@ class InvalidCSSError<State extends MatcherState> extends Error {
     }
 }
 
-function parseCSS<State extends MatcherState>(css: string, matcherFn: MatcherFn, context: State) {
+function parseCSS<State extends MatcherState>(css: string, matcherFn: IMatcherFn, context: State) {
     const ast = cssParse(`selector { ${css} }`, { silent: true }).stylesheet;
 
     if (ast.parsingErrors && ast.parsingErrors.length > 0) {
@@ -131,8 +129,8 @@ function parseCSS<State extends MatcherState>(css: string, matcherFn: MatcherFn,
     }
 
     // The parsed css is always a single `selector { ... }` rule.
-    const parsedRules = ((ast.rules[0] as Rule).declarations ?? [])
-        .filter((d): d is Declaration => d.type === "declaration")
+    const parsedRules = ((ast.rules[0] as IRule).declarations ?? [])
+        .filter((d): d is IDeclaration => d.type === "declaration")
         .reduce<Record<string, string>>(
             (obj, { property, value }) => Object.assign(obj, { [property]: value }),
             {},
@@ -180,7 +178,7 @@ function normalize(text: string) {
 }
 
 function getTag(element: Element) {
-    return element.tagName && element.tagName.toLowerCase();
+    return element.tagName?.toLowerCase();
 }
 
 function getSelectValue({ multiple, options }: HTMLSelectElement) {
@@ -334,5 +332,3 @@ export function getType(value: unknown): ValueType {
 
     throw new Error(`value of unknown type: ${value}`);
 }
-
-export const isPrimitive = (value: unknown): boolean => Object(value) !== value;

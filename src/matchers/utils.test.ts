@@ -1,20 +1,20 @@
 // @vitest-environment happy-dom
 
-import { beforeAll, describe, expect, it, test, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import type { MatcherFn, MatcherState } from "./types.js";
+import type { IMatcherFn, MatcherState } from "./types.js";
 import {
-    deprecate,
-    checkHtmlElement,
-    checkNode,
     HtmlElementTypeError,
     NodeTypeError,
+    checkHtmlElement,
+    checkNode,
+    deprecate,
     toSentence,
 } from "./utils.js";
 
-const noopMatcher: MatcherFn = () => ({ pass: true, message: () => "" });
+const noopMatcher: IMatcherFn = () => ({ pass: true, message: () => "" });
 
-test("deprecate", () => {
+it("deprecate", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const name = "test";
     const replacement = "test";
@@ -34,12 +34,14 @@ describe("checkHtmlElement", () => {
     beforeAll(() => {
         expect.extend({
             fakeMatcher() {
-                assertionContext = this;
+                assertionContext = { ...this };
 
                 return { pass: true, message: () => "" };
             },
         });
 
+        // Not an assertion — invokes fakeMatcher to capture its MatcherState
+        // oxlint-disable-next-line vitest/no-standalone-expect
         expect(true).fakeMatcher(true);
     });
     it("does not throw an error for correct html element", () => {
@@ -101,12 +103,14 @@ describe("checkNode", () => {
     beforeAll(() => {
         expect.extend({
             fakeMatcher() {
-                assertionContext = this;
+                assertionContext = { ...this };
 
                 return { pass: true, message: () => "" };
             },
         });
 
+        // Not an assertion — invokes fakeMatcher to capture its MatcherState
+        // oxlint-disable-next-line vitest/no-standalone-expect
         expect(true).fakeMatcher(true);
     });
     it("does not throw an error for correct html element", () => {

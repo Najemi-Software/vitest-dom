@@ -1,7 +1,7 @@
 import { computeAccessibleDescription } from "dom-accessibility-api";
 import type { expect } from "vitest";
 
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 /**
@@ -33,12 +33,12 @@ export function toHaveAccessibleDescription(
     this: MatcherState,
     htmlElement: Element,
     expectedAccessibleDescription?: string | RegExp | typeof expect.stringContaining,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveAccessibleDescription, this);
     const actualAccessibleDescription = computeAccessibleDescription(htmlElement);
     const missingExpectedValue = arguments.length === 1;
 
-    let pass = false;
+    let pass: boolean;
     if (missingExpectedValue) {
         // When called without an expected value we only want to validate that the element has an
         // accessible description, whatever it may be.

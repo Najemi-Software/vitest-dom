@@ -35,7 +35,7 @@ const defaultValues = {
     "benefits[1]": "Multicultural environment",
 };
 
-interface FormValues {
+interface IFormValues {
     title?: string;
     salary?: number | string | null;
     category?: string | null;
@@ -55,7 +55,7 @@ function renderForm({
 }: {
     selectSingle?: SingleValueRenderer;
     selectMultiple?: MultipleValuesRenderer;
-    values?: FormValues;
+    values?: IFormValues;
 } = {}) {
     const values = {
         ...defaultValues,
@@ -295,20 +295,20 @@ describe(".toHaveFormValues", () => {
 
 // Form control renderers
 
-interface Option {
+interface IOption {
     value: string;
     label: string;
 }
 
-type SingleValueRenderer = (name: string, label: string, options: Option[], value?: string | null) => string;
+type SingleValueRenderer = (name: string, label: string, options: IOption[], value?: string | null) => string;
 
-type MultipleValuesRenderer = (name: string, label: string, options: Option[], value?: string[]) => string;
+type MultipleValuesRenderer = (name: string, label: string, options: IOption[], value?: string[]) => string;
 
-function isSelected(value: string[], option: Option) {
+function isSelected(value: string[], option: IOption) {
     return Array.isArray(value) && value.indexOf(option.value) >= 0;
 }
 
-function renderCheckboxes(name: string, label: string, options: Option[], value: string[] = []) {
+function renderCheckboxes(name: string, label: string, options: IOption[], value: string[] = []) {
     return `
     <fieldset>
       <legend>${label}</legend>
@@ -331,7 +331,7 @@ function renderCheckboxes(name: string, label: string, options: Option[], value:
   `;
 }
 
-function renderRadioButtons(name: string, label: string, options: Option[], value?: string | null) {
+function renderRadioButtons(name: string, label: string, options: IOption[], value?: string | null) {
     return `
     <fieldset>
       <legend>${label}</legend>
@@ -354,7 +354,7 @@ function renderRadioButtons(name: string, label: string, options: Option[], valu
   `;
 }
 
-function renderSelect(name: string, label: string, options: Option[], value: string[], multiple: boolean) {
+function renderSelect(name: string, label: string, options: IOption[], value: string[], multiple: boolean) {
     return `
     <label for="${name}">${label}</label>
     <select id="${name}" name="${name}" ${multiple ? "multiple" : ""}>
@@ -373,11 +373,11 @@ function renderSelect(name: string, label: string, options: Option[], value: str
   `;
 }
 
-function renderSelectSingle(name: string, label: string, options: Option[], value?: string | null) {
+function renderSelectSingle(name: string, label: string, options: IOption[], value?: string | null) {
     return renderSelect(name, label, options, value === undefined || value === null ? [] : [value], false);
 }
 
-function renderSelectMultiple(name: string, label: string, options: Option[], value: string[] = []) {
+function renderSelectMultiple(name: string, label: string, options: IOption[], value: string[] = []) {
     return renderSelect(name, label, options, value, true);
 }
 

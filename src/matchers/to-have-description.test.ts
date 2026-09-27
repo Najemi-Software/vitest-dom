@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { beforeAll, afterAll, describe, expect, test, vi, type MockInstance } from "vitest";
+import { type MockInstance, afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveDescription } from "./to-have-description.js";
@@ -18,7 +18,7 @@ describe(".toHaveDescription", () => {
         spy.mockRestore();
     });
 
-    test("handles positive test cases", () => {
+    it("handles positive test cases", () => {
         const { queryByTestId } = render(`
     <div id="description">The description</div>
 
@@ -42,7 +42,7 @@ describe(".toHaveDescription", () => {
         expect(queryByTestId("without")).toHaveDescription("");
     });
 
-    test("handles multiple ids", () => {
+    it("handles multiple ids", () => {
         const { queryByTestId } = render(`
     <div id="first">First description</div>
     <div id="second">Second description</div>
@@ -65,7 +65,7 @@ describe(".toHaveDescription", () => {
         expect(queryByTestId("multiple")).not.toHaveDescription("First");
     });
 
-    test("handles negative test cases", () => {
+    it("handles negative test cases", () => {
         const { queryByTestId } = render(`
     <div id="description">The description</div>
     <div data-testid="target" aria-describedby="description"></div>
@@ -78,7 +78,7 @@ describe(".toHaveDescription", () => {
         expect(() => expect(queryByTestId("target")).not.toHaveDescription("The description")).toThrowError();
     });
 
-    test("normalizes whitespace", () => {
+    it("normalizes whitespace", () => {
         const { queryByTestId } = render(`
       <div id="first">
         Step
@@ -97,7 +97,7 @@ describe(".toHaveDescription", () => {
         expect(queryByTestId("target")).toHaveDescription("Step 1 of 4 And extra description");
     });
 
-    test("can handle multiple levels with content spread across decendants", () => {
+    it("can handle multiple levels with content spread across decendants", () => {
         const { queryByTestId } = render(`
         <span id="description">
             <span>Step</span>
@@ -113,7 +113,7 @@ describe(".toHaveDescription", () => {
         expect(queryByTestId("target")).toHaveDescription("Step 1 of 4");
     });
 
-    test("handles extra whitespace with multiple ids", () => {
+    it("handles extra whitespace with multiple ids", () => {
         const { queryByTestId } = render(`
     <div id="first">First description</div>
     <div id="second">Second description</div>
@@ -129,7 +129,7 @@ describe(".toHaveDescription", () => {
         );
     });
 
-    test("is case-sensitive", () => {
+    it("is case-sensitive", () => {
         const { queryByTestId } = render(`
       <span id="description">Sensitive text</span>
       <div data-testid="target" aria-describedby="description"></div>

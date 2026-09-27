@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { describe, expect, it, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveDisplayValue } from "./to-have-display-value.js";
 
 expect.extend({ toHaveDisplayValue });
 
-test("it should work as expected", () => {
+it("should work as expected", () => {
     const { queryByTestId } = render(`
     <select id="fruits" data-testid="select">
       <option value="">Select a fruit...</option>
@@ -68,7 +68,7 @@ describe("with multiple select", () => {
     });
 });
 
-test("it should work with input elements", () => {
+it("should work with input elements", () => {
     const { queryByTestId } = render(`
     <input type="text" data-testid="input" value="Luca" />
   `);
@@ -80,7 +80,7 @@ test("it should work with input elements", () => {
     expect(queryByTestId("input")).toHaveDisplayValue("Piero");
 });
 
-test("it should work with textarea elements", () => {
+it("should work with textarea elements", () => {
     const { queryByTestId } = render(
         '<textarea data-testid="textarea-example">An example description here.</textarea>',
     );
@@ -92,7 +92,7 @@ test("it should work with textarea elements", () => {
     expect(queryByTestId("textarea-example")).toHaveDisplayValue("Another example");
 });
 
-test("it should throw if element is not valid", () => {
+it("should throw if element is not valid", () => {
     const { queryByTestId } = render(`
     <div data-testid="div">Banana</div>
     <input type="radio" data-testid="radio" value="Something" />
@@ -132,7 +132,7 @@ test("it should throw if element is not valid", () => {
     );
 });
 
-test("it should work with numbers", () => {
+it("should work with numbers", () => {
     const { queryByTestId } = render(`
     <select data-testid="select">
       <option value="">1</option>
