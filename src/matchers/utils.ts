@@ -33,13 +33,13 @@ class GenericTypeError<State extends MatcherState> extends Error {
     }
 }
 
-class HtmlElementTypeError<State extends MatcherState = any> extends GenericTypeError<State> {
+class HtmlElementTypeError<State extends MatcherState> extends GenericTypeError<State> {
     constructor(element: unknown, matcherFn: IMatcherFn<State>, context: State) {
         super("be an HTMLElement or an SVGElement", element, matcherFn, context);
     }
 }
 
-class NodeTypeError<State extends MatcherState = any> extends GenericTypeError<State> {
+class NodeTypeError<State extends MatcherState> extends GenericTypeError<State> {
     constructor(element: unknown, matcherFn: IMatcherFn<State>, context: State) {
         super("be a Node", element, matcherFn, context);
     }
@@ -60,7 +60,7 @@ function checkHasWindow<State extends MatcherState>(
     }
 }
 
-function checkNode<State extends MatcherState = any>(
+function checkNode<State extends MatcherState>(
     node: unknown,
     matcherFn: IMatcherFn<State>,
     context: State,
@@ -95,7 +95,7 @@ class InvalidCSSError<State extends MatcherState> extends Error {
             message: string;
             css: string;
         },
-        matcherFn: IMatcherFn,
+        matcherFn: IMatcherFn<State>,
         context: State,
     ) {
         super();
@@ -112,7 +112,7 @@ class InvalidCSSError<State extends MatcherState> extends Error {
     }
 }
 
-function parseCSS<State extends MatcherState>(css: string, matcherFn: IMatcherFn, context: State) {
+function parseCSS<State extends MatcherState>(css: string, matcherFn: IMatcherFn<State>, context: State) {
     const ast = cssParse(`selector { ${css} }`, { silent: true }).stylesheet;
 
     if (ast.parsingErrors && ast.parsingErrors.length > 0) {
@@ -222,6 +222,7 @@ function getSingleElementValue(element: Element | undefined | null) {
     if (!element) {
         return undefined;
     }
+
     switch (element.tagName.toLowerCase()) {
         case "input":
             return getInputValue(element as HTMLInputElement);
