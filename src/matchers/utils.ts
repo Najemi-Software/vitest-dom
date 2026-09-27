@@ -2,7 +2,9 @@ import isEqual from "lodash-es/isEqual.js";
 import isFunction from "lodash-es/isFunction.js";
 import redent from "redent";
 
-import { type IDeclaration, type IRule, cssParse } from "./css-parse.js";
+import { cssParse } from "../css-parse/css-parse.js";
+import type { IDeclaration, IRule } from "../css-parse/nodes.js";
+
 import type { IMatcherFn, MatcherState } from "./types.js";
 
 class GenericTypeError<State extends MatcherState> extends Error {
