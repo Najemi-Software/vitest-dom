@@ -2,7 +2,10 @@
 
 import { describe, expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveValue } from "./to-have-value.js";
+
+expect.extend({ toHaveValue });
 
 describe(".toHaveValue", () => {
     test("handles value of text input", () => {

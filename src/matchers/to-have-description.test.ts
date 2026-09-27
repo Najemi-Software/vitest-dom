@@ -2,7 +2,10 @@
 
 import { beforeAll, afterAll, describe, expect, test, vi, type MockInstance } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveDescription } from "./to-have-description.js";
+
+expect.extend({ toHaveDescription });
 
 describe(".toHaveDescription", () => {
     let spy: MockInstance;

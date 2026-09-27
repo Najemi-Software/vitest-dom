@@ -2,7 +2,11 @@
 
 import { describe, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBePartiallyChecked } from "./to-be-partially-checked.js";
+import { toHaveValue } from "./to-have-value.js";
+
+expect.extend({ toBePartiallyChecked, toHaveValue });
 
 describe(".toBePartiallyChecked", () => {
     test("handles input checkbox with aria-checked", () => {

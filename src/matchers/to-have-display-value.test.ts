@@ -2,7 +2,10 @@
 
 import { describe, expect, it, test } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveDisplayValue } from "./to-have-display-value.js";
+
+expect.extend({ toHaveDisplayValue });
 
 test("it should work as expected", () => {
     const { queryByTestId } = render(`

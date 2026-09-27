@@ -2,7 +2,7 @@
 
 import { beforeAll, describe, expect, it, test, vi } from "vitest";
 
-import type { MatcherFn, MatcherState } from "../src/matchers/types.js";
+import type { MatcherFn, MatcherState } from "./types.js";
 import {
     deprecate,
     checkHtmlElement,
@@ -10,7 +10,7 @@ import {
     HtmlElementTypeError,
     NodeTypeError,
     toSentence,
-} from "../src/matchers/utils.js";
+} from "./utils.js";
 
 const noopMatcher: MatcherFn = () => ({ pass: true, message: () => "" });
 

@@ -6,8 +6,6 @@ process.env.NO_COLOR = "1";
 
 export default defineConfig({
     test: {
-        include: ["__tests__/**/*.test.ts"],
-        setupFiles: ["vitest.setup.ts"],
         clearMocks: true,
         restoreMocks: true,
     },

@@ -2,7 +2,10 @@
 
 import { test, expect } from "vitest";
 
-import { HtmlElementTypeError } from "../src/matchers/utils.js";
+import { toBeInTheDocument } from "./to-be-in-the-document.js";
+import { HtmlElementTypeError } from "./utils.js";
+
+expect.extend({ toBeInTheDocument });
 
 const HTMLElement = window.HTMLElement;
 

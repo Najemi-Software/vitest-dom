@@ -2,7 +2,10 @@
 
 import { describe, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeChecked } from "./to-be-checked.js";
+
+expect.extend({ toBeChecked });
 
 describe(".toBeChecked", () => {
     test("handles checkbox input", () => {

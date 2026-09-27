@@ -2,7 +2,10 @@
 
 import { describe, expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveErrorMessage } from "./to-have-errormessage.js";
+
+expect.extend({ toHaveErrorMessage });
 
 // eslint-disable-next-line max-lines-per-function
 describe(".toHaveErrorMessage", () => {

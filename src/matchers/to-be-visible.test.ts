@@ -2,7 +2,10 @@
 
 import { beforeEach, describe, it, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeVisible } from "./to-be-visible.js";
+
+expect.extend({ toBeVisible });
 
 describe(".toBeVisible", () => {
     it("returns the visibility of an element", () => {
