@@ -43,27 +43,41 @@ it(".toBeEmptyDOMElement", () => {
     expect(withText).not.toBeEmptyDOMElement();
 
     // negative test cases wrapped in throwError assertions for coverage.
-    expect(() => expect(empty).not.toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(empty).not.toBeEmptyDOMElement()).toThrow(
+        "expect(element).not.toBeEmptyDOMElement()",
+    );
 
-    expect(() => expect(svgEmpty).not.toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(svgEmpty).not.toBeEmptyDOMElement()).toThrow(
+        "expect(element).not.toBeEmptyDOMElement()",
+    );
 
-    expect(() => expect(notEmpty).toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(notEmpty).toBeEmptyDOMElement()).toThrow("expect(element).toBeEmptyDOMElement()");
 
-    expect(() => expect(withComment).not.toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(withComment).not.toBeEmptyDOMElement()).toThrow(
+        "expect(element).not.toBeEmptyDOMElement()",
+    );
 
-    expect(() => expect(withMultipleComments).not.toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(withMultipleComments).not.toBeEmptyDOMElement()).toThrow(
+        "expect(element).not.toBeEmptyDOMElement()",
+    );
 
-    expect(() => expect(withElement).toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(withElement).toBeEmptyDOMElement()).toThrow("expect(element).toBeEmptyDOMElement()");
 
-    expect(() => expect(withElementAndComment).toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(withElementAndComment).toBeEmptyDOMElement()).toThrow(
+        "expect(element).toBeEmptyDOMElement()",
+    );
 
-    expect(() => expect(withWhitespace).toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(withWhitespace).toBeEmptyDOMElement()).toThrow(
+        "expect(element).toBeEmptyDOMElement()",
+    );
 
-    expect(() => expect(withText).toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(withText).toBeEmptyDOMElement()).toThrow("expect(element).toBeEmptyDOMElement()");
 
-    expect(() => expect(fakeElement).toBeEmptyDOMElement()).toThrowError();
+    expect(() => expect(fakeElement).toBeEmptyDOMElement()).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
 
     expect(() => {
         expect(nonExistantElement).toBeEmptyDOMElement();
-    }).toThrowError();
+    }).toThrow("received value must be an HTMLElement or an SVGElement");
 });

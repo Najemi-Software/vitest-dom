@@ -42,7 +42,9 @@ it(".toBeDisabled", () => {
     `);
 
     expect(queryByTestId("button-element")).toBeDisabled();
-    expect(() => expect(queryByTestId("button-element")).not.toBeDisabled()).toThrowError();
+    expect(() => expect(queryByTestId("button-element")).not.toBeDisabled()).toThrow(
+        "Received element is disabled",
+    );
     expect(queryByTestId("textarea-element")).toBeDisabled();
     expect(queryByTestId("input-element")).toBeDisabled();
 
@@ -59,8 +61,12 @@ it(".toBeDisabled", () => {
 
     expect(queryByTestId("a-element")).not.toBeDisabled();
     expect(queryByTestId("deep-a-element")).not.toBeDisabled();
-    expect(() => expect(queryByTestId("a-element")).toBeDisabled()).toThrowError();
-    expect(() => expect(queryByTestId("deep-a-element")).toBeDisabled()).toThrowError();
+    expect(() => expect(queryByTestId("a-element")).toBeDisabled()).toThrow(
+        "Received element is not disabled",
+    );
+    expect(() => expect(queryByTestId("deep-a-element")).toBeDisabled()).toThrow(
+        "Received element is not disabled",
+    );
 });
 
 it(".toBeDisabled fieldset>legend", () => {
@@ -123,12 +129,12 @@ it(".toBeDisabled custom element", () => {
     expect(queryByTestId("disabled-custom-element")).toBeDisabled();
     expect(() => {
         expect(queryByTestId("disabled-custom-element")).not.toBeDisabled();
-    }).toThrowError("element is disabled");
+    }).toThrow("element is disabled");
 
     expect(queryByTestId("enabled-custom-element")).not.toBeDisabled();
     expect(() => {
         expect(queryByTestId("enabled-custom-element")).toBeDisabled();
-    }).toThrowError("element is not disabled");
+    }).toThrow("element is not disabled");
 });
 
 it(".toBeEnabled", () => {
@@ -165,42 +171,44 @@ it(".toBeEnabled", () => {
 
     expect(() => {
         expect(queryByTestId("button-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(queryByTestId("button-element")).not.toBeEnabled();
     expect(() => {
         expect(queryByTestId("textarea-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(() => {
         expect(queryByTestId("input-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
 
     expect(() => {
         expect(queryByTestId("fieldset-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(() => {
         expect(queryByTestId("fieldset-child-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
 
     expect(queryByTestId("div-element")).toBeEnabled();
     expect(queryByTestId("div-child-element")).toBeEnabled();
 
     expect(() => {
         expect(queryByTestId("nested-form-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(() => {
         expect(queryByTestId("deep-select-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(() => {
         expect(queryByTestId("deep-optgroup-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(() => {
         expect(queryByTestId("deep-option-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
 
     expect(queryByTestId("a-element")).toBeEnabled();
-    expect(() => expect(queryByTestId("a-element")).not.toBeEnabled()).toThrowError();
+    expect(() => expect(queryByTestId("a-element")).not.toBeEnabled()).toThrow("Received element is enabled");
     expect(queryByTestId("deep-a-element")).toBeEnabled();
-    expect(() => expect(queryByTestId("deep-a-element")).not.toBeEnabled()).toThrowError();
+    expect(() => expect(queryByTestId("deep-a-element")).not.toBeEnabled()).toThrow(
+        "Received element is enabled",
+    );
 });
 
 it(".toBeEnabled fieldset>legend", () => {
@@ -246,18 +254,18 @@ it(".toBeEnabled fieldset>legend", () => {
 
     expect(() => {
         expect(queryByTestId("inherited-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("Received element is not enabled");
     expect(queryByTestId("inside-legend-element")).toBeEnabled();
     expect(queryByTestId("nested-inside-legend-element")).toBeEnabled();
 
     expect(queryByTestId("first-legend-element")).toBeEnabled();
     expect(() => {
         expect(queryByTestId("second-legend-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("element is not enabled");
 
     expect(() => {
         expect(queryByTestId("outer-fieldset-element")).toBeEnabled();
-    }).toThrowError();
+    }).toThrow("element is not enabled");
 });
 
 it(".toBeEnabled custom element", () => {
@@ -269,10 +277,10 @@ it(".toBeEnabled custom element", () => {
     expect(queryByTestId("disabled-custom-element")).not.toBeEnabled();
     expect(() => {
         expect(queryByTestId("disabled-custom-element")).toBeEnabled();
-    }).toThrowError("element is not enabled");
+    }).toThrow("element is not enabled");
 
     expect(queryByTestId("enabled-custom-element")).toBeEnabled();
     expect(() => {
         expect(queryByTestId("enabled-custom-element")).not.toBeEnabled();
-    }).toThrowError("element is enabled");
+    }).toThrow("element is enabled");
 });

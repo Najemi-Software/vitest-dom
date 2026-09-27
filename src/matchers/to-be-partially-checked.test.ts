@@ -52,7 +52,9 @@ describe(".toBePartiallyChecked", () => {
             `<input type="checkbox" aria-checked="mixed" data-testid="checkbox-mixed" />`,
         );
 
-        expect(() => expect(queryByTestId("checkbox-mixed")).not.toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("checkbox-mixed")).not.toBePartiallyChecked()).toThrow(
+            "Received element is partially checked",
+        );
     });
 
     it("throws when input checkbox is indeterminate but expected not to be", () => {
@@ -60,13 +62,17 @@ describe(".toBePartiallyChecked", () => {
 
         queryByTestId<HTMLInputElement>("checkbox-mixed")!.indeterminate = true;
 
-        expect(() => expect(queryByTestId("input-mixed")).not.toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("input-mixed")).not.toBePartiallyChecked()).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
     });
 
     it("throws when input checkbox is not checked but expected to be", () => {
         const { queryByTestId } = render(`<input type="checkbox" data-testid="checkbox-empty" />`);
 
-        expect(() => expect(queryByTestId("checkbox-empty")).toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("checkbox-empty")).toBePartiallyChecked()).toThrow(
+            "Received element is not partially checked",
+        );
     });
 
     it('throws when element with role="checkbox" is partially checked but expected not to be', () => {
@@ -74,7 +80,9 @@ describe(".toBePartiallyChecked", () => {
             `<div role="checkbox" aria-checked="mixed" data-testid="aria-checkbox-mixed" />`,
         );
 
-        expect(() => expect(queryByTestId("aria-checkbox-mixed")).not.toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("aria-checkbox-mixed")).not.toBePartiallyChecked()).toThrow(
+            "Received element is partially checked",
+        );
     });
 
     it('throws when element with role="checkbox" is checked but expected to be partially checked', () => {
@@ -82,7 +90,9 @@ describe(".toBePartiallyChecked", () => {
             `<div role="checkbox" aria-checked="true" data-testid="aria-checkbox-checked" />`,
         );
 
-        expect(() => expect(queryByTestId("aria-checkbox-checked")).toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("aria-checkbox-checked")).toBePartiallyChecked()).toThrow(
+            "Received element is not partially checked",
+        );
     });
 
     it('throws when element with role="checkbox" is not checked but expected to be', () => {
@@ -90,7 +100,9 @@ describe(".toBePartiallyChecked", () => {
             `<div role="checkbox" aria-checked="false" data-testid="aria-checkbox" />`,
         );
 
-        expect(() => expect(queryByTestId("aria-checkbox")).toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("aria-checkbox")).toBePartiallyChecked()).toThrow(
+            "Received element is not partially checked",
+        );
     });
 
     it('throws when element with role="checkbox" has an invalid aria-checked attribute', () => {
@@ -98,12 +110,14 @@ describe(".toBePartiallyChecked", () => {
             `<div role="checkbox" aria-checked="something" data-testid="aria-checkbox-invalid" />`,
         );
 
-        expect(() => expect(queryByTestId("aria-checkbox-invalid")).toBePartiallyChecked()).toThrowError();
+        expect(() => expect(queryByTestId("aria-checkbox-invalid")).toBePartiallyChecked()).toThrow(
+            "Received element is not partially checked",
+        );
     });
 
     it("throws when the element is not a checkbox", () => {
         const { queryByTestId } = render(`<select data-testid="select"></select>`);
-        expect(() => expect(queryByTestId("select")).toBePartiallyChecked()).toThrowError(
+        expect(() => expect(queryByTestId("select")).toBePartiallyChecked()).toThrow(
             'only inputs with type="checkbox" or elements with role="checkbox" and a valid aria-checked attribute can be used with .toBePartiallyChecked(). Use .toHaveValue() instead',
         );
     });

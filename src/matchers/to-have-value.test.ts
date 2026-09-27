@@ -104,11 +104,11 @@ describe(".toHaveValue", () => {
 
         expect(() => {
             expect(queryByTestId("checkbox")).toHaveValue("");
-        }).toThrow();
+        }).toThrow("input with type=checkbox or type=radio cannot be used with .toHaveValue()");
 
         expect(() => {
             expect(queryByTestId("radio")).toHaveValue("");
-        }).toThrow();
+        }).toThrow("input with type=checkbox or type=radio cannot be used with .toHaveValue()");
     });
 
     it("throws when the expected input value does not match", () => {

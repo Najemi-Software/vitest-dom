@@ -24,15 +24,31 @@ it(".toHaveAttribute", () => {
     expect(queryByTestId("svg-element")).toHaveAttribute("width", "12");
     expect(queryByTestId("ok-button")).not.toHaveAttribute("height");
 
-    expect(() => expect(queryByTestId("ok-button")).not.toHaveAttribute("disabled")).toThrowError();
-    expect(() => expect(queryByTestId("ok-button")).not.toHaveAttribute("type")).toThrowError();
-    expect(() => expect(queryByTestId("ok-button")).toHaveAttribute("class")).toThrowError();
-    expect(() => expect(queryByTestId("ok-button")).not.toHaveAttribute("type", "submit")).toThrowError();
-    expect(() => expect(queryByTestId("ok-button")).toHaveAttribute("type", "button")).toThrowError();
-    expect(() => expect(queryByTestId("svg-element")).not.toHaveAttribute("width")).toThrowError();
-    expect(() => expect(queryByTestId("svg-element")).not.toHaveAttribute("width", "12")).toThrowError();
+    expect(() => expect(queryByTestId("ok-button")).not.toHaveAttribute("disabled")).toThrow(
+        'expect(element).not.toHaveAttribute("disabled")',
+    );
+    expect(() => expect(queryByTestId("ok-button")).not.toHaveAttribute("type")).toThrow(
+        'expect(element).not.toHaveAttribute("type")',
+    );
+    expect(() => expect(queryByTestId("ok-button")).toHaveAttribute("class")).toThrow(
+        'expect(element).toHaveAttribute("class")',
+    );
+    expect(() => expect(queryByTestId("ok-button")).not.toHaveAttribute("type", "submit")).toThrow(
+        'expect(element).not.toHaveAttribute("type", "submit")',
+    );
+    expect(() => expect(queryByTestId("ok-button")).toHaveAttribute("type", "button")).toThrow(
+        'expect(element).toHaveAttribute("type", "button")',
+    );
+    expect(() => expect(queryByTestId("svg-element")).not.toHaveAttribute("width")).toThrow(
+        'expect(element).not.toHaveAttribute("width")',
+    );
+    expect(() => expect(queryByTestId("svg-element")).not.toHaveAttribute("width", "12")).toThrow(
+        'expect(element).not.toHaveAttribute("width", "12")',
+    );
     // @ts-expect-error: testing a missing argument
-    expect(() => expect({ thisIsNot: "an html element" }).not.toHaveAttribute()).toThrowError();
+    expect(() => expect({ thisIsNot: "an html element" }).not.toHaveAttribute()).toThrow(
+        "received value must be an HTMLElement or an SVGElement",
+    );
 
     // Asymmetric matchers
     expect(queryByTestId("ok-button")).toHaveAttribute("type", expect.stringContaining("sub"));
@@ -41,5 +57,5 @@ it(".toHaveAttribute", () => {
 
     expect(() =>
         expect(queryByTestId("ok-button")).toHaveAttribute("type", expect.not.stringContaining("sub")),
-    ).toThrowError();
+    ).toThrow("Expected the element to have attribute");
 });

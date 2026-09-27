@@ -37,11 +37,21 @@ describe(".toBeInvalid", () => {
         expect(invalidInputNode).toBeInvalid();
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(queryByTestId("no-aria-invalid")).toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid")).not.toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-value")).not.toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-false")).toBeInvalid()).toThrowError();
-        expect(() => expect(invalidInputNode).not.toBeInvalid()).toThrowError();
+        expect(() => expect(queryByTestId("no-aria-invalid")).toBeInvalid()).toThrow(
+            "Received element is not currently invalid",
+        );
+        expect(() => expect(queryByTestId("aria-invalid")).not.toBeInvalid()).toThrow(
+            "Received element is currently invalid",
+        );
+        expect(() => expect(queryByTestId("aria-invalid-value")).not.toBeInvalid()).toThrow(
+            "Received element is currently invalid",
+        );
+        expect(() => expect(queryByTestId("aria-invalid-false")).toBeInvalid()).toThrow(
+            "Received element is not currently invalid",
+        );
+        expect(() => expect(invalidInputNode).not.toBeInvalid()).toThrow(
+            "Received element is currently invalid",
+        );
     });
 
     it("handles <form/>", () => {
@@ -55,8 +65,12 @@ describe(".toBeInvalid", () => {
         expect(invalidFormNode).toBeInvalid();
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(queryByTestId("valid")).toBeInvalid()).toThrowError();
-        expect(() => expect(invalidFormNode).not.toBeInvalid()).toThrowError();
+        expect(() => expect(queryByTestId("valid")).toBeInvalid()).toThrow(
+            "Received element is not currently invalid",
+        );
+        expect(() => expect(invalidFormNode).not.toBeInvalid()).toThrow(
+            "Received element is currently invalid",
+        );
     });
 
     it("handles any element", () => {
@@ -76,11 +90,21 @@ describe(".toBeInvalid", () => {
         expect(queryByTestId("aria-invalid-false")).not.toBeInvalid();
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(queryByTestId("valid")).toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("no-aria-invalid")).toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid")).not.toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-value")).not.toBeInvalid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-false")).toBeInvalid()).toThrowError();
+        expect(() => expect(queryByTestId("valid")).toBeInvalid()).toThrow(
+            /Received element is not currently invalid/,
+        );
+        expect(() => expect(queryByTestId("no-aria-invalid")).toBeInvalid()).toThrow(
+            /Received element is not currently invalid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid")).not.toBeInvalid()).toThrow(
+            /Received element is currently invalid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid-value")).not.toBeInvalid()).toThrow(
+            /Received element is currently invalid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid-false")).toBeInvalid()).toThrow(
+            /Received element is not currently invalid/,
+        );
     });
 });
 
@@ -102,11 +126,19 @@ describe(".toBeValid", () => {
         expect(invalidInputNode).not.toBeValid();
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(queryByTestId("no-aria-invalid")).not.toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid")).toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-value")).toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-false")).not.toBeValid()).toThrowError();
-        expect(() => expect(invalidInputNode).toBeValid()).toThrowError();
+        expect(() => expect(queryByTestId("no-aria-invalid")).not.toBeValid()).toThrow(
+            /Received element is currently valid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid")).toBeValid()).toThrow(
+            /Received element is not currently valid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid-value")).toBeValid()).toThrow(
+            /Received element is not currently valid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid-false")).not.toBeValid()).toThrow(
+            /Received element is currently valid/,
+        );
+        expect(() => expect(invalidInputNode).toBeValid()).toThrow(/Received element is not currently valid/);
     });
 
     it("handles <form/>", () => {
@@ -120,8 +152,10 @@ describe(".toBeValid", () => {
         expect(invalidFormNode).not.toBeValid();
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(queryByTestId("valid")).not.toBeValid()).toThrowError();
-        expect(() => expect(invalidFormNode).toBeValid()).toThrowError();
+        expect(() => expect(queryByTestId("valid")).not.toBeValid()).toThrow(
+            /Received element is currently valid/,
+        );
+        expect(() => expect(invalidFormNode).toBeValid()).toThrow(/Received element is not currently valid/);
     });
 
     it("handles any element", () => {
@@ -141,10 +175,20 @@ describe(".toBeValid", () => {
         expect(queryByTestId("aria-invalid-false")).toBeValid();
 
         // negative test cases wrapped in throwError assertions for coverage.
-        expect(() => expect(queryByTestId("valid")).not.toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("no-aria-invalid")).not.toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid")).toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-value")).toBeValid()).toThrowError();
-        expect(() => expect(queryByTestId("aria-invalid-false")).not.toBeValid()).toThrowError();
+        expect(() => expect(queryByTestId("valid")).not.toBeValid()).toThrow(
+            /Received element is currently valid/,
+        );
+        expect(() => expect(queryByTestId("no-aria-invalid")).not.toBeValid()).toThrow(
+            /Received element is currently valid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid")).toBeValid()).toThrow(
+            /Received element is not currently valid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid-value")).toBeValid()).toThrow(
+            /Received element is not currently valid/,
+        );
+        expect(() => expect(queryByTestId("aria-invalid-false")).not.toBeValid()).toThrow(
+            /Received element is currently valid/,
+        );
     });
 });

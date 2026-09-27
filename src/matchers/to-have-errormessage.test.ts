@@ -48,12 +48,12 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("valid")).not.toHaveErrorMessage("The errormessage");
         expect(() => {
             expect(queryByTestId("valid")).toHaveErrorMessage("The errormessage");
-        }).toThrowError();
+        }).toThrow("Expected the element to have invalid state indicated by");
 
         expect(queryByTestId("explicitly_valid")).not.toHaveErrorMessage("The errormessage");
         expect(() => {
             expect(queryByTestId("explicitly_valid")).toHaveErrorMessage("The errormessage");
-        }).toThrowError();
+        }).toThrow("Expected the element to have invalid state indicated by");
     });
 
     it("rejects for object with incorrect aria-errormessage reference", () => {
@@ -85,12 +85,12 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("without")).not.toHaveErrorMessage();
         expect(() => {
             expect(queryByTestId("without")).toHaveErrorMessage();
-        }).toThrowError();
+        }).toThrow("Expected the element to have invalid state indicated by");
 
         expect(queryByTestId("without")).not.toHaveErrorMessage("");
         expect(() => {
             expect(queryByTestId("without")).toHaveErrorMessage("");
-        }).toThrowError();
+        }).toThrow("Expected the element to have invalid state indicated by");
     });
 
     it("handles multiple ids", () => {
@@ -121,13 +121,17 @@ describe(".toHaveErrorMessage", () => {
     <div data-testid="target" aria-errormessage="errormessage" aria-invalid="true"></div>
     `);
 
-        expect(() => expect(queryByTestId("other")).toHaveErrorMessage("The errormessage")).toThrowError();
+        expect(() => expect(queryByTestId("other")).toHaveErrorMessage("The errormessage")).toThrow(
+            "received value must be an HTMLElement or an SVGElement",
+        );
 
-        expect(() => expect(queryByTestId("target")).toHaveErrorMessage("Something else")).toThrowError();
+        expect(() => expect(queryByTestId("target")).toHaveErrorMessage("Something else")).toThrow(
+            "Expected the element to have error message",
+        );
 
-        expect(() =>
-            expect(queryByTestId("target")).not.toHaveErrorMessage("The errormessage"),
-        ).toThrowError();
+        expect(() => expect(queryByTestId("target")).not.toHaveErrorMessage("The errormessage")).toThrow(
+            "Expected the element not to have error message",
+        );
     });
 
     it("normalizes whitespace", () => {

@@ -79,28 +79,32 @@ describe(".toHaveStyle", () => {
         document.body.appendChild(style);
         document.body.appendChild(container);
 
-        expect(() =>
-            expect(container.querySelector(".label")).toHaveStyle("font-weight: bold"),
-        ).toThrowError();
+        expect(() => expect(container.querySelector(".label")).toHaveStyle("font-weight: bold")).toThrow(
+            "- font-weight: bold;",
+        );
 
-        expect(() =>
-            expect(container.querySelector(".label")).not.toHaveStyle("color: white"),
-        ).toThrowError();
+        expect(() => expect(container.querySelector(".label")).not.toHaveStyle("color: white")).toThrow(
+            "expect(element).not.toHaveStyle()",
+        );
 
         expect(() =>
             expect(container.querySelector(".label")).toHaveStyle(
                 "transition: all 0.7s ease, width 1.0s cubic-bezier(3, 4, 5, 6);",
             ),
-        ).toThrowError();
+        ).toThrow("- transition: all 0.7s ease, width 1.0s cubic-bezier(3, 4, 5, 6);");
 
         // Make sure the test fails if the css syntax is not valid
-        expect(() =>
-            expect(container.querySelector(".label")).not.toHaveStyle("font-weight bold"),
-        ).toThrowError();
+        expect(() => expect(container.querySelector(".label")).not.toHaveStyle("font-weight bold")).toThrow(
+            "Syntax error parsing expected css: property missing ':'",
+        );
 
-        expect(() => expect(container.querySelector(".label")).toHaveStyle("color white")).toThrowError();
+        expect(() => expect(container.querySelector(".label")).toHaveStyle("color white")).toThrow(
+            "Syntax error parsing expected css: property missing ':'",
+        );
 
-        expect(() => expect(container.querySelector(".label")).toHaveStyle("--color: black")).toThrowError();
+        expect(() => expect(container.querySelector(".label")).toHaveStyle("--color: black")).toThrow(
+            "- --color: black;",
+        );
         document.body.removeChild(style);
         document.body.removeChild(container);
     });
@@ -210,7 +214,7 @@ describe(".toHaveStyle", () => {
                 expect(queryByTestId("color-example")).toHaveStyle({
                     fontSize: "12px",
                 });
-            }).toThrowError();
+            }).toThrow("expect(element).toHaveStyle()");
         });
 
         it("supports dash-cased property names", () => {
