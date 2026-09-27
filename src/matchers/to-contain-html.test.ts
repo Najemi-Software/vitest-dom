@@ -7,7 +7,6 @@ import { toContainHTML } from "./to-contain-html.js";
 
 expect.extend({ toContainHTML });
 
-/* eslint-disable max-statements */
 describe(".toContainHTML", () => {
     test("handles positive and negative cases", () => {
         const { queryByTestId } = render(`

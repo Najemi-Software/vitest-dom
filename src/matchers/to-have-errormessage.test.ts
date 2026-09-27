@@ -7,7 +7,6 @@ import { toHaveErrorMessage } from "./to-have-errormessage.js";
 
 expect.extend({ toHaveErrorMessage });
 
-// eslint-disable-next-line max-lines-per-function
 describe(".toHaveErrorMessage", () => {
     test("resolves for object with correct aria-errormessage reference", () => {
         const { queryByTestId } = render(`
