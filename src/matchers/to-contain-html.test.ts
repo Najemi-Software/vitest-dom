@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { describe, test, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toContainHTML } from "./to-contain-html.js";
@@ -8,7 +8,7 @@ import { toContainHTML } from "./to-contain-html.js";
 expect.extend({ toContainHTML });
 
 describe(".toContainHTML", () => {
-    test("handles positive and negative cases", () => {
+    it("handles positive and negative cases", () => {
         const { queryByTestId } = render(`
     <span data-testid="grandparent">
       <span data-testid="parent">
@@ -68,7 +68,7 @@ describe(".toContainHTML", () => {
         expect(() => expect(parent).not.toContainHTML(incorrectStringHtml)).toThrowError();
     });
 
-    test("throws with an expected text", () => {
+    it("throws with an expected text", () => {
         const { queryByTestId } = render('<span data-testid="child"></span>');
         const htmlElement = queryByTestId("child");
         const nonExistantString = "<div> non-existant element </div>";

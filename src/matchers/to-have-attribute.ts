@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 function printAttribute(stringify: (value: unknown) => string, name: string, value: unknown) {
@@ -38,7 +38,7 @@ export function toHaveAttribute(
     htmlElement: Element,
     name: string,
     expectedValue?: unknown,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveAttribute, this);
     const isExpectedValuePresent = expectedValue !== undefined;
     const hasAttribute = htmlElement.hasAttribute(name);

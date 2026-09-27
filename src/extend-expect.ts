@@ -1,3 +1,6 @@
+// oxlint-disable eslint-js/no-restricted-syntax no-restricted-imports @typescript-eslint/no-empty-object-type
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { expect } from "vitest";
 
 import * as matchers from "./matchers.js";

@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 function isStyleVisible(element: Element) {
@@ -57,7 +57,7 @@ function isElementVisible(element: Element, previousElement?: Element): boolean 
  * @see
  * [testing-library/jest-dom#tobevisible](https://github.com/testing-library/jest-dom#tobevisible)
  */
-export function toBeVisible(this: MatcherState, element: Element): MatcherResult {
+export function toBeVisible(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeVisible, this);
     const isInDocument = element.ownerDocument === element.getRootNode({ composed: true });
     const isVisible = isInDocument && isElementVisible(element);

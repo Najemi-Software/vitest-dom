@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
@@ -14,7 +14,7 @@ import { checkHtmlElement } from "./utils.js";
  * @see
  * [testing-library/jest-dom#tobeemptydomelement](https://github.com/testing-library/jest-dom#tobeemptydomelement)
  */
-export function toBeEmptyDOMElement(this: MatcherState, element: Element): MatcherResult {
+export function toBeEmptyDOMElement(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeEmptyDOMElement, this);
 
     return {

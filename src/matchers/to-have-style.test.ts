@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveStyle } from "./to-have-style.js";
@@ -8,7 +8,7 @@ import { toHaveStyle } from "./to-have-style.js";
 expect.extend({ toHaveStyle });
 
 describe(".toHaveStyle", () => {
-    test("handles positive test cases", () => {
+    it("handles positive test cases", () => {
         const { container } = render(`
           <div class="label" style="background-color: blue; height: 100%">
             Hello World
@@ -60,7 +60,7 @@ describe(".toHaveStyle", () => {
     `);
     });
 
-    test("handles negative test cases", () => {
+    it("handles negative test cases", () => {
         const { container } = render(`
     <div class="label" style="background-color: blue; height: 100%">
       Hello World
@@ -105,21 +105,21 @@ describe(".toHaveStyle", () => {
         document.body.removeChild(container);
     });
 
-    test("properly normalizes colors", () => {
+    it("properly normalizes colors", () => {
         const { queryByTestId } = render(`
       <span data-testid="color-example" style="background-color: #123456">Hello World</span>
     `);
         expect(queryByTestId("color-example")).toHaveStyle("background-color: #123456");
     });
 
-    test("handles inline custom properties", () => {
+    it("handles inline custom properties", () => {
         const { queryByTestId } = render(`
       <span data-testid="color-example" style="--color: blue">Hello World</span>
     `);
         expect(queryByTestId("color-example")).toHaveStyle("--color: blue");
     });
 
-    test("handles global custom properties", () => {
+    it("handles global custom properties", () => {
         const style = document.createElement("style");
         style.innerHTML = `
       div {
@@ -141,14 +141,14 @@ describe(".toHaveStyle", () => {
         expect(container).toHaveStyle(`--color: blue`);
     });
 
-    test("properly normalizes colors for border", () => {
+    it("properly normalizes colors for border", () => {
         const { queryByTestId } = render(`
     <span data-testid="color-example" style="border: 1px solid #fff">Hello World</span>
   `);
         expect(queryByTestId("color-example")).toHaveStyle("border: 1px solid #fff");
     });
 
-    test("handles different color declaration formats", () => {
+    it("handles different color declaration formats", () => {
         const { queryByTestId } = render(`
       <span data-testid="color-example" style="color: rgba(0, 0, 0, 1); background-color: #000000">Hello World</span>
     `);
@@ -159,7 +159,7 @@ describe(".toHaveStyle", () => {
         expect(queryByTestId("color-example")).toHaveStyle("background-color: #000000");
     });
 
-    test("handles nonexistent styles", () => {
+    it("handles nonexistent styles", () => {
         const { container } = render(`
           <div class="label" style="background-color: blue; height: 100%">
             Hello World
@@ -170,7 +170,7 @@ describe(".toHaveStyle", () => {
     });
 
     describe("object syntax", () => {
-        test("handles styles as object", () => {
+        it("handles styles as object", () => {
             const { container } = render(`
         <div class="label" style="background-color: blue; height: 100%">
           Hello World
@@ -193,7 +193,7 @@ describe(".toHaveStyle", () => {
             });
         });
 
-        test("Uses px as the default unit", () => {
+        it("Uses px as the default unit", () => {
             const { queryByTestId } = render(`
         <span data-testid="color-example" style="font-size: 12px">Hello World</span>
       `);
@@ -202,7 +202,7 @@ describe(".toHaveStyle", () => {
             });
         });
 
-        test("Fails with an invalid unit", () => {
+        it("Fails with an invalid unit", () => {
             const { queryByTestId } = render(`
         <span data-testid="color-example" style="font-size: 12rem">Hello World</span>
       `);
@@ -213,7 +213,7 @@ describe(".toHaveStyle", () => {
             }).toThrowError();
         });
 
-        test("supports dash-cased property names", () => {
+        it("supports dash-cased property names", () => {
             const { container } = render(`
         <div class="label" style="background-color: blue; height: 100%">
           Hello World
@@ -224,7 +224,7 @@ describe(".toHaveStyle", () => {
             });
         });
 
-        test("requires strict empty properties matching", () => {
+        it("requires strict empty properties matching", () => {
             const { container } = render(`
         <div class="label" style="width: 100%;height: 100%">
           Hello World

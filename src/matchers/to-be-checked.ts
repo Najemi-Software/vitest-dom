@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, toSentence } from "./utils.js";
 
 // WAI-ARIA roles supporting the aria-checked state
@@ -36,7 +36,7 @@ const ROLES_SUPPORTING_CHECKED = [
  * @see
  * [testing-library/jest-dom#tobechecked](https://github.com/testing-library/jest-dom#tobechecked)
  */
-export function toBeChecked(this: MatcherState, element: Element): MatcherResult {
+export function toBeChecked(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeChecked, this);
 
     const isValidInput = () => {

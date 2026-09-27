@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { expect, test } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveFocus } from "./to-have-focus.js";
 
 expect.extend({ toHaveFocus });
 
-test(".toHaveFocus", () => {
+it(".toHaveFocus", () => {
     const { container } = render(`
       <div>
         <label for="focused">test</label>

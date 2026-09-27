@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
@@ -12,7 +12,7 @@ import { checkHtmlElement } from "./utils.js";
  * @see
  * [testing-library/jest-dom#tobeinthedocument](https://github.com/testing-library/jest-dom#tobeinthedocument)
  */
-export function toBeInTheDocument(this: MatcherState, element: Element): MatcherResult {
+export function toBeInTheDocument(this: MatcherState, element: Element): IMatcherResult {
     if (element !== null || !this.isNot) {
         checkHtmlElement(element, toBeInTheDocument, this);
     }

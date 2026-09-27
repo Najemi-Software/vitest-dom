@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 function getNormalizedHtml(container: Element, htmlText: string) {
@@ -17,7 +17,7 @@ function getNormalizedHtml(container: Element, htmlText: string) {
  * @see
  * [testing-library/jest-dom#tocontainhtml](https://github.com/testing-library/jest-dom#tocontainhtml)
  */
-export function toContainHTML(this: MatcherState, container: Element, htmlText: string): MatcherResult {
+export function toContainHTML(this: MatcherState, container: Element, htmlText: string): IMatcherResult {
     checkHtmlElement(container, toContainHTML, this);
 
     if (typeof htmlText !== "string") {

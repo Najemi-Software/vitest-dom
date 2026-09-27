@@ -2,110 +2,110 @@
 // https://github.com/visionmedia/css-parse/pull/49#issuecomment-30088027
 const commentre = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
 
-export interface ParserOptions {
+export interface IParserOptions {
     /** Silently fail on parse errors */
     silent?: boolean | undefined;
     /** The path to the file containing css. Makes errors and source maps more helpful, by letting them know where code comes from. */
     source?: string | undefined;
 }
 
-interface LineColumn {
+interface ILineColumn {
     line: number;
     column: number;
 }
 
 /** Information about the position in the source string that corresponds to the node. */
-interface NodePosition {
-    start: LineColumn;
-    end: LineColumn;
+interface INodePosition {
+    start: ILineColumn;
+    end: ILineColumn;
     /** The value of options.source if passed to css.parse. Otherwise undefined. */
     source: string | undefined;
     /** The full source string passed to css.parse. */
     content: string;
 }
 
-interface BaseNode {
+interface IBaseNode {
     /** The possible values are the ones listed in the Types section on https://github.com/reworkcss/css page. */
     type: string;
-    position?: NodePosition;
+    position?: INodePosition;
     /** A reference to the parent node, or null if the node has no parent. */
-    parent?: BaseNode | null;
+    parent?: IBaseNode | null;
 }
 
-export interface Comment extends BaseNode {
+export interface IComment extends IBaseNode {
     type: "comment";
     comment: string;
 }
 
-export interface Declaration extends BaseNode {
+export interface IDeclaration extends IBaseNode {
     type: "declaration";
     property: string;
     value: string;
 }
 
-export interface Rule extends BaseNode {
+export interface IRule extends IBaseNode {
     type: "rule";
     selectors: string[];
-    declarations: Array<Declaration | Comment> | undefined;
+    declarations: Array<IDeclaration | IComment> | undefined;
 }
 
-export interface Keyframe extends BaseNode {
+export interface IKeyframe extends IBaseNode {
     type: "keyframe";
     values: string[];
-    declarations: Array<Declaration | Comment> | undefined;
+    declarations: Array<IDeclaration | IComment> | undefined;
 }
 
-export interface Keyframes extends BaseNode {
+export interface IKeyframes extends IBaseNode {
     type: "keyframes";
     name: string;
     vendor: string | undefined;
-    keyframes: Array<Keyframe | Comment>;
+    keyframes: Array<IKeyframe | IComment>;
 }
 
-export interface Supports extends BaseNode {
+export interface ISupports extends IBaseNode {
     type: "supports";
     supports: string;
     rules: StyleNode[];
 }
 
-export interface Host extends BaseNode {
+export interface IHost extends IBaseNode {
     type: "host";
     rules: StyleNode[];
 }
 
-export interface Media extends BaseNode {
+export interface IMedia extends IBaseNode {
     type: "media";
     media: string;
     rules: StyleNode[];
 }
 
-export interface CustomMedia extends BaseNode {
+export interface ICustomMedia extends IBaseNode {
     type: "custom-media";
     name: string;
     media: string;
 }
 
-export interface Page extends BaseNode {
+export interface IPage extends IBaseNode {
     type: "page";
     selectors: string[];
-    declarations: Array<Declaration | Comment>;
+    declarations: Array<IDeclaration | IComment>;
 }
 
-export interface Document extends BaseNode {
+export interface IDocument extends IBaseNode {
     type: "document";
     document: string;
     vendor: string;
     rules: StyleNode[];
 }
 
-export interface FontFace extends BaseNode {
+export interface IFontFace extends IBaseNode {
     type: "font-face";
-    declarations: Array<Declaration | Comment>;
+    declarations: Array<IDeclaration | IComment>;
 }
 
 type SimpleAtRuleName = "import" | "charset" | "namespace";
 
-export interface SimpleAtRule extends BaseNode {
+export interface ISimpleAtRule extends IBaseNode {
     type: SimpleAtRuleName;
     import?: string;
     charset?: string;
@@ -113,19 +113,19 @@ export interface SimpleAtRule extends BaseNode {
 }
 
 export type AtRule =
-    | Keyframes
-    | Media
-    | CustomMedia
-    | Supports
-    | SimpleAtRule
-    | Document
-    | Page
-    | Host
-    | FontFace;
+    | IKeyframes
+    | IMedia
+    | ICustomMedia
+    | ISupports
+    | ISimpleAtRule
+    | IDocument
+    | IPage
+    | IHost
+    | IFontFace;
 
-export type StyleNode = Rule | Comment | AtRule;
+export type StyleNode = IRule | IComment | AtRule;
 
-export interface ParseError extends Error {
+export interface IParseError extends Error {
     reason: string;
     filename: string | undefined;
     line: number;
@@ -133,19 +133,19 @@ export interface ParseError extends Error {
     source: string;
 }
 
-export interface StyleRules {
+export interface IStyleRules {
     source: string | undefined;
     rules: StyleNode[];
-    parsingErrors: ParseError[];
+    parsingErrors: IParseError[];
 }
 
-export interface Stylesheet extends BaseNode {
+export interface IStylesheet extends IBaseNode {
     type: "stylesheet";
-    stylesheet: StyleRules;
+    stylesheet: IStyleRules;
 }
 
-function cssParse(css: string, options?: ParserOptions): Stylesheet {
-    const opts: ParserOptions = options || {};
+export function cssParse(css: string, options?: IParserOptions): IStylesheet {
+    const opts: IParserOptions = options || {};
 
     /**
      * Positional.
@@ -159,9 +159,9 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      */
 
     function updatePosition(str: string) {
-        let lines = str.match(/\n/g);
+        const lines = str.match(/\n/g);
         if (lines) lineno += lines.length;
-        let i = str.lastIndexOf("\n");
+        const i = str.lastIndexOf("\n");
         column = ~i ? str.length - i : column + str.length;
     }
 
@@ -170,8 +170,8 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      */
 
     function position() {
-        let start = { line: lineno, column: column };
-        return function <const T extends BaseNode>(node: T): T {
+        const start = { line: lineno, column: column };
+        return function <const T extends IBaseNode>(node: T): T {
             node.position = new Position(start);
             whitespace();
             return node;
@@ -182,13 +182,13 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Store position information for a node
      */
 
-    class Position implements NodePosition {
-        start: LineColumn;
-        end: LineColumn;
+    class Position implements INodePosition {
+        start: ILineColumn;
+        end: ILineColumn;
         source: string | undefined;
         declare content: string;
 
-        constructor(start: LineColumn) {
+        constructor(start: ILineColumn) {
             this.start = start;
             this.end = { line: lineno, column: column };
             this.source = opts.source;
@@ -205,10 +205,10 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Error `msg`.
      */
 
-    let errorsList: ParseError[] = [];
+    const errorsList: IParseError[] = [];
 
     function error(msg: string): undefined {
-        let err: ParseError = Object.assign(
+        const err: IParseError = Object.assign(
             new Error(opts.source + ":" + lineno + ":" + column + ": " + msg),
             {
                 reason: msg,
@@ -230,8 +230,8 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse stylesheet.
      */
 
-    function stylesheet(): Stylesheet {
-        let rulesList = rules();
+    function stylesheet(): IStylesheet {
+        const rulesList = rules();
 
         return {
             type: "stylesheet",
@@ -265,7 +265,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
 
     function rules(): StyleNode[] {
         let node: StyleNode | undefined;
-        let rules: StyleNode[] = [];
+        const rules: StyleNode[] = [];
         whitespace();
         comments(rules);
         while (css.length && css.charAt(0) != "}" && (node = atrule() || rule())) {
@@ -280,9 +280,9 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      */
 
     function match(re: RegExp) {
-        let m = re.exec(css);
+        const m = re.exec(css);
         if (!m) return;
-        let str = m[0];
+        const str = m[0];
         updatePosition(str);
         css = css.slice(str.length);
         return m;
@@ -300,8 +300,8 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse comments;
      */
 
-    function comments<T>(rules: Array<T | Comment> = []): Array<T | Comment> {
-        let c: Comment | undefined;
+    function comments<T>(rules: Array<T | IComment> = []): Array<T | IComment> {
+        let c: IComment | undefined;
         while ((c = comment())) {
             rules.push(c);
         }
@@ -312,8 +312,8 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse comment.
      */
 
-    function comment(): Comment | undefined {
-        let pos = position();
+    function comment(): IComment | undefined {
+        const pos = position();
         if ("/" != css.charAt(0) || "*" != css.charAt(1)) return;
 
         let i = 2;
@@ -324,7 +324,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
             return error("End of comment missing");
         }
 
-        let str = css.slice(2, i - 2);
+        const str = css.slice(2, i - 2);
         column += 2;
         updatePosition(str);
         css = css.slice(i);
@@ -341,7 +341,7 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      */
 
     function selector(): string[] | undefined {
-        let m = match(/^([^{]+)/);
+        const m = match(/^([^{]+)/);
         if (!m) return;
         /* @fix Remove all comments from selectors
          * http://ostermiller.org/findcomment.html */
@@ -360,23 +360,23 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse declaration.
      */
 
-    function declaration(): Declaration | undefined {
-        let pos = position();
+    function declaration(): IDeclaration | undefined {
+        const pos = position();
 
         // prop
-        // eslint-disable-next-line no-useless-escape
-        let propMatch = match(/^(\*?[-#\/\*\\\w]+(\[[0-9a-z_-]+\])?)\s*/);
+
+        const propMatch = match(/^(\*?[-#\/\*\\\w]+(\[[0-9a-z_-]+\])?)\s*/);
         if (!propMatch) return;
-        let prop = trim(propMatch[0]);
+        const prop = trim(propMatch[0]);
 
         // :
         if (!match(/^:\s*/)) return error("property missing ':'");
 
         // val
-        // eslint-disable-next-line no-useless-escape
-        let val = match(/^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^\)]*?\)|[^};])+)/);
 
-        let ret = pos({
+        const val = match(/^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^\)]*?\)|[^};])+)/);
+
+        const ret = pos({
             type: "declaration",
             property: prop.replace(commentre, ""),
             value: val ? trim(val[0]).replace(commentre, "") : "",
@@ -392,14 +392,14 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse declarations.
      */
 
-    function declarations(): Array<Declaration | Comment> | undefined {
-        let decls: Array<Declaration | Comment> = [];
+    function declarations(): Array<IDeclaration | IComment> | undefined {
+        const decls: Array<IDeclaration | IComment> = [];
 
         if (!open()) return error("missing '{'");
         comments(decls);
 
         // declarations
-        let decl: Declaration | undefined;
+        let decl: IDeclaration | undefined;
         while ((decl = declaration())) {
             decls.push(decl);
             comments(decls);
@@ -413,10 +413,10 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse keyframe.
      */
 
-    function keyframe(): Keyframe | undefined {
+    function keyframe(): IKeyframe | undefined {
         let m;
-        let vals: string[] = [];
-        let pos = position();
+        const vals: string[] = [];
+        const pos = position();
 
         while ((m = match(/^((\d+\.\d+|\.\d+|\d+)%?|[a-z]+)\s*/))) {
             vals.push(m[1]);
@@ -436,25 +436,25 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse keyframes.
      */
 
-    function atkeyframes(): Keyframes | undefined {
-        let pos = position();
+    function atkeyframes(): IKeyframes | undefined {
+        const pos = position();
         let m = match(/^@([-\w]+)?keyframes\s*/);
 
         if (!m) return;
-        let vendor = m[1];
+        const vendor = m[1];
 
         // identifier
         m = match(/^([-\w]+)\s*/);
         if (!m) return error("@keyframes missing name");
-        let name = m[1];
+        const name = m[1];
 
         if (!open()) return error("@keyframes missing '{'");
 
-        let frame: Keyframe | undefined;
-        let frames = comments<Keyframe>();
+        let frame: IKeyframe | undefined;
+        let frames = comments<IKeyframe>();
         while ((frame = keyframe())) {
             frames.push(frame);
-            frames = frames.concat(comments<Keyframe>());
+            frames = frames.concat(comments<IKeyframe>());
         }
 
         if (!close()) return error("@keyframes missing '}'");
@@ -471,16 +471,16 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse supports.
      */
 
-    function atsupports(): Supports | undefined {
-        let pos = position();
-        let m = match(/^@supports *([^{]+)/);
+    function atsupports(): ISupports | undefined {
+        const pos = position();
+        const m = match(/^@supports *([^{]+)/);
 
         if (!m) return;
-        let supports = trim(m[1]);
+        const supports = trim(m[1]);
 
         if (!open()) return error("@supports missing '{'");
 
-        let style = comments<StyleNode>().concat(rules());
+        const style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@supports missing '}'");
 
@@ -495,15 +495,15 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse host.
      */
 
-    function athost(): Host | undefined {
-        let pos = position();
-        let m = match(/^@host\s*/);
+    function athost(): IHost | undefined {
+        const pos = position();
+        const m = match(/^@host\s*/);
 
         if (!m) return;
 
         if (!open()) return error("@host missing '{'");
 
-        let style = comments<StyleNode>().concat(rules());
+        const style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@host missing '}'");
 
@@ -517,16 +517,16 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse media.
      */
 
-    function atmedia(): Media | undefined {
-        let pos = position();
-        let m = match(/^@media *([^{]+)/);
+    function atmedia(): IMedia | undefined {
+        const pos = position();
+        const m = match(/^@media *([^{]+)/);
 
         if (!m) return;
-        let media = trim(m[1]);
+        const media = trim(m[1]);
 
         if (!open()) return error("@media missing '{'");
 
-        let style = comments<StyleNode>().concat(rules());
+        const style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@media missing '}'");
 
@@ -541,9 +541,9 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse custom-media.
      */
 
-    function atcustommedia(): CustomMedia | undefined {
-        let pos = position();
-        let m = match(/^@custom-media\s+(--[^\s]+)\s*([^{;]+);/);
+    function atcustommedia(): ICustomMedia | undefined {
+        const pos = position();
+        const m = match(/^@custom-media\s+(--[^\s]+)\s*([^{;]+);/);
         if (!m) return;
 
         return pos({
@@ -557,21 +557,21 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse paged media.
      */
 
-    function atpage(): Page | undefined {
-        let pos = position();
-        let m = match(/^@page */);
+    function atpage(): IPage | undefined {
+        const pos = position();
+        const m = match(/^@page */);
         if (!m) return;
 
-        let sel = selector() || [];
+        const sel = selector() || [];
 
         if (!open()) return error("@page missing '{'");
-        let decls = comments<Declaration>();
+        let decls = comments<IDeclaration>();
 
         // declarations
-        let decl: Declaration | undefined;
+        let decl: IDeclaration | undefined;
         while ((decl = declaration())) {
             decls.push(decl);
-            decls = decls.concat(comments<Declaration>());
+            decls = decls.concat(comments<IDeclaration>());
         }
 
         if (!close()) return error("@page missing '}'");
@@ -587,17 +587,17 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse document.
      */
 
-    function atdocument(): Document | undefined {
-        let pos = position();
-        let m = match(/^@([-\w]+)?document *([^{]+)/);
+    function atdocument(): IDocument | undefined {
+        const pos = position();
+        const m = match(/^@([-\w]+)?document *([^{]+)/);
         if (!m) return;
 
-        let vendor = trim(m[1]);
-        let doc = trim(m[2]);
+        const vendor = trim(m[1]);
+        const doc = trim(m[2]);
 
         if (!open()) return error("@document missing '{'");
 
-        let style = comments<StyleNode>().concat(rules());
+        const style = comments<StyleNode>().concat(rules());
 
         if (!close()) return error("@document missing '}'");
 
@@ -613,19 +613,19 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse font-face.
      */
 
-    function atfontface(): FontFace | undefined {
-        let pos = position();
-        let m = match(/^@font-face\s*/);
+    function atfontface(): IFontFace | undefined {
+        const pos = position();
+        const m = match(/^@font-face\s*/);
         if (!m) return;
 
         if (!open()) return error("@font-face missing '{'");
-        let decls = comments<Declaration>();
+        let decls = comments<IDeclaration>();
 
         // declarations
-        let decl: Declaration | undefined;
+        let decl: IDeclaration | undefined;
         while ((decl = declaration())) {
             decls.push(decl);
-            decls = decls.concat(comments<Declaration>());
+            decls = decls.concat(comments<IDeclaration>());
         }
 
         if (!close()) return error("@font-face missing '}'");
@@ -640,31 +640,31 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse import
      */
 
-    let atimport = _compileAtrule("import");
+    const atimport = _compileAtrule("import");
 
     /**
      * Parse charset
      */
 
-    let atcharset = _compileAtrule("charset");
+    const atcharset = _compileAtrule("charset");
 
     /**
      * Parse namespace
      */
 
-    let atnamespace = _compileAtrule("namespace");
+    const atnamespace = _compileAtrule("namespace");
 
     /**
      * Parse non-block at-rules
      */
 
     function _compileAtrule(name: SimpleAtRuleName) {
-        let re = new RegExp("^@" + name + "\\s*([^;]+);");
-        return function (): SimpleAtRule | undefined {
-            let pos = position();
-            let m = match(re);
+        const re = new RegExp("^@" + name + "\\s*([^;]+);");
+        return function (): ISimpleAtRule | undefined {
+            const pos = position();
+            const m = match(re);
             if (!m) return;
-            let ret: SimpleAtRule = { type: name };
+            const ret: ISimpleAtRule = { type: name };
             ret[name] = m[1].trim();
             return pos(ret);
         };
@@ -696,9 +696,9 @@ function cssParse(css: string, options?: ParserOptions): Stylesheet {
      * Parse rule.
      */
 
-    function rule(): Rule | undefined {
-        let pos = position();
-        let sel = selector();
+    function rule(): IRule | undefined {
+        const pos = position();
+        const sel = selector();
 
         if (!sel) return error("selector missing");
         comments();
@@ -726,12 +726,12 @@ function trim(str: string | undefined) {
  */
 
 function addParent<T>(obj: T, parent?: object): T {
-    let record = obj as Record<string, unknown>;
-    let isNode = obj && typeof record.type === "string";
-    let childParent = isNode ? record : parent;
+    const record = obj as Record<string, unknown>;
+    const isNode = obj && typeof record.type === "string";
+    const childParent = isNode ? record : parent;
 
-    for (var k in record) {
-        let value = record[k];
+    for (const k in record) {
+        const value = record[k];
         if (Array.isArray(value)) {
             value.forEach(function (v) {
                 addParent(v, childParent);
@@ -752,5 +752,3 @@ function addParent<T>(obj: T, parent?: object): T {
 
     return obj;
 }
-
-export default cssParse;

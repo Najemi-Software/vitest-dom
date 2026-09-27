@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 /**
@@ -46,7 +46,7 @@ export function toHaveDisplayValue(
     this: MatcherState,
     htmlElement: Element,
     expectedValue: string | RegExp | Array<string | RegExp>,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveDisplayValue, this);
     const tagName = htmlElement.tagName.toLowerCase();
 

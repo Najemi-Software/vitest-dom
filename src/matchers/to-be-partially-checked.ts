@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
@@ -38,7 +38,7 @@ import { checkHtmlElement } from "./utils.js";
  * @see
  * [testing-library/jest-dom#tobepartiallychecked](https://github.com/testing-library/jest-dom#tobepartiallychecked)
  */
-export function toBePartiallyChecked(this: MatcherState, element: Element): MatcherResult {
+export function toBePartiallyChecked(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBePartiallyChecked, this);
 
     const isValidInput = () => {

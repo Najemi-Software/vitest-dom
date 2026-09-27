@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { test, expect } from "vitest";
+import { expect, it } from "vitest";
 
 import { toBeInTheDocument } from "./to-be-in-the-document.js";
 import { HtmlElementTypeError } from "./utils.js";
@@ -9,7 +9,7 @@ expect.extend({ toBeInTheDocument });
 
 const HTMLElement = window.HTMLElement;
 
-test(".toBeInTheDocument", () => {
+it(".toBeInTheDocument", () => {
     window.customElements.define(
         "custom-element",
         class extends HTMLElement {

@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { test, expect } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeRequired } from "./to-be-required.js";
 
 expect.extend({ toBeRequired });
 
-test(".toBeRequired", () => {
+it(".toBeRequired", () => {
     const { queryByTestId } = render(`
     <div>
       <input data-testid="required-input" required>

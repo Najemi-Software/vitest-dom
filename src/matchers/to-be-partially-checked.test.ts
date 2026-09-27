@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { describe, test, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBePartiallyChecked } from "./to-be-partially-checked.js";
@@ -9,7 +9,7 @@ import { toHaveValue } from "./to-have-value.js";
 expect.extend({ toBePartiallyChecked, toHaveValue });
 
 describe(".toBePartiallyChecked", () => {
-    test("handles input checkbox with aria-checked", () => {
+    it("handles input checkbox with aria-checked", () => {
         const { queryByTestId } = render(`
       <input type="checkbox" aria-checked="mixed" data-testid="checkbox-mixed" />
       <input type="checkbox" checked data-testid="checkbox-checked" />
@@ -21,7 +21,7 @@ describe(".toBePartiallyChecked", () => {
         expect(queryByTestId("checkbox-unchecked")).not.toBePartiallyChecked();
     });
 
-    test("handles input checkbox set as indeterminate", () => {
+    it("handles input checkbox set as indeterminate", () => {
         const { queryByTestId } = render(`
       <input type="checkbox" data-testid="checkbox-mixed" />
       <input type="checkbox" checked data-testid="checkbox-checked" />
@@ -35,7 +35,7 @@ describe(".toBePartiallyChecked", () => {
         expect(queryByTestId("checkbox-unchecked")).not.toBePartiallyChecked();
     });
 
-    test('handles element with role="checkbox"', () => {
+    it('handles element with role="checkbox"', () => {
         const { queryByTestId } = render(`
       <div role="checkbox" aria-checked="mixed" data-testid="aria-checkbox-mixed" />
       <div role="checkbox" aria-checked="true" data-testid="aria-checkbox-checked" />
@@ -47,7 +47,7 @@ describe(".toBePartiallyChecked", () => {
         expect(queryByTestId("aria-checkbox-unchecked")).not.toBePartiallyChecked();
     });
 
-    test("throws when input checkbox is mixed but expected not to be", () => {
+    it("throws when input checkbox is mixed but expected not to be", () => {
         const { queryByTestId } = render(
             `<input type="checkbox" aria-checked="mixed" data-testid="checkbox-mixed" />`,
         );
@@ -55,7 +55,7 @@ describe(".toBePartiallyChecked", () => {
         expect(() => expect(queryByTestId("checkbox-mixed")).not.toBePartiallyChecked()).toThrowError();
     });
 
-    test("throws when input checkbox is indeterminate but expected not to be", () => {
+    it("throws when input checkbox is indeterminate but expected not to be", () => {
         const { queryByTestId } = render(`<input type="checkbox" data-testid="checkbox-mixed" />`);
 
         queryByTestId<HTMLInputElement>("checkbox-mixed")!.indeterminate = true;
@@ -63,13 +63,13 @@ describe(".toBePartiallyChecked", () => {
         expect(() => expect(queryByTestId("input-mixed")).not.toBePartiallyChecked()).toThrowError();
     });
 
-    test("throws when input checkbox is not checked but expected to be", () => {
+    it("throws when input checkbox is not checked but expected to be", () => {
         const { queryByTestId } = render(`<input type="checkbox" data-testid="checkbox-empty" />`);
 
         expect(() => expect(queryByTestId("checkbox-empty")).toBePartiallyChecked()).toThrowError();
     });
 
-    test('throws when element with role="checkbox" is partially checked but expected not to be', () => {
+    it('throws when element with role="checkbox" is partially checked but expected not to be', () => {
         const { queryByTestId } = render(
             `<div role="checkbox" aria-checked="mixed" data-testid="aria-checkbox-mixed" />`,
         );
@@ -77,7 +77,7 @@ describe(".toBePartiallyChecked", () => {
         expect(() => expect(queryByTestId("aria-checkbox-mixed")).not.toBePartiallyChecked()).toThrowError();
     });
 
-    test('throws when element with role="checkbox" is checked but expected to be partially checked', () => {
+    it('throws when element with role="checkbox" is checked but expected to be partially checked', () => {
         const { queryByTestId } = render(
             `<div role="checkbox" aria-checked="true" data-testid="aria-checkbox-checked" />`,
         );
@@ -85,7 +85,7 @@ describe(".toBePartiallyChecked", () => {
         expect(() => expect(queryByTestId("aria-checkbox-checked")).toBePartiallyChecked()).toThrowError();
     });
 
-    test('throws when element with role="checkbox" is not checked but expected to be', () => {
+    it('throws when element with role="checkbox" is not checked but expected to be', () => {
         const { queryByTestId } = render(
             `<div role="checkbox" aria-checked="false" data-testid="aria-checkbox" />`,
         );
@@ -93,7 +93,7 @@ describe(".toBePartiallyChecked", () => {
         expect(() => expect(queryByTestId("aria-checkbox")).toBePartiallyChecked()).toThrowError();
     });
 
-    test('throws when element with role="checkbox" has an invalid aria-checked attribute', () => {
+    it('throws when element with role="checkbox" has an invalid aria-checked attribute', () => {
         const { queryByTestId } = render(
             `<div role="checkbox" aria-checked="something" data-testid="aria-checkbox-invalid" />`,
         );
@@ -101,7 +101,7 @@ describe(".toBePartiallyChecked", () => {
         expect(() => expect(queryByTestId("aria-checkbox-invalid")).toBePartiallyChecked()).toThrowError();
     });
 
-    test("throws when the element is not a checkbox", () => {
+    it("throws when the element is not a checkbox", () => {
         const { queryByTestId } = render(`<select data-testid="select"></select>`);
         expect(() => expect(queryByTestId("select")).toBePartiallyChecked()).toThrowError(
             'only inputs with type="checkbox" or elements with role="checkbox" and a valid aria-checked attribute can be used with .toBePartiallyChecked(). Use .toHaveValue() instead',

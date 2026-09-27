@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { expect, test } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveAttribute } from "./to-have-attribute.js";
 
 expect.extend({ toHaveAttribute });
 
-test(".toHaveAttribute", () => {
+it(".toHaveAttribute", () => {
     const { queryByTestId } = render(`
     <button data-testid="ok-button" type="submit" disabled>
       OK

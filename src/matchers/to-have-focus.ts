@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
@@ -17,7 +17,7 @@ import { checkHtmlElement } from "./utils.js";
  * @see
  * [testing-library/jest-dom#tohavefocus](https://github.com/testing-library/jest-dom#tohavefocus)
  */
-export function toHaveFocus(this: MatcherState, element: Element): MatcherResult {
+export function toHaveFocus(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toHaveFocus, this);
 
     return {

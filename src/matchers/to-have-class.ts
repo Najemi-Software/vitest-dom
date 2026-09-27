@@ -1,13 +1,13 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
-interface ToHaveClassOptions {
+interface IToHaveClassOptions {
     exact: boolean;
 }
 
-function getExpectedClassNamesAndOptions(params: Array<string | ToHaveClassOptions>) {
+function getExpectedClassNamesAndOptions(params: Array<string | IToHaveClassOptions>) {
     const lastParam = params.pop();
-    let expectedClassNames: Array<string | undefined>, options: ToHaveClassOptions;
+    let expectedClassNames: Array<string | undefined>, options: IToHaveClassOptions;
 
     if (typeof lastParam === "object") {
         expectedClassNames = params as string[];
@@ -55,7 +55,7 @@ function isSubset(subset: string[], superset: string[]) {
  * @see
  * [testing-library/jest-dom#tohaveclass](https://github.com/testing-library/jest-dom#tohaveclass)
  */
-export function toHaveClass(this: MatcherState, htmlElement: Element, ...params: string[]): MatcherResult {
+export function toHaveClass(this: MatcherState, htmlElement: Element, ...params: string[]): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveClass, this);
     const { expectedClassNames, options } = getExpectedClassNamesAndOptions(params);
 

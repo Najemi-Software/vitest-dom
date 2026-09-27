@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getTag } from "./utils.js";
 
 // form elements that support 'disabled'
@@ -70,7 +70,7 @@ function isElementOrAncestorDisabled(element: Element) {
  * @see
  * [testing-library/jest-dom#tobedisabled](https://github.com/testing-library/jest-dom#tobedisabled)
  */
-export function toBeDisabled(this: MatcherState, element: Element): MatcherResult {
+export function toBeDisabled(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeDisabled, this);
 
     const isDisabled = isElementOrAncestorDisabled(element);
@@ -108,7 +108,7 @@ export function toBeDisabled(this: MatcherState, element: Element): MatcherResul
  * @see
  * [testing-library/jest-dom#tobeenabled](https://github.com/testing-library/jest-dom#tobeenabled)
  */
-export function toBeEnabled(this: MatcherState, element: Element): MatcherResult {
+export function toBeEnabled(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeEnabled, this);
 
     const isEnabled = !isElementOrAncestorDisabled(element);

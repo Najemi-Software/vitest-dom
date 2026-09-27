@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { test, expect } from "vitest";
+import { expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toContainElement } from "./to-contain-element.js";
@@ -23,7 +23,7 @@ const svgElement = queryByTestId<SVGElement>("svg-element");
 const nonExistantElement = queryByTestId<HTMLElement>("not-exists");
 const fakeElement = { thisIsNot: "an html element" };
 
-test(".toContainElement positive test cases", () => {
+it(".toContainElement positive test cases", () => {
     expect(grandparent).toContainElement(parent);
     expect(grandparent).toContainElement(child);
     expect(grandparent).toContainElement(svgElement);
@@ -36,7 +36,7 @@ test(".toContainElement positive test cases", () => {
     expect(grandparent).not.toContainElement(nonExistantElement);
 });
 
-test(".toContainElement negative test cases", () => {
+it(".toContainElement negative test cases", () => {
     expect(() => expect(nonExistantElement).not.toContainElement(child)).toThrowError();
     expect(() => expect(parent).toContainElement(grandparent)).toThrowError();
     expect(() => expect(nonExistantElement).toContainElement(grandparent)).toThrowError();

@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 
-import { test, expect, vi } from "vitest";
+import { expect, it, vi } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toBeEmpty } from "./to-be-empty.js";
 
 expect.extend({ toBeEmpty });
 
-test(".toBeEmpty", () => {
+it(".toBeEmpty", () => {
     // @deprecated intentionally hiding warnings for test clarity
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const { queryByTestId } = render(`

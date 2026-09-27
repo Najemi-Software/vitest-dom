@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getTag } from "./utils.js";
 
 // form elements that support 'required'
@@ -51,7 +51,7 @@ function isElementRequiredByARIA(element: Element) {
  * @see
  * [testing-library/jest-dom#toberequired](https://github.com/testing-library/jest-dom#toberequired)
  */
-export function toBeRequired(this: MatcherState, element: Element): MatcherResult {
+export function toBeRequired(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeRequired, this);
 
     const isRequired =

@@ -1,4 +1,4 @@
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
@@ -22,7 +22,7 @@ export function toContainElement(
     this: MatcherState,
     container: Element,
     element: HTMLElement | SVGElement | null,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(container, toContainElement, this);
 
     if (element !== null) {

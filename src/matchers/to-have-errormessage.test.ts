@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveErrorMessage } from "./to-have-errormessage.js";
@@ -8,7 +8,7 @@ import { toHaveErrorMessage } from "./to-have-errormessage.js";
 expect.extend({ toHaveErrorMessage });
 
 describe(".toHaveErrorMessage", () => {
-    test("resolves for object with correct aria-errormessage reference", () => {
+    it("resolves for object with correct aria-errormessage reference", () => {
         const { queryByTestId } = render(`
     <label for="startTime"> Please enter a start time for the meeting: </label>
     <input data-testid="startTime" type="text" aria-errormessage="msgID" aria-invalid="true" value="11:30 PM" >
@@ -23,7 +23,7 @@ describe(".toHaveErrorMessage", () => {
         expect(timeInput).not.toHaveErrorMessage("Pikachu!");
     });
 
-    test("works correctly on implicit invalid element", () => {
+    it("works correctly on implicit invalid element", () => {
         const { queryByTestId } = render(`
     <label for="startTime"> Please enter a start time for the meeting: </label>
     <input data-testid="startTime" type="text" aria-errormessage="msgID" aria-invalid value="11:30 PM" >
@@ -38,7 +38,7 @@ describe(".toHaveErrorMessage", () => {
         expect(timeInput).not.toHaveErrorMessage("Pikachu!");
     });
 
-    test("rejects for valid object", () => {
+    it("rejects for valid object", () => {
         const { queryByTestId } = render(`
     <div id="errormessage">The errormessage</div>
     <div data-testid="valid" aria-errormessage="errormessage"></div>
@@ -56,7 +56,7 @@ describe(".toHaveErrorMessage", () => {
         }).toThrowError();
     });
 
-    test("rejects for object with incorrect aria-errormessage reference", () => {
+    it("rejects for object with incorrect aria-errormessage reference", () => {
         const { queryByTestId } = render(`
     <div id="errormessage">The errormessage</div>
     <div data-testid="invalid_id" aria-errormessage="invalid" aria-invalid="true"></div>
@@ -66,7 +66,7 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("invalid_id")).toHaveErrorMessage("");
     });
 
-    test("handles invalid element without aria-errormessage", () => {
+    it("handles invalid element without aria-errormessage", () => {
         const { queryByTestId } = render(`
     <div id="errormessage">The errormessage</div>
     <div data-testid="without" aria-invalid="true"></div>
@@ -76,7 +76,7 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("without")).toHaveErrorMessage("");
     });
 
-    test("handles valid element without aria-errormessage", () => {
+    it("handles valid element without aria-errormessage", () => {
         const { queryByTestId } = render(`
     <div id="errormessage">The errormessage</div>
     <div data-testid="without"></div>
@@ -93,7 +93,7 @@ describe(".toHaveErrorMessage", () => {
         }).toThrowError();
     });
 
-    test("handles multiple ids", () => {
+    it("handles multiple ids", () => {
         const { queryByTestId } = render(`
     <div id="first">First errormessage</div>
     <div id="second">Second errormessage</div>
@@ -115,7 +115,7 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("multiple")).not.toHaveErrorMessage("First");
     });
 
-    test("handles negative test cases", () => {
+    it("handles negative test cases", () => {
         const { queryByTestId } = render(`
     <div id="errormessage">The errormessage</div>
     <div data-testid="target" aria-errormessage="errormessage" aria-invalid="true"></div>
@@ -130,7 +130,7 @@ describe(".toHaveErrorMessage", () => {
         ).toThrowError();
     });
 
-    test("normalizes whitespace", () => {
+    it("normalizes whitespace", () => {
         const { queryByTestId } = render(`
       <div id="first">
         Step
@@ -149,7 +149,7 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("target")).toHaveErrorMessage("Step 1 of 4 And extra errormessage");
     });
 
-    test("can handle multiple levels with content spread across decendants", () => {
+    it("can handle multiple levels with content spread across decendants", () => {
         const { queryByTestId } = render(`
         <span id="errormessage">
             <span>Step</span>
@@ -163,7 +163,7 @@ describe(".toHaveErrorMessage", () => {
         expect(queryByTestId("target")).toHaveErrorMessage("Step 1 of 4");
     });
 
-    test("handles extra whitespace with multiple ids", () => {
+    it("handles extra whitespace with multiple ids", () => {
         const { queryByTestId } = render(`
     <div id="first">First errormessage</div>
     <div id="second">Second errormessage</div>
@@ -178,7 +178,7 @@ describe(".toHaveErrorMessage", () => {
         );
     });
 
-    test("is case-sensitive", () => {
+    it("is case-sensitive", () => {
         const { queryByTestId } = render(`
       <span id="errormessage">Sensitive text</span>
       <div data-testid="target" aria-errormessage="errormessage" aria-invalid="true"></div>

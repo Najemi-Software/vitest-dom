@@ -1,6 +1,6 @@
 import { isEqualWith } from "lodash-es";
 
-import type { MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, compareArraysAsSet, getMessage, getSingleElementValue } from "./utils.js";
 
 /**
@@ -26,7 +26,7 @@ export function toHaveValue(
     this: MatcherState,
     htmlElement: Element,
     expectedValue?: string | string[] | number | null,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveValue, this);
 
     if (

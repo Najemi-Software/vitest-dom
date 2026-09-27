@@ -1,4 +1,4 @@
-import type { MatcherFn, MatcherResult, MatcherState } from "./types.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage, normalize } from "./utils.js";
 
 const ariaInvalidName = "aria-invalid";
@@ -47,7 +47,7 @@ export function toHaveAccessibleErrorMessage<State extends MatcherState>(
     this: State,
     htmlElement: HTMLElement,
     expectedAccessibleErrorMessage?: string | RegExp | State,
-): MatcherResult {
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveAccessibleErrorMessage, this);
     const to = this.isNot ? "not to" : "to";
     const method = this.isNot ? ".not.toHaveAccessibleErrorMessage" : ".toHaveAccessibleErrorMessage";
@@ -96,9 +96,9 @@ export function toHaveAccessibleErrorMessage<State extends MatcherState>(
     }
 
     const error = normalize(
-        errormessageId != null
-            ? (htmlElement.ownerDocument.getElementById(errormessageId)?.textContent ?? "")
-            : "",
+        errormessageId == null
+            ? ""
+            : (htmlElement.ownerDocument.getElementById(errormessageId)?.textContent ?? ""),
     );
 
     return {
@@ -121,14 +121,3 @@ export function toHaveAccessibleErrorMessage<State extends MatcherState>(
         },
     };
 }
-
-// type MatcherFnToExtendExpectObj<Name extends string, T extends MatcherFn, R> = {
-//   [K in Name]:
-// };
-
-type AllParemetersExceptFirst<T extends (...args: any[]) => any> = T extends (
-    first: any,
-    ...rest: infer P
-) => any
-    ? P
-    : never;

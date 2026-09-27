@@ -1,5 +1,5 @@
-import type { MatcherResult, MatcherState } from "./types.js";
-import { getMessage, checkNode, matches, normalize } from "./utils.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
+import { checkNode, getMessage, matches, normalize } from "./utils.js";
 
 /**
  * @description
@@ -29,7 +29,7 @@ export function toHaveTextContent(
     node: Element,
     checkWith: string | RegExp,
     options: { normalizeWhitespace: boolean } = { normalizeWhitespace: true },
-): MatcherResult {
+): IMatcherResult {
     checkNode(node, toHaveTextContent, this);
 
     const textContent = options.normalizeWhitespace

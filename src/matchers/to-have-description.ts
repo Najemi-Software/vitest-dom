@@ -1,7 +1,7 @@
 import type { expect } from "vitest";
 
-import type { MatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getMessage, normalize, deprecate } from "./utils.js";
+import type { IMatcherResult, MatcherState } from "./types.js";
+import { checkHtmlElement, deprecate, getMessage, normalize } from "./utils.js";
 
 // See algoritm: https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_description
 /**
@@ -56,7 +56,7 @@ export function toHaveDescription(
     this: MatcherState,
     htmlElement: Element,
     checkWith?: string | RegExp | typeof expect.stringContaining,
-): MatcherResult {
+): IMatcherResult {
     deprecate("toHaveDescription", "Please use toHaveAccessibleDescription.");
 
     checkHtmlElement(htmlElement, toHaveDescription, this);

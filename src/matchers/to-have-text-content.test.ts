@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { render } from "./render.test.utils.js";
 import { toHaveTextContent } from "./to-have-text-content.js";
@@ -8,7 +8,7 @@ import { toHaveTextContent } from "./to-have-text-content.js";
 expect.extend({ toHaveTextContent });
 
 describe(".toHaveTextContent", () => {
-    test("handles positive test cases", () => {
+    it("handles positive test cases", () => {
         const { queryByTestId } = render(`<span data-testid="count-value">2</span>`);
 
         expect(queryByTestId("count-value")).toHaveTextContent("2");
@@ -18,19 +18,19 @@ describe(".toHaveTextContent", () => {
         expect(queryByTestId("count-value")).not.toHaveTextContent("21");
     });
 
-    test("handles text nodes", () => {
+    it("handles text nodes", () => {
         const { container } = render(`<span>example</span>`);
 
         expect(container.querySelector("span")!.firstChild).toHaveTextContent("example");
     });
 
-    test("handles fragments", () => {
+    it("handles fragments", () => {
         const { asFragment } = render(`<span>example</span>`);
 
         expect(asFragment()).toHaveTextContent("example");
     });
 
-    test("handles negative test cases", () => {
+    it("handles negative test cases", () => {
         const { queryByTestId } = render(`<span data-testid="count-value">2</span>`);
 
         expect(() => expect(queryByTestId("count-value2")).toHaveTextContent("2")).toThrowError();
@@ -39,7 +39,7 @@ describe(".toHaveTextContent", () => {
         expect(() => expect(queryByTestId("count-value")).not.toHaveTextContent("2")).toThrowError();
     });
 
-    test("normalizes whitespace by default", () => {
+    it("normalizes whitespace by default", () => {
         const { container } = render(`
       <span>
         Step
@@ -52,7 +52,7 @@ describe(".toHaveTextContent", () => {
         expect(container.querySelector("span")).toHaveTextContent("Step 1 of 4");
     });
 
-    test("allows whitespace normalization to be turned off", () => {
+    it("allows whitespace normalization to be turned off", () => {
         const { container } = render(`<span>&nbsp;&nbsp;Step 1 of 4</span>`);
 
         expect(container.querySelector("span")).toHaveTextContent("  Step 1 of 4", {
@@ -60,7 +60,7 @@ describe(".toHaveTextContent", () => {
         });
     });
 
-    test("can handle multiple levels", () => {
+    it("can handle multiple levels", () => {
         const { container } = render(`<span id="parent"><span>Step 1
 
     of 4</span></span>`);
@@ -68,7 +68,7 @@ describe(".toHaveTextContent", () => {
         expect(container.querySelector("#parent")).toHaveTextContent("Step 1 of 4");
     });
 
-    test("can handle multiple levels with content spread across decendants", () => {
+    it("can handle multiple levels with content spread across decendants", () => {
         const { container } = render(`
         <span id="parent">
             <span>Step</span>
@@ -83,19 +83,19 @@ describe(".toHaveTextContent", () => {
         expect(container.querySelector("#parent")).toHaveTextContent("Step 1 of 4");
     });
 
-    test("does not throw error with empty content", () => {
+    it("does not throw error with empty content", () => {
         const { container } = render(`<span></span>`);
         expect(container.querySelector("span")).toHaveTextContent("");
     });
 
-    test("is case-sensitive", () => {
+    it("is case-sensitive", () => {
         const { container } = render("<span>Sensitive text</span>");
 
         expect(container.querySelector("span")).toHaveTextContent("Sensitive text");
         expect(container.querySelector("span")).not.toHaveTextContent("sensitive text");
     });
 
-    test("when matching with empty string and element with content, suggest using toBeEmptyDOMElement instead", () => {
+    it("when matching with empty string and element with content, suggest using toBeEmptyDOMElement instead", () => {
         // https://github.com/testing-library/jest-dom/issues/104
         const { container } = render("<span>not empty</span>");
 
