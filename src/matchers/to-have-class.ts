@@ -5,7 +5,7 @@ interface IToHaveClassOptions {
     exact: boolean;
 }
 
-function getExpectedClassNamesAndOptions(params: Array<string | IToHaveClassOptions>) {
+function getExpectedClassNamesAndOptions(params: Array<string | IToHaveClassOptions | undefined>) {
     const lastParam = params.pop();
     let expectedClassNames: Array<string | undefined>, options: IToHaveClassOptions;
 
@@ -55,7 +55,14 @@ function isSubset(subset: string[], superset: string[]) {
  * @see
  * [testing-library/jest-dom#tohaveclass](https://github.com/testing-library/jest-dom#tohaveclass)
  */
-export function toHaveClass(this: MatcherState, htmlElement: Element, ...params: string[]): IMatcherResult {
+export function toHaveClass(
+    this: MatcherState,
+    htmlElement: Element,
+    ...params:
+        | string[]
+        | [classNames: string, options?: IToHaveClassOptions]
+        | [...classNames: string[], options: IToHaveClassOptions]
+): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveClass, this);
     const { expectedClassNames, options } = getExpectedClassNamesAndOptions(params);
 
