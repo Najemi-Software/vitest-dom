@@ -79,13 +79,13 @@ describe(".toContainHTML", () => {
         }
 
         expect(errorMessage).toMatchInlineSnapshot(`
-      "<dim>expect(</><red>element</><dim>).toContainHTML()</>
-      Expected:
-        <green><div> non-existant element </div></>
-      Received:
-        <red><span
-        data-testid=\\"child\\"
-      /></>"
-    `);
+          "expect(element).toContainHTML()
+          Expected:
+            <div> non-existant element </div>
+          Received:
+            <span
+            data-testid=\\"child\\"
+          />"
+        `);
     });
 });
