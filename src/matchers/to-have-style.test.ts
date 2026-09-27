@@ -7,7 +7,6 @@ import { toHaveStyle } from "./to-have-style.js";
 
 expect.extend({ toHaveStyle });
 
-// eslint-disable-next-line max-lines-per-function
 describe(".toHaveStyle", () => {
     test("handles positive test cases", () => {
         const { container } = render(`

@@ -169,7 +169,6 @@ function matches(textToMatch: string, matcher: string | RegExp) {
 
 function deprecate(name: string, replacementText?: string) {
     // Notify user that they are using deprecated functionality.
-    // eslint-disable-next-line no-console
     console.warn(
         `Warning: ${name} has been deprecated and will be removed in future updates.`,
         replacementText,
