@@ -13,6 +13,7 @@ import { toBeVisible } from "./matchers/to-be-visible.js";
 import { toContainElement } from "./matchers/to-contain-element.js";
 import { toContainHTML } from "./matchers/to-contain-html.js";
 import { toHaveAccessibleDescription } from "./matchers/to-have-accessible-description.js";
+import { toHaveAccessibleErrorMessage } from "./matchers/to-have-accessible-errormessage.js";
 import { toHaveAccessibleName } from "./matchers/to-have-accessible-name.js";
 import { toHaveAttribute } from "./matchers/to-have-attribute.js";
 import { toHaveClass } from "./matchers/to-have-class.js";
@@ -34,6 +35,7 @@ export {
     toContainHTML,
     toHaveTextContent,
     toHaveAccessibleDescription,
+    toHaveAccessibleErrorMessage,
     toHaveAccessibleName,
     toHaveAttribute,
     toHaveClass,

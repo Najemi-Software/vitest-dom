@@ -45,7 +45,7 @@ const validStates = ["false"];
  */
 export function toHaveAccessibleErrorMessage<State extends MatcherState>(
     this: State,
-    htmlElement: HTMLElement,
+    htmlElement: Element,
     expectedAccessibleErrorMessage?: string | RegExp | State,
 ): IMatcherResult {
     checkHtmlElement(htmlElement, toHaveAccessibleErrorMessage, this);
