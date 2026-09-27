@@ -84,7 +84,7 @@ describe(".toContainHTML", () => {
             <div> non-existant element </div>
           Received:
             <span
-            data-testid=\\"child\\"
+            data-testid="child"
           />"
         `);
     });
