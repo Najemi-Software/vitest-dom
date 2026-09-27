@@ -2,7 +2,10 @@
 
 import { describe, expect, it } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveFormValues } from "./to-have-form-values.js";
+
+expect.extend({ toHaveFormValues });
 
 const categories = [
     { value: "", label: "–" },

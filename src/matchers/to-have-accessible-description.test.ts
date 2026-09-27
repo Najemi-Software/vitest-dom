@@ -2,7 +2,10 @@
 
 import { describe, it, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveAccessibleDescription } from "./to-have-accessible-description.js";
+
+expect.extend({ toHaveAccessibleDescription });
 
 describe(".toHaveAccessibleDescription", () => {
     it("works with the link title attribute", () => {

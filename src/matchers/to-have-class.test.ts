@@ -2,7 +2,10 @@
 
 import { expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveClass } from "./to-have-class.js";
+
+expect.extend({ toHaveClass });
 
 const renderElementWithClasses = () =>
     render(`

@@ -2,7 +2,10 @@
 
 import { describe, it, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveAccessibleName } from "./to-have-accessible-name.js";
+
+expect.extend({ toHaveAccessibleName });
 
 describe(".toHaveAccessibleName", () => {
     it("recognizes an element's content as its label when appropriate", () => {

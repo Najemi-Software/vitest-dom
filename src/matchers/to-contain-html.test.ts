@@ -2,7 +2,10 @@
 
 import { describe, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toContainHTML } from "./to-contain-html.js";
+
+expect.extend({ toContainHTML });
 
 /* eslint-disable max-statements */
 describe(".toContainHTML", () => {

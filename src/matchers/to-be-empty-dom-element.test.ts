@@ -2,7 +2,10 @@
 
 import { test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeEmptyDOMElement } from "./to-be-empty-dom-element.js";
+
+expect.extend({ toBeEmptyDOMElement });
 
 test(".toBeEmptyDOMElement", () => {
     const { queryByTestId } = render(`

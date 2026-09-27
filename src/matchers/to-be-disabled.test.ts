@@ -2,7 +2,10 @@
 
 import { test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeDisabled, toBeEnabled } from "./to-be-disabled.js";
+
+expect.extend({ toBeDisabled, toBeEnabled });
 
 window.customElements.define("custom-element", class extends window.HTMLElement {});
 

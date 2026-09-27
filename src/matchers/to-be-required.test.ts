@@ -2,7 +2,10 @@
 
 import { test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeRequired } from "./to-be-required.js";
+
+expect.extend({ toBeRequired });
 
 test(".toBeRequired", () => {
     const { queryByTestId } = render(`

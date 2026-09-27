@@ -2,7 +2,10 @@
 
 import { describe, test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeInvalid, toBeValid } from "./to-be-invalid.js";
+
+expect.extend({ toBeInvalid, toBeValid });
 
 // A required field without a value is invalid
 const invalidInputHtml = `<input required>`;

@@ -2,7 +2,10 @@
 
 import { test, expect, vi } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toBeEmpty } from "./to-be-empty.js";
+
+expect.extend({ toBeEmpty });
 
 test(".toBeEmpty", () => {
     // @deprecated intentionally hiding warnings for test clarity

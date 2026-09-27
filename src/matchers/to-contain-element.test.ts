@@ -2,7 +2,10 @@
 
 import { test, expect } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toContainElement } from "./to-contain-element.js";
+
+expect.extend({ toContainElement });
 
 const { queryByTestId } = render(`
 <span data-testid="grandparent">

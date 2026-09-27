@@ -2,7 +2,10 @@
 
 import { expect, test } from "vitest";
 
-import { render } from "./helpers/test-utils.js";
+import { render } from "./render.test.utils.js";
+import { toHaveFocus } from "./to-have-focus.js";
+
+expect.extend({ toHaveFocus });
 
 test(".toHaveFocus", () => {
     const { container } = render(`
