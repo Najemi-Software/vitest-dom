@@ -129,13 +129,12 @@ function parseCSS<State extends MatcherState>(css: string, matcherFn: IMatcherFn
     }
 
     // The parsed css is always a single `selector { ... }` rule.
-    const parsedRules = ((ast.rules[0] as IRule).declarations ?? [])
+    return ((ast.rules[0] as IRule).declarations ?? [])
         .filter((d): d is IDeclaration => d.type === "declaration")
         .reduce<Record<string, string>>(
             (obj, { property, value }) => Object.assign(obj, { [property]: value }),
             {},
         );
-    return parsedRules;
 }
 
 function display(context: MatcherState, value: unknown) {
