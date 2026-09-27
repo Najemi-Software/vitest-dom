@@ -1,6 +1,19 @@
 import type { MatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
+/**
+ * @description
+ * Assert whether an element has content or not.
+ * @example
+ * <span data-testid="not-empty">
+ *   <span data-testid="empty"></span>
+ * </span>
+ *
+ * expect(getByTestId('empty')).toBeEmptyDOMElement()
+ * expect(getByTestId('not-empty')).not.toBeEmptyDOMElement()
+ * @see
+ * [testing-library/jest-dom#tobeemptydomelement](https://github.com/testing-library/jest-dom#tobeemptydomelement)
+ */
 export function toBeEmptyDOMElement(this: MatcherState, element: Element): MatcherResult {
     checkHtmlElement(element, toBeEmptyDOMElement, this);
 
