@@ -109,7 +109,7 @@ export function toHaveFormValues(
             const to = this.isNot ? "not to" : "to";
             const matcher = `${this.isNot ? ".not" : ""}.toHaveFormValues`;
             const commonKeyValues = Object.keys(formValues)
-                .filter((key) => expectedValues.hasOwnProperty(key))
+                .filter((key) => Object.prototype.hasOwnProperty.call(expectedValues, key))
                 .reduce((obj, key) => ({ ...obj, [key]: formValues[key] }), {});
             return [
                 this.utils.matcherHint(matcher, "element", ""),

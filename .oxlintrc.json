@@ -7,8 +7,7 @@
     "rules": {
         "headers/header-format": "off",
 
-        "eslint/no-restricted-imports": "off",
-        "eslint/no-prototype-builtins": "off"
+        "eslint/no-restricted-imports": "off"
     },
     "overrides": [
         {
