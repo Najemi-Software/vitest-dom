@@ -114,7 +114,7 @@ test("it should throw if element is not valid", () => {
     }
 
     expect(errorMessage).toMatchInlineSnapshot(
-        '".toHaveDisplayValue() currently does not support input[type=\\"radio\\"], try with another matcher instead."',
+        `".toHaveDisplayValue() currently does not support input[type="radio"], try with another matcher instead."`,
     );
 
     try {
@@ -125,7 +125,7 @@ test("it should throw if element is not valid", () => {
     }
 
     expect(errorMessage).toMatchInlineSnapshot(
-        '".toHaveDisplayValue() currently does not support input[type=\\"checkbox\\"], try with another matcher instead."',
+        `".toHaveDisplayValue() currently does not support input[type="checkbox"], try with another matcher instead."`,
     );
 });
 
