@@ -1,7 +1,10 @@
 import type { expect } from "vitest";
 
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, deprecate, getMessage, normalize } from "./utils.js";
+import { deprecate } from "./utils/deprecate.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
+import { normalize } from "./utils/text.js";
 
 // See algoritm: https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_description
 /**

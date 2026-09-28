@@ -1,5 +1,5 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
 
 /**
  * Allows you to assert whether an element contains another element as a descendant or not.

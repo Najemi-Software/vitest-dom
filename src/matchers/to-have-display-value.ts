@@ -1,5 +1,6 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getMessage } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
 
 /**
  * This allows you to check whether the given form element has the specified displayed value (the one the

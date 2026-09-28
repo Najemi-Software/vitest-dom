@@ -1,7 +1,9 @@
 import { isEqualWith, uniq } from "lodash-es";
 
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, compareArraysAsSet, getSingleElementValue } from "./utils.js";
+import { compareArraysAsSet } from "./utils/arrays.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getSingleElementValue } from "./utils/element-values.js";
 
 // Returns the combined value of several elements that have the same name
 // e.g. radio buttons or groups of checkboxes

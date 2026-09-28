@@ -1,5 +1,6 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, deprecate } from "./utils.js";
+import { deprecate } from "./utils/deprecate.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
 
 /**
  * Assert whether a value is a DOM element, or not. Contrary to what its name

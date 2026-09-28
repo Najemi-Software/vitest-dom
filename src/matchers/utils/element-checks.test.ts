@@ -1,35 +1,14 @@
 // @vitest-environment happy-dom
 
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
-import { type IMatcherFn } from "../types.js";
+import type { IMatcherFn } from "../../types.js";
+import type { MatcherState } from "../types.js";
 
-import type { MatcherState } from "./types.js";
-import {
-    HtmlElementTypeError,
-    NodeTypeError,
-    checkHtmlElement,
-    checkNode,
-    deprecate,
-    toSentence,
-} from "./utils.js";
+import { checkHtmlElement, checkNode } from "./element-checks.js";
+import { HtmlElementTypeError, NodeTypeError } from "./type-errors.js";
 
 const noopMatcher: IMatcherFn<MatcherState> = () => ({ pass: true, message: () => "" });
-
-it("deprecate", () => {
-    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const name = "test";
-    const replacement = "test";
-    const message = `Warning: ${name} has been deprecated and will be removed in future updates.`;
-
-    deprecate(name, replacement);
-    expect(spy).toHaveBeenCalledWith(message, replacement);
-
-    deprecate(name);
-    expect(spy).toHaveBeenCalledWith(message, undefined);
-
-    spy.mockRestore();
-});
 
 describe("checkHtmlElement", () => {
     let assertionContext: MatcherState;
@@ -194,27 +173,5 @@ describe("checkNode", () => {
                 assertionContext,
             );
         }).toThrow(NodeTypeError);
-    });
-});
-
-describe("toSentence", () => {
-    it("turns array into string of comma separated list with default last word connector", () => {
-        expect(toSentence(["one", "two", "three"])).toBe("one, two and three");
-    });
-
-    it("supports custom word connector", () => {
-        expect(toSentence(["one", "two", "three"], { wordConnector: "; " })).toBe("one; two and three");
-    });
-
-    it("supports custom last word connector", () => {
-        expect(toSentence(["one", "two", "three"], { lastWordConnector: " or " })).toBe("one, two or three");
-    });
-
-    it("turns one element array into string containing first element", () => {
-        expect(toSentence(["one"])).toBe("one");
-    });
-
-    it("turns empty array into empty string", () => {
-        expect(toSentence([])).toBe("");
     });
 });

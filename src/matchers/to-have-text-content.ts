@@ -1,5 +1,7 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkNode, getMessage, matches, normalize } from "./utils.js";
+import { checkNode } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
+import { matches, normalize } from "./utils/text.js";
 
 /**
  * Check whether the given element has a text content or not.
