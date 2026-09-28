@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-09-28
+
+### Fixed
+
+- Remove the old `IMatcherFn` declaration that should have been replaced in 1.0.0 but was left in place alongside its replacement, which merged the two into a single interface with an unintended extra call signature
+
 ## [1.0.0] - 2026-09-28
 
 ### Added
@@ -355,6 +361,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[1.0.1]: https://github.com/Najemi-Software/vitest-dom/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.37.0...v1.0.0
 [0.37.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.35.1...v0.36.0
