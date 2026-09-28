@@ -56,6 +56,7 @@ preferably in your [tests setup file][]:
 | 2.x            | `@najemi-software/vitest-dom/extend-expect/v2` |
 | 3.x            | `@najemi-software/vitest-dom/extend-expect/v3` |
 | 4.x            | `@najemi-software/vitest-dom/extend-expect/v4` |
+| 5.x            | `@najemi-software/vitest-dom/extend-expect/v5` |
 
 ```typescript
 // vitest.setup.ts

@@ -5,7 +5,8 @@
         "src/extend-expect/public/v0.ts",
         "src/extend-expect/public/v1.ts",
         "src/extend-expect/public/v2.ts",
-        "src/extend-expect/public/v3.ts"
+        "src/extend-expect/public/v3.ts",
+        "src/extend-expect/public/v4.ts"
     ],
     "compilerOptions": {
         "noEmit": true
