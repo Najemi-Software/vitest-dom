@@ -119,10 +119,14 @@ class InvalidCSSError<State extends MatcherState> extends Error {
     }
 }
 
+function isNonEmptyArray<T>(array: T[] | null | undefined): array is [T, ...T[]] {
+    return !!array && array.length > 0;
+}
+
 function parseCSS<State extends MatcherState>(css: string, matcherFn: IMatcherFn<State>, context: State) {
     const ast = cssParse(`selector { ${css} }`, { silent: true }).stylesheet;
 
-    if (ast.parsingErrors && ast.parsingErrors.length > 0) {
+    if (isNonEmptyArray(ast.parsingErrors)) {
         const { reason, line } = ast.parsingErrors[0];
 
         throw new InvalidCSSError(
@@ -194,10 +198,11 @@ function getSelectValue({ multiple, options }: HTMLSelectElement) {
         return [...selectedOptions].map((opt) => opt.value);
     }
 
-    if (selectedOptions.length === 0) {
-        return undefined; // Couldn't make this happen, but just in case
+    if (isNonEmptyArray(selectedOptions)) {
+        return selectedOptions[0].value;
     }
-    return selectedOptions[0].value;
+
+    return undefined; // Couldn't make this happen, but just in case
 }
 
 function getInputValue(inputElement: HTMLInputElement) {

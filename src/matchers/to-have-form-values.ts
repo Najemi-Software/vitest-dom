@@ -36,6 +36,10 @@ type FormElement =
     | HTMLMeterElement
     | HTMLProgressElement;
 
+function isSingleItemArray<T>(array: T[]): array is [T] {
+    return array.length === 1;
+}
+
 function getFormValue(container: HTMLFormElement | HTMLFieldSetElement, name: string) {
     const elements = Array.from(container.querySelectorAll("[name]")).filter(
         (element) => element.getAttribute("name") === name,
@@ -44,7 +48,7 @@ function getFormValue(container: HTMLFormElement | HTMLFieldSetElement, name: st
         return undefined; // shouldn't happen, but just in case
     }
 
-    if (elements.length === 1) {
+    if (isSingleItemArray(elements)) {
         return getSingleElementValue(elements[0]);
     } else {
         return getMultiElementValue(elements as HTMLInputElement[]);

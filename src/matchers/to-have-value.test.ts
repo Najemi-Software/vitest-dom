@@ -85,7 +85,7 @@ describe(".toHaveValue", () => {
         expect(queryByTestId("not-selected")).not.toHaveValue();
         expect(queryByTestId("not-selected")).toHaveValue("");
 
-        queryByTestId("single")!.children[0].setAttribute("selected", "true");
+        queryByTestId("single")!.children[0]!.setAttribute("selected", "true");
         expect(queryByTestId("single")).toHaveValue("first");
     });
 

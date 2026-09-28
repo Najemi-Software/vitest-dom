@@ -37,7 +37,7 @@ describe(".toHaveAccessibleErrorMessage", () => {
             `);
 
             // Assume the remaining error messages are the EXACT same as above
-            expect(() => expect(field).toHaveAccessibleErrorMessage(new RegExp(error[0]))).toThrow(
+            expect(() => expect(field).toHaveAccessibleErrorMessage(new RegExp(error.charAt(0)))).toThrow(
                 /aria-errormessage/,
             );
 
@@ -46,9 +46,9 @@ describe(".toHaveAccessibleErrorMessage", () => {
                 /aria-errormessage/,
             );
 
-            expect(() => expect(field).toHaveAccessibleErrorMessage(new RegExp(secondError[0]))).toThrow(
-                /aria-errormessage/,
-            );
+            expect(() =>
+                expect(field).toHaveAccessibleErrorMessage(new RegExp(secondError.charAt(0))),
+            ).toThrow(/aria-errormessage/);
         });
 
         it("Fails the test if the target element is valid according to the WAI-ARIA spec", () => {
@@ -248,9 +248,9 @@ describe(".toHaveAccessibleErrorMessage", () => {
             const field = queryByTestId("input");
             expect(field).not.toHaveAccessibleErrorMessage();
             expect(field).not.toHaveAccessibleErrorMessage(error);
-            expect(field).not.toHaveAccessibleErrorMessage(new RegExp(error[0]));
+            expect(field).not.toHaveAccessibleErrorMessage(new RegExp(error.charAt(0)));
             expect(field).not.toHaveAccessibleErrorMessage(secondError);
-            expect(field).not.toHaveAccessibleErrorMessage(new RegExp(secondError[0]));
+            expect(field).not.toHaveAccessibleErrorMessage(new RegExp(secondError.charAt(0)));
         });
 
         it("Passes the test if the target element is valid according to the WAI-ARIA spec", () => {
@@ -264,7 +264,7 @@ describe(".toHaveAccessibleErrorMessage", () => {
             const field = queryByTestId(input);
             expect(field).not.toHaveAccessibleErrorMessage();
             expect(field).not.toHaveAccessibleErrorMessage(error);
-            expect(field).not.toHaveAccessibleErrorMessage(new RegExp(error[0]));
+            expect(field).not.toHaveAccessibleErrorMessage(new RegExp(error.charAt(0)));
         });
     });
 });
