@@ -4,8 +4,9 @@ import redent from "redent";
 
 import { cssParse } from "../css-parse/css-parse.js";
 import type { IDeclaration, IRule } from "../css-parse/nodes.js";
+import type { IMatcherFn } from "../types.js";
 
-import type { IMatcherFn, MatcherState } from "./types.js";
+import type { MatcherState } from "./types.js";
 
 class GenericTypeError<State extends MatcherState> extends Error {
     constructor(

@@ -2,7 +2,9 @@
 
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import type { IMatcherFn, MatcherState } from "./types.js";
+import { type IMatcherFn } from "../types.js";
+
+import type { MatcherState } from "./types.js";
 import {
     HtmlElementTypeError,
     NodeTypeError,

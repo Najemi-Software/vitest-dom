@@ -70,7 +70,6 @@ declare namespace matchers {
         toHaveValue
     }
 }
-export { matchers }
 
 // @public (undocumented)
 export type MatcherState = ReturnType<ExpectStatic["getState"]>;
