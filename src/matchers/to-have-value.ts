@@ -1,7 +1,10 @@
 import { isEqualWith } from "lodash-es";
 
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, compareArraysAsSet, getMessage, getSingleElementValue } from "./utils.js";
+import { compareArraysAsSet } from "./utils/arrays.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getSingleElementValue } from "./utils/element-values.js";
+import { getMessage } from "./utils/messages.js";
 
 /**
  * Check whether the given form element has the specified value.

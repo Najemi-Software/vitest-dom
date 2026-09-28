@@ -3,7 +3,7 @@
 import { expect, it } from "vitest";
 
 import { toBeInTheDocument } from "./to-be-in-the-document.js";
-import { HtmlElementTypeError } from "./utils.js";
+import { HtmlElementTypeError } from "./utils/type-errors.js";
 
 expect.extend({ toBeInTheDocument });
 

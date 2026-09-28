@@ -1,5 +1,5 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
 
 function isStyleVisible(element: Element) {
     const { getComputedStyle } = element.ownerDocument.defaultView!;

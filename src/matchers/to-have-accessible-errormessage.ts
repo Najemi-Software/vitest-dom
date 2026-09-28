@@ -1,5 +1,7 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getMessage, normalize } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
+import { normalize } from "./utils/text.js";
 
 const ariaInvalidName = "aria-invalid";
 const validStates = ["false"];

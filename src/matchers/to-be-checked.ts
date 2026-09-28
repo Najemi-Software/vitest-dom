@@ -1,5 +1,6 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, toSentence } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { toSentence } from "./utils/text.js";
 
 // WAI-ARIA roles supporting the aria-checked state
 // (https://www.w3.org/TR/wai-aria-1.2/#aria-checked).

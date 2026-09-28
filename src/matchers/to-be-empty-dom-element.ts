@@ -1,5 +1,5 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
 
 /**
  * Assert whether an element has content or not.

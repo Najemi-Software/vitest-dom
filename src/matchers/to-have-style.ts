@@ -1,7 +1,8 @@
 import chalk from "chalk";
 
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, parseCSS } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { parseCSS } from "./utils/parse-css.js";
 
 type Styles = Record<string, unknown>;
 

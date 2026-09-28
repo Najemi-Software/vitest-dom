@@ -2,7 +2,8 @@ import { computeAccessibleDescription } from "dom-accessibility-api";
 import type { expect } from "vitest";
 
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getMessage } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
 
 /**
  * This allows to assert that an element has the expected [accessible description](https://w3c.github.io/accname/).

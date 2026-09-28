@@ -1,5 +1,6 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getMessage } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
 
 function printAttribute(stringify: (value: unknown) => string, name: string, value: unknown) {
     return value === undefined ? name : `${name}=${stringify(value)}`;

@@ -1,7 +1,9 @@
 import type { expect } from "vitest";
 
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getMessage, normalize } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getMessage } from "./utils/messages.js";
+import { normalize } from "./utils/text.js";
 
 // See aria-errormessage spec https://www.w3.org/TR/wai-aria-1.2/#aria-errormessage
 /**

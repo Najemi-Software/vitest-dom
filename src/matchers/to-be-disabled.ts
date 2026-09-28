@@ -1,5 +1,6 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement, getTag } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
+import { getTag } from "./utils/element-tag.js";
 
 // form elements that support 'disabled'
 const FORM_TAGS = ["fieldset", "input", "select", "optgroup", "option", "button", "textarea"];

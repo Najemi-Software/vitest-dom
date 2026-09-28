@@ -1,5 +1,5 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
-import { checkHtmlElement } from "./utils.js";
+import { checkHtmlElement } from "./utils/element-checks.js";
 
 /**
  * This allows you to check whether the given element is partially checked.
