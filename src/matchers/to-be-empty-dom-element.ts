@@ -40,7 +40,7 @@ export function toBeEmptyDOMElement(this: MatcherState, element: Element): IMatc
  * https://github.com/jsdom/jsdom/issues/2220 under jsdom).
  *
  * @param {*} element an HtmlElement or SVGElement
- * @return {*} true if the element only contains comments or none
+ * @return true if the element only contains comments or none
  */
 function isEmptyElement(element: Element) {
     const nonCommentChildNodes = Array.from(element.childNodes).filter((node) => node.nodeType !== 8);

@@ -37,28 +37,28 @@
             "default": "./esm/index.js"
         },
         "./extend-expect/v0": {
-            "types": "./esm/extend-expect/public/v0.d.ts",
-            "default": "./esm/extend-expect/public/v0.js"
+            "types": "./esm/extend-expect/v0.d.ts",
+            "default": "./esm/extend-expect/v0.js"
         },
         "./extend-expect/v1": {
-            "types": "./esm/extend-expect/public/v1.d.ts",
-            "default": "./esm/extend-expect/public/v1.js"
+            "types": "./esm/extend-expect/v1.d.ts",
+            "default": "./esm/extend-expect/v1.js"
         },
         "./extend-expect/v2": {
-            "types": "./esm/extend-expect/public/v2.d.ts",
-            "default": "./esm/extend-expect/public/v2.js"
+            "types": "./esm/extend-expect/v2.d.ts",
+            "default": "./esm/extend-expect/v2.js"
         },
         "./extend-expect/v3": {
-            "types": "./esm/extend-expect/public/v3.d.ts",
-            "default": "./esm/extend-expect/public/v3.js"
+            "types": "./esm/extend-expect/v3.d.ts",
+            "default": "./esm/extend-expect/v3.js"
         },
         "./extend-expect/v4": {
-            "types": "./esm/extend-expect/public/v4.d.ts",
-            "default": "./esm/extend-expect/public/v4.js"
+            "types": "./esm/extend-expect/v4.d.ts",
+            "default": "./esm/extend-expect/v4.js"
         },
         "./extend-expect/v5": {
-            "types": "./esm/extend-expect/public/v5.d.ts",
-            "default": "./esm/extend-expect/public/v5.js"
+            "types": "./esm/extend-expect/v5.d.ts",
+            "default": "./esm/extend-expect/v5.js"
         }
     },
     "publishConfig": {

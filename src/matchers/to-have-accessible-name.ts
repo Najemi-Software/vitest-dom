@@ -44,7 +44,7 @@ export function toHaveAccessibleName(
     const actualAccessibleName = computeAccessibleName(htmlElement);
     const missingExpectedValue = arguments.length === 1;
 
-    let pass = false;
+    let pass: boolean;
     if (missingExpectedValue) {
         // When called without an expected value we only want to validate that the element has an
         // accessible name, whatever it may be.
