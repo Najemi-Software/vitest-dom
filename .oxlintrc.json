@@ -4,6 +4,12 @@
     "options": {
         "typeAware": true
     },
+    "ignorePatterns": [
+        "src/extend-expect/public/v0.ts",
+        "src/extend-expect/public/v1.ts",
+        "src/extend-expect/public/v2.ts",
+        "src/extend-expect/public/v3.ts"
+    ],
     "rules": {
         "headers/header-format": "off",
 

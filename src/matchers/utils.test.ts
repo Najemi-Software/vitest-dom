@@ -40,6 +40,9 @@ describe("checkHtmlElement", () => {
             },
         });
 
+        // TODO: Remove the '@ts-expect-error' directive once the matcher context can be captured through a typed matcher
+        // @ts-expect-error fakeMatcher is registered above via expect.extend() for this test only, so it is not part of vitest's typed matchers
+
         // Not an assertion — invokes fakeMatcher to capture its MatcherState
         // oxlint-disable-next-line vitest/no-standalone-expect
         expect(true).fakeMatcher(true);
@@ -112,6 +115,9 @@ describe("checkNode", () => {
                 return { pass: true, message: () => "" };
             },
         });
+
+        // TODO: Remove the '@ts-expect-error' directive once the matcher context can be captured through a typed matcher
+        // @ts-expect-error fakeMatcher is registered above via expect.extend() for this test only, so it is not part of vitest's typed matchers
 
         // Not an assertion — invokes fakeMatcher to capture its MatcherState
         // oxlint-disable-next-line vitest/no-standalone-expect

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-09-28
+
+### Added
+
+- One entry point per Vitest major version, `@najemi-software/vitest-dom/extend-expect/v0` through `@najemi-software/vitest-dom/extend-expect/v4`, each exporting `extendExpect()` and `matchers` and adding the matcher types through the typing extension point of that Vitest version (`Assertion` for Vitest 0.31–2, `Matchers` for Vitest 3–4), so the types check cleanly even with `skipLibCheck` disabled
+- `extendExpect()` optionally accepts a subset of the matchers, to extend `expect` with only those
+- The package root `@najemi-software/vitest-dom` exports the individual matchers, a `matchers` object and the `TestingLibraryMatchers` type
+
+### Breaking Changes
+
+- Remove the side-effect entry point `@najemi-software/vitest-dom/extend-expect`; import `extendExpect` from the entry point matching your Vitest major version and call it instead (see "Migrating to 1.0.0" in the README)
+- Remove the `@najemi-software/vitest-dom/matchers` entry point; import `matchers` from the package root instead
+- `TestingLibraryMatchers` takes a single type parameter, the matchers' return type, instead of two (`<E, R>`)
+
 ## [0.37.0] - 2026-09-28
 
 ### Changed
@@ -341,6 +355,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[1.0.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.37.0...v1.0.0
 [0.37.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.35.1...v0.36.0
 [0.35.1]: https://github.com/Najemi-Software/vitest-dom/compare/v0.35.0...v0.35.1

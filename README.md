@@ -44,55 +44,83 @@ pnpm add --dev @najemi-software/vitest-dom
 
 ## Usage
 
-Import the matchers from `@najemi-software/vitest-dom/matchers` once (perferably in your [tests
-setup file][]), then pass them to Vitest's `expect.extend` method:
+Import `extendExpect` from the entry point matching your installed Vitest major version and call it once,
+preferably in your [tests setup file][]:
 
 [tests setup file]: https://vitest.dev/config/#setupfiles
 
-```javascript
-// vitest-setup.js
-import * as matchers from "@najemi-software/vitest-dom/matchers";
-import { expect } from "vitest";
-expect.extend(matchers);
+| Vitest version | Entry point                                    |
+| -------------- | ---------------------------------------------- |
+| 0.31 – 0.x     | `@najemi-software/vitest-dom/extend-expect/v0` |
+| 1.x            | `@najemi-software/vitest-dom/extend-expect/v1` |
+| 2.x            | `@najemi-software/vitest-dom/extend-expect/v2` |
+| 3.x            | `@najemi-software/vitest-dom/extend-expect/v3` |
+| 4.x            | `@najemi-software/vitest-dom/extend-expect/v4` |
 
-// or:
-import "@najemi-software/vitest-dom/extend-expect";
+```typescript
+// vitest.setup.ts
+import { extendExpect } from "@najemi-software/vitest-dom/extend-expect/v4";
 
-// In vitest.config.js, add the following
+extendExpect();
+```
+
+```typescript
+// vitest.config.ts
 export default defineConfig({
     test: {
-        setupFiles: ["vitest-setup.js"],
+        setupFiles: ["vitest.setup.ts"],
     },
 });
 ```
 
-### With TypeScript
-
-If you're using TypeScript, make sure your setup file has a `.ts` extension to
-include the necessary types.
-
-If you import from `@najemi-software/vitest-dom/extend-expect` to run `expect.extend` for you,
-you will get TypeScript support automatically.
+Calling `extendExpect()` without arguments extends `expect` with all matchers. To extend it with only some of
+them, pass them explicitly:
 
 ```typescript
-// vitest-setup.ts
-import "@najemi-software/vitest-dom/extend-expect";
+import { extendExpect, matchers } from "@najemi-software/vitest-dom/extend-expect/v4";
+
+extendExpect({ toBeVisible: matchers.toBeVisible, toHaveClass: matchers.toHaveClass });
 ```
 
-If you want to run `extend.expect` yourself, you will need to include the type defintions either with a `/// <reference />` directive or including the type in your `compilerOptions`:
+### With TypeScript
+
+Importing from an `extend-expect/v{n}` entry point also adds the matchers' types to Vitest's `expect`, using the
+typing extension point of that Vitest major version. Make sure your setup file has a `.ts` extension and is
+included in your TypeScript project.
+
+If you call Vitest's `expect.extend` yourself (with the matchers from `@najemi-software/vitest-dom`), include the
+types of your Vitest version's entry point either with a `/// <reference />` directive or in your
+`compilerOptions`:
+
+```typescript
+import { matchers } from "@najemi-software/vitest-dom";
+import { expect } from "vitest";
+
+expect.extend(matchers);
+```
 
 1. In your test file via a reference directive:
     ```typescript
-    /// <reference types="@najemi-software/vitest-dom/extend-expect" />
+    /// <reference types="@najemi-software/vitest-dom/extend-expect/v4" />
     ```
 2. In your `tsconfig.json` via the `types` compiler option:
     ```json
     {
         "compilerOptions": {
-            "types": ["@najemi-software/vitest-dom/extend-expect"]
+            "types": ["@najemi-software/vitest-dom/extend-expect/v4"]
         }
     }
     ```
+
+### Migrating to 1.0.0
+
+The side-effect import `import "@najemi-software/vitest-dom/extend-expect";` has been replaced by an explicit
+call to `extendExpect()` from the entry point matching your Vitest version (see [Usage](#usage)).
+
+The `@najemi-software/vitest-dom/matchers` entry point has been replaced by the package root
+`@najemi-software/vitest-dom`, which also exports a `matchers` object; use
+`import { matchers } from "@najemi-software/vitest-dom";` instead of
+`import * as matchers from "@najemi-software/vitest-dom/matchers";`.
 
 <!-- prettier-ignore-start -->
 [vitest]: https://vitest.dev/
