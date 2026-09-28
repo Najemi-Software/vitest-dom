@@ -31,7 +31,7 @@ function _compileAtrule(name: SimpleAtRuleName) {
         const m = ctx.match(re);
         if (!m) return;
         const ret: ISimpleAtRule = { type: name };
-        ret[name] = m[1].trim();
+        ret[name] = m[1]!.trim();
         return pos(ret);
     };
 }

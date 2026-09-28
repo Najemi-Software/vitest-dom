@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.0] - 2026-09-28
+
+### Changed
+
+- Make the TypeScript configuration stricter (including `noUncheckedIndexedAccess`), with shared compiler options now living in `tsconfig.base.json` and `tsconfig.strict.json`, and adapt the source and tests accordingly without changing behavior
+- Compile the published package for ES2022 (previously ES2020) and ship declaration maps alongside the type declarations
+
 ## [0.35.1] - 2026-09-27
 
 ### Fixed
@@ -328,6 +335,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[0.36.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.35.1...v0.36.0
 [0.35.1]: https://github.com/Najemi-Software/vitest-dom/compare/v0.35.0...v0.35.1
 [0.35.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/Najemi-Software/vitest-dom/compare/v0.33.1...v0.34.0

@@ -4,7 +4,7 @@
 
 export function addParent<T>(obj: T, parent?: object): T {
     const record = obj as Record<string, unknown>;
-    const isNode = obj && typeof record.type === "string";
+    const isNode = obj && typeof record["type"] === "string";
     const childParent = isNode ? record : parent;
 
     for (const k in record) {

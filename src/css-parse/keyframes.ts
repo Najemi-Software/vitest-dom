@@ -3,6 +3,10 @@ import { comments } from "./comments.js";
 import { declarations } from "./declarations.js";
 import type { ParserContext } from "./parser-context.js";
 
+function hasItemAtIndex<T, N extends number>(array: T[], index: N): array is T[] & Record<N, T> {
+    return array[index] !== undefined;
+}
+
 /**
  * Parse keyframe.
  */
@@ -13,7 +17,7 @@ export function keyframe(ctx: ParserContext): IKeyframe | undefined {
     const pos = ctx.position();
 
     while ((m = ctx.match(/^((\d+\.\d+|\.\d+|\d+)%?|[a-z]+)\s*/))) {
-        vals.push(m[1]);
+        vals.push(m[1]!);
         ctx.match(/^,\s*/);
     }
 
@@ -39,7 +43,7 @@ export function atkeyframes(ctx: ParserContext): IKeyframes | undefined {
 
     // identifier
     m = ctx.match(/^([-\w]+)\s*/);
-    if (!m) return ctx.error("@keyframes missing name");
+    if (!m || !hasItemAtIndex(m, 1)) return ctx.error("@keyframes missing name");
     const name = m[1];
 
     if (!ctx.open()) return ctx.error("@keyframes missing '{'");
