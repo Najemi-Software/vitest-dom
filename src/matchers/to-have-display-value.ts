@@ -2,11 +2,12 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 /**
- * @description
  * This allows you to check whether the given form element has the specified displayed value (the one the
  * end user will see). It accepts <input>, <select> and <textarea> elements with the exception of <input type="checkbox">
  * and <input type="radio">, which can be meaningfully matched only using toBeChecked or toHaveFormValues.
+ *
  * @example
+ * ```html
  * <label for="input-example">First name</label>
  * <input type="text" id="input-example" value="Luca" />
  *
@@ -28,7 +29,9 @@ import { checkHtmlElement, getMessage } from "./utils.js";
  *   <option value="ananas">Ananas</option>
  *   <option value="avocado" selected>Avocado</option>
  * </select>
+ * ```
  *
+ * ```ts
  * const input = screen.getByLabelText('First name')
  * const textarea = screen.getByLabelText('Description')
  * const selectSingle = screen.getByLabelText('Fruit')
@@ -38,9 +41,12 @@ import { checkHtmlElement, getMessage } from "./utils.js";
  * expect(textarea).toHaveDisplayValue('An example description here.')
  * expect(selectSingle).toHaveDisplayValue('Select a fruit...')
  * expect(selectMultiple).toHaveDisplayValue(['Banana', 'Avocado'])
+ * ```
  *
  * @see
  * [testing-library/jest-dom#tohavedisplayvalue](https://github.com/testing-library/jest-dom#tohavedisplayvalue)
+ *
+ * @public
  */
 export function toHaveDisplayValue(
     this: MatcherState,

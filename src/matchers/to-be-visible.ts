@@ -32,7 +32,6 @@ function isElementVisible(element: Element, previousElement?: Element): boolean 
 }
 
 /**
- * @description
  * This allows you to check if an element is currently visible to the user.
  *
  * An element is visible if **all** the following conditions are met:
@@ -56,6 +55,8 @@ function isElementVisible(element: Element, previousElement?: Element): boolean 
  * expect(getByTestId('visible')).toBeVisible()
  * @see
  * [testing-library/jest-dom#tobevisible](https://github.com/testing-library/jest-dom#tobevisible)
+ *
+ * @public
  */
 export function toBeVisible(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeVisible, this);

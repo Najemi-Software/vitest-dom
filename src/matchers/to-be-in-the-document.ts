@@ -2,7 +2,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
- * @description
  * Assert whether an element is present in the document or not.
  * @example
  * <svg data-testid="svg-element"></svg>
@@ -11,6 +10,8 @@ import { checkHtmlElement } from "./utils.js";
  * expect(queryByTestId('does-not-exist')).not.toBeInTheDocument()
  * @see
  * [testing-library/jest-dom#tobeinthedocument](https://github.com/testing-library/jest-dom#tobeinthedocument)
+ *
+ * @public
  */
 export function toBeInTheDocument(this: MatcherState, element: Element): IMatcherResult {
     if (element !== null || !this.isNot) {

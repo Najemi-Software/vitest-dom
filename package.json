@@ -61,7 +61,8 @@
         "access": "public"
     },
     "scripts": {
-        "build": "pnpm run clean && npm-run-all -p build-ts build-check",
+        "api-extractor": "mkdir -p api && [ -z \"${CI}\" ] && (api-extractor run -l) || (api-extractor run)",
+        "build": "pnpm run clean && npm-run-all -p build-ts build-check && pnpm run api-extractor",
         "build-check": "tsc",
         "build-ts": "tsc -p tsconfig.build.json",
         "clean": "rm -rf ./esm",
@@ -83,6 +84,7 @@
     "devDependencies": {
         "@gooddata/eslint-config": "11.59.0",
         "@gooddata/oxlint-config": "11.59.0",
+        "@microsoft/api-extractor": "^7.59.2",
         "@types/lodash-es": "^4.17.9",
         "@typescript-eslint/eslint-plugin": "8.58.0",
         "@typescript-eslint/parser": "8.58.0",

@@ -1,7 +1,10 @@
 import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
-interface IToHaveClassOptions {
+/**
+ * @public
+ */
+export interface IToHaveClassOptions {
     exact: boolean;
 }
 
@@ -31,11 +34,12 @@ function isSubset(subset: string[], superset: string[]) {
 }
 
 /**
- * @description
  * Check whether the given element has certain classes within its `class` attribute.
  *
  * You must provide at least one class, unless you are asserting that an element does not have any classes.
+ *
  * @example
+ * ```html
  * <button
  *   data-testid="delete-button"
  *   class="btn xs btn-danger"
@@ -44,7 +48,9 @@ function isSubset(subset: string[], superset: string[]) {
  * </button>
  *
  * <div data-testid="no-classes">no classes</div>
+ * ```
  *
+ * ```ts
  * const deleteButton = getByTestId('delete-button')
  * const noClasses = getByTestId('no-classes')
  * expect(deleteButton).toHaveClass('btn')
@@ -52,8 +58,12 @@ function isSubset(subset: string[], superset: string[]) {
  * expect(deleteButton).toHaveClass('btn xs btn-danger', {exact: true})
  * expect(deleteButton).not.toHaveClass('btn xs btn-danger', {exact: true})
  * expect(noClasses).not.toHaveClass()
+ * ```
+ *
  * @see
  * [testing-library/jest-dom#tohaveclass](https://github.com/testing-library/jest-dom#tohaveclass)
+ *
+ * @public
  */
 export function toHaveClass(
     this: MatcherState,

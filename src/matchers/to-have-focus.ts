@@ -2,7 +2,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
- * @description
  * Assert whether an element has focus or not.
  * @example
  * <div>
@@ -16,6 +15,8 @@ import { checkHtmlElement } from "./utils.js";
  * expect(input).not.toHaveFocus()
  * @see
  * [testing-library/jest-dom#tohavefocus](https://github.com/testing-library/jest-dom#tohavefocus)
+ *
+ * @public
  */
 export function toHaveFocus(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toHaveFocus, this);

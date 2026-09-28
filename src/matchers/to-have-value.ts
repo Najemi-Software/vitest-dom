@@ -4,7 +4,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, compareArraysAsSet, getMessage, getSingleElementValue } from "./utils.js";
 
 /**
- * @description
  * Check whether the given form element has the specified value.
  *
  * Accepts `<input>`, `<select>`, and `<textarea>` elements with the exception of `<input type="checkbox">` and
@@ -21,6 +20,8 @@ import { checkHtmlElement, compareArraysAsSet, getMessage, getSingleElementValue
  * expect(numberInput).toHaveValue(5)
  * @see
  * [testing-library/jest-dom#tohavevalue](https://github.com/testing-library/jest-dom#tohavevalue)
+ *
+ * @public
  */
 export function toHaveValue(
     this: MatcherState,

@@ -23,22 +23,29 @@ function isElementInvalid(element: Element) {
 }
 
 /**
- * @description
  * Check if a form element, or the entire `form`, is currently invalid.
  *
  * An `input`, `select`, `textarea`, or `form` element is invalid if it has an `aria-invalid` attribute with no
  * value or a value of "true", or if the result of `checkValidity()` is false.
+ *
  * @example
+ * ```html
  * <input data-testid="no-aria-invalid" />
  *
  * <form data-testid="invalid-form">
  *   <input required />
  * </form>
+ * ```
  *
+ * ```ts
  * expect(getByTestId('no-aria-invalid')).not.toBeInvalid()
  * expect(getByTestId('invalid-form')).toBeInvalid()
+ * ```
+ *
  * @see
  * [testing-library/jest-dom#tobeinvalid](https://github.com/testing-library/jest-dom#tobeinvalid)
+ *
+ * @public
  */
 export function toBeInvalid(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeInvalid, this);
@@ -60,22 +67,29 @@ export function toBeInvalid(this: MatcherState, element: Element): IMatcherResul
 }
 
 /**
- * @description
  * Allows you to check if a form element is currently required.
  *
  * An `input`, `select`, `textarea`, or `form` element is invalid if it has an `aria-invalid` attribute with no
  * value or a value of "false", or if the result of `checkValidity()` is true.
+ *
  * @example
+ * ```html
  * <input data-testid="aria-invalid" aria-invalid />
  *
  * <form data-testid="valid-form">
  *   <input />
  * </form>
+ * ```
  *
+ * ```ts
  * expect(getByTestId('no-aria-invalid')).not.toBeValid()
  * expect(getByTestId('invalid-form')).toBeInvalid()
+ * ```
+ *
  * @see
  * [testing-library/jest-dom#tobevalid](https://github.com/testing-library/jest-dom#tobevalid)
+ *
+ * @public
  */
 export function toBeValid(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeValid, this);

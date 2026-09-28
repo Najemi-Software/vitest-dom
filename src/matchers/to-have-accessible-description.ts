@@ -5,7 +5,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 /**
- * @description
  * This allows to assert that an element has the expected [accessible description](https://w3c.github.io/accname/).
  *
  * You can pass the exact string of the expected accessible description, or you can make a
@@ -28,6 +27,8 @@ import { checkHtmlElement, getMessage } from "./utils.js";
  * expect(getByTestId('logo')).toHaveAccessibleDescription('The logo of Our Company')
  * @see
  * [testing-library/jest-dom#tohaveaccessibledescription](https://github.com/testing-library/jest-dom#tohaveaccessibledescription)
+ *
+ * @public
  */
 export function toHaveAccessibleDescription(
     this: MatcherState,

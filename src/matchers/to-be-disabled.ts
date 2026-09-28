@@ -52,12 +52,13 @@ function isElementOrAncestorDisabled(element: Element) {
 }
 
 /**
- * @description
  * Allows you to check whether an element is disabled from the user's perspective.
  *
  * Matches if the element is a form control and the `disabled` attribute is specified on this element or the
  * element is a descendant of a form element with a `disabled` attribute.
+ *
  * @example
+ * ```html
  * <button
  *   data-testid="button"
  *   type="submit"
@@ -65,10 +66,16 @@ function isElementOrAncestorDisabled(element: Element) {
  * >
  *   submit
  * </button>
+ * ```
  *
+ * ```ts
  * expect(getByTestId('button')).toBeDisabled()
+ * ```
+ *
  * @see
  * [testing-library/jest-dom#tobedisabled](https://github.com/testing-library/jest-dom#tobedisabled)
+ *
+ * @public
  */
 export function toBeDisabled(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeDisabled, this);
@@ -90,7 +97,6 @@ export function toBeDisabled(this: MatcherState, element: Element): IMatcherResu
 }
 
 /**
- * @description
  * Allows you to check whether an element is not disabled from the user's perspective.
  *
  * Works like `not.toBeDisabled()`.
@@ -107,6 +113,8 @@ export function toBeDisabled(this: MatcherState, element: Element): IMatcherResu
  * expect(getByTestId('button')).toBeEnabled()
  * @see
  * [testing-library/jest-dom#tobeenabled](https://github.com/testing-library/jest-dom#tobeenabled)
+ *
+ * @public
  */
 export function toBeEnabled(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeEnabled, this);

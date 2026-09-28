@@ -5,8 +5,6 @@ import { checkHtmlElement, getMessage, normalize } from "./utils.js";
 
 // See aria-errormessage spec https://www.w3.org/TR/wai-aria-1.2/#aria-errormessage
 /**
- * @description
- *
  * Check whether the given element has an [ARIA error message](https://www.w3.org/TR/wai-aria/#aria-errormessage) or not.
  *
  * Use the `aria-errormessage` attribute to reference another element that contains
@@ -23,7 +21,7 @@ import { checkHtmlElement, getMessage, normalize } from "./utils.js";
  * modifier.
  *
  * To perform a partial match, you can pass a `RegExp` or use
- * expect.stringContaining("partial string")`.
+ * `expect.stringContaining("partial string")`.
  *
  * @example
  * <label for="startTime"> Please enter a start time for the meeting: </label>
@@ -43,6 +41,8 @@ import { checkHtmlElement, getMessage, normalize } from "./utils.js";
  * expect(timeInput).not.toHaveErrorMessage('Pikachu!')
  * @see
  * [testing-library/jest-dom#tohaveerrormessage](https://github.com/testing-library/jest-dom#tohaveerrormessage)
+ *
+ * @public
  */
 export function toHaveErrorMessage(
     this: MatcherState,

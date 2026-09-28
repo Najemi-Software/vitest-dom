@@ -5,7 +5,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, getMessage } from "./utils.js";
 
 /**
- * @description
  * This allows to assert that an element has the expected [accessible name](https://w3c.github.io/accname/).
  * It is useful, for instance, to assert that form elements and buttons are properly labelled.
  *
@@ -33,6 +32,8 @@ import { checkHtmlElement, getMessage } from "./utils.js";
  * expect(getByTestId('input-title')).toHaveAccessibleName()
  * @see
  * [testing-library/jest-dom#tohaveaccessiblename](https://github.com/testing-library/jest-dom#tohaveaccessiblename)
+ *
+ * @public
  */
 export function toHaveAccessibleName(
     this: MatcherState,

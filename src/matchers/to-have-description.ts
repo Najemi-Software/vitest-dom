@@ -5,9 +5,6 @@ import { checkHtmlElement, deprecate, getMessage, normalize } from "./utils.js";
 
 // See algoritm: https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_description
 /**
- * @deprecated
- * since v5.14.1
- * @description
  * Check the accessible description for an element.
  * This allows you to check whether the given element has a description or not.
  *
@@ -28,7 +25,11 @@ import { checkHtmlElement, deprecate, getMessage, normalize } from "./utils.js";
  * To perform a partial match, you can pass a `RegExp` or use
  * `expect.stringContaining("partial string")`.
  *
+ * @deprecated
+ * since v5.14.1
+ *
  * @example
+ * ```html
  * <button aria-label="Close" aria-describedby="description-close">
  *   X
  * </button>
@@ -37,7 +38,9 @@ import { checkHtmlElement, deprecate, getMessage, normalize } from "./utils.js";
  * </div>
  *
  * <button>Delete</button>
+ * ```
  *
+ * ```ts
  * const closeButton = getByRole('button', {name: 'Close'})
  *
  * expect(closeButton).toHaveDescription('Closing will discard any changes')
@@ -49,8 +52,12 @@ import { checkHtmlElement, deprecate, getMessage, normalize } from "./utils.js";
  * const deleteButton = getByRole('button', {name: 'Delete'})
  * expect(deleteButton).not.toHaveDescription()
  * expect(deleteButton).toHaveDescription('') // Missing or empty description always becomes a blank string
+ * ```
+ *
  * @see
  * [testing-library/jest-dom#tohavedescription](https://github.com/testing-library/jest-dom#tohavedescription)
+ *
+ * @public
  */
 export function toHaveDescription(
     this: MatcherState,

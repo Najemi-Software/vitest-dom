@@ -2,7 +2,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement } from "./utils.js";
 
 /**
- * @description
  * Allows you to assert whether an element contains another element as a descendant or not.
  * @example
  * <span data-testid="ancestor">
@@ -17,6 +16,8 @@ import { checkHtmlElement } from "./utils.js";
  * expect(ancestor).not.toContainElement(nonExistantElement)
  * @see
  * [testing-library/jest-dom#tocontainelement](https://github.com/testing-library/jest-dom#tocontainelement)
+ *
+ * @public
  */
 export function toContainElement(
     this: MatcherState,
