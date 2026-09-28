@@ -2,10 +2,11 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkHtmlElement, deprecate } from "./utils.js";
 
 /**
+ * Assert whether an element has content or not.
+ *
  * @deprecated
  * since v5.9.0
- * @description
- * Assert whether an element has content or not.
+ *
  * @example
  * <span data-testid="not-empty">
  *   <span data-testid="empty"></span>
@@ -15,6 +16,8 @@ import { checkHtmlElement, deprecate } from "./utils.js";
  * expect(getByTestId('not-empty')).not.toBeEmpty()
  * @see
  * [testing-library/jest-dom#tobeempty](https://github.com/testing-library/jest-dom#tobeempty)
+ *
+ * @public
  */
 export function toBeEmpty(this: MatcherState, element: Element): IMatcherResult {
     deprecate("toBeEmpty", "Please use instead toBeEmptyDOMElement for finding empty nodes in the DOM.");

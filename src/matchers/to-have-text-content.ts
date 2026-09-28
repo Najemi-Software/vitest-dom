@@ -2,7 +2,6 @@ import type { IMatcherResult, MatcherState } from "./types.js";
 import { checkNode, getMessage, matches, normalize } from "./utils.js";
 
 /**
- * @description
  * Check whether the given element has a text content or not.
  *
  * When a string argument is passed through, it will perform a partial case-sensitive match to the element
@@ -23,6 +22,8 @@ import { checkNode, getMessage, matches, normalize } from "./utils.js";
  * expect(element).not.toHaveTextContent('content')
  * @see
  * [testing-library/jest-dom#tohavetextcontent](https://github.com/testing-library/jest-dom#tohavetextcontent)
+ *
+ * @public
  */
 export function toHaveTextContent(
     this: MatcherState,

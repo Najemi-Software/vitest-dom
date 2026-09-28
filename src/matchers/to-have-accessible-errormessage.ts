@@ -6,7 +6,6 @@ const validStates = ["false"];
 
 // See `aria-errormessage` spec at https://www.w3.org/TR/wai-aria-1.2/#aria-errormessage
 /**
- * @description
  * This allows you to assert that an element has the expected
  * [accessible error message](https://w3c.github.io/aria/#aria-errormessage).
  *
@@ -17,12 +16,15 @@ const validStates = ["false"];
  * or [expect.stringMatching](https://jestjs.io/docs/en/expect.html#expectstringmatchingstring-regexp).
  *
  * @example
+ * ```html
  * <input aria-label="Has Error" aria-invalid="true" aria-errormessage="error-message" />
  * <div id="error-message" role="alert">This field is invalid</div>
  *
  * <input aria-label="No Error Attributes" />
  * <input aria-label="Not Invalid" aria-invalid="false" aria-errormessage="error-message" />
+ * ```
  *
+ * ```ts
  * // Inputs with Valid Error Messages
  * expect(getByRole('textbox', {name: 'Has Error'})).toHaveAccessibleErrorMessage()
  * expect(getByRole('textbox', {name: 'Has Error'})).toHaveAccessibleErrorMessage('This field is invalid')
@@ -39,9 +41,12 @@ const validStates = ["false"];
  * expect(
  *   getByRole('textbox', {name: 'Not Invalid'}),
  * ).not.toHaveAccessibleErrorMessage()
+ * ```
  *
  * @see
  * [testing-library/jest-dom#tohaveaccessibleerrormessage](https://github.com/testing-library/jest-dom#tohaveaccessibleerrormessage)
+ *
+ * @public
  */
 export function toHaveAccessibleErrorMessage<State extends MatcherState>(
     this: State,

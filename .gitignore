@@ -3,6 +3,7 @@
 
 node_modules/
 esm/
+temp/
 .npm
 .cache
 .npmrc
@@ -15,7 +16,5 @@ esm/
 .env.*
 !.env.template
 !.env.test
-
-*.scss.d.ts
 
 npm-debug.log*

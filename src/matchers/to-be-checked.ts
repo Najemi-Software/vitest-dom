@@ -14,12 +14,13 @@ const ROLES_SUPPORTING_CHECKED = [
 ];
 
 /**
- * @description
  * Assert whether the given element is checked.
  *
  * It accepts an `input` of type `checkbox` or `radio` and elements with a `role` of `radio` with a valid
  * `aria-checked` attribute of "true" or "false".
+ *
  * @example
+ * ```html
  * <input
  *   type="checkbox"
  *   checked
@@ -28,13 +29,19 @@ const ROLES_SUPPORTING_CHECKED = [
  *   type="radio"
  *   value="foo"
  *   data-testid="input-radio" />
+ * ```
  *
+ * ```ts
  * const inputCheckbox = getByTestId('input-checkbox')
  * const inputRadio = getByTestId('input-radio')
  * expect(inputCheckbox).toBeChecked()
  * expect(inputRadio).not.toBeChecked()
+ * ```
+ *
  * @see
  * [testing-library/jest-dom#tobechecked](https://github.com/testing-library/jest-dom#tobechecked)
+ *
+ * @public
  */
 export function toBeChecked(this: MatcherState, element: Element): IMatcherResult {
     checkHtmlElement(element, toBeChecked, this);

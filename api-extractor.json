@@ -1,0 +1,112 @@
+/**
+ * Config file for API Extractor.  For more info, please visit: https://api-extractor.com
+ */
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+    "mainEntryPointFilePath": "<projectFolder>/esm/index.d.ts",
+
+    /**
+     * Determines how the TypeScript compiler engine will be invoked by API Extractor.
+     */
+    "compiler": {
+        "tsconfigFilePath": "<projectFolder>/tsconfig.json"
+    },
+
+    /**
+     * Configures how the API report file (*.api.md) will be generated.
+     */
+    "apiReport": {
+        "enabled": true,
+        "reportFolder": "<projectFolder>/api/"
+    },
+
+    /**
+     * Configures how the doc model file (*.api.json) will be generated.
+     */
+    "docModel": {
+        "enabled": true
+    },
+
+    /**
+     * Configures how the .d.ts rollup file will be generated.
+     */
+    "dtsRollup": {
+        "enabled": true,
+        "untrimmedFilePath": "<projectFolder>/esm/<unscopedPackageName>.d.ts"
+    },
+
+    /**
+     * Configures how the tsdoc-metadata.json file will be generated.
+     */
+    "tsdocMetadata": {
+        "enabled": true
+    },
+
+    /**
+     * Specifies what type of newlines API Extractor should use when writing output files.
+     */
+    "newlineKind": "lf",
+
+    /**
+     * Configures how API Extractor reports error and warning messages produced during analysis.
+     *
+     * There are three sources of messages:  compiler messages, API Extractor messages, and TSDoc messages.
+     */
+    "messages": {
+        /**
+         * Configures handling of diagnostic messages reported by the TypeScript compiler engine while analyzing
+         * the input .d.ts files.
+         */
+        "compilerMessageReporting": {
+            "default": {
+                "logLevel": "warning"
+            }
+        },
+
+        /**
+         * Configures handling of messages reported by API Extractor during its analysis.
+         */
+        "extractorMessageReporting": {
+            "default": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            },
+            // We need to be explicit here, otherwise the default is used that suppresses the errors...
+            "ae-forgotten-export": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            },
+            "ae-incompatible-release-tags": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            },
+            // we do not want to enforce this rule
+            "ae-internal-missing-underscore": {
+                "logLevel": "none",
+                "addToApiReportFile": false
+            },
+            "ae-internal-mixed-release-tag": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            },
+            "ae-unresolved-inheritdoc-reference": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            },
+            "ae-unresolved-inheritdoc-base": {
+                "logLevel": "error",
+                "addToApiReportFile": false
+            }
+        },
+
+        /**
+         * Configures handling of messages reported by the TSDoc parser when analyzing code comments.
+         */
+        "tsdocMessageReporting": {
+            "default": {
+                "logLevel": "error"
+            }
+        }
+    }
+}
