@@ -55,6 +55,10 @@
         "./extend-expect/v4": {
             "types": "./esm/extend-expect/public/v4.d.ts",
             "default": "./esm/extend-expect/public/v4.js"
+        },
+        "./extend-expect/v5": {
+            "types": "./esm/extend-expect/public/v5.d.ts",
+            "default": "./esm/extend-expect/public/v5.js"
         }
     },
     "publishConfig": {
@@ -111,7 +115,7 @@
         "oxlint-tsgolint": "7.0.2001",
         "typescript": "7.0.2",
         "typescript-eslint": "8.70.1",
-        "vitest": "4.1.11"
+        "vitest": "5.0.2"
     },
     "peerDependencies": {
         "vitest": ">=0.31.0"
