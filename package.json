@@ -129,5 +129,8 @@
             "sh -c 'oxfmt \"$@\" || true' --"
         ]
     },
+    "engines": {
+        "node": ">=22.0.0"
+    },
     "packageManager": "pnpm@12.6.0"
 }
